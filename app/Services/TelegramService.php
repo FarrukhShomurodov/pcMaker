@@ -302,7 +302,7 @@ class TelegramService
                 foreach ($photos as $index => $photo) {
                     $mediaGroup[] = InputMediaPhoto::make([
                         'type' => 'photo',
-                        'media' => 'https://event-in.online/storage/'.$photo,
+                        'media' => 'https://event-in.online/storage/product_photos/9hEFaXhHEAUFXwYlMH5t5PNXV0CraEBwxc7RX6eO.jpg',
                         'caption' => $index === 0 ? $description : '',
                         'parse_mode' => 'Markdown'
                     ]);
