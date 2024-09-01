@@ -300,12 +300,9 @@ class TelegramService
             $mediaGroup = [];
             if (!empty($photos) && is_array($photos)) {
                 foreach ($photos as $index => $photo) {
-                    $photoPath = 'storage' . $photo;
-                    $fullPhotoUrl = env('APP_URL') . $photoPath;
-
                     $mediaGroup[] = InputMediaPhoto::make([
                         'type' => 'photo',
-                        'media' => `${$fullPhotoUrl}`,
+                        'media' => 'https://event-in.online/storage/'.$photo,
                         'caption' => $index === 0 ? $description : '',
                         'parse_mode' => 'Markdown'
                     ]);
