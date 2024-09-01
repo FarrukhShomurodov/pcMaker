@@ -305,7 +305,7 @@ class TelegramService
 
                     $mediaGroup[] = InputMediaPhoto::make([
                         'type' => 'photo',
-                        'media' => 'https://st40.online/images/portfolio/healthcare.png',
+                        'media' => $fullPhotoUrl,
                         'caption' => $index === 0 ? $description : '',
                         'parse_mode' => 'Markdown'
                     ]);
