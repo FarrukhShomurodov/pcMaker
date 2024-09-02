@@ -575,7 +575,7 @@ class TelegramService
 
                         $mediaGroup[] = InputMediaPhoto::make([
                             'type' => 'photo',
-                            'media' => `$fullPhotoUrl`,
+                            'media' => 'https://event-in.online/storage/product_photos/9hEFaXhHEAUFXwYlMH5t5PNXV0CraEBwxc7RX6eO.jpg',
                             'caption' => $index === 0 ? $description : '',
                             'parse_mode' => 'Markdown'
                         ]);
@@ -619,7 +619,7 @@ class TelegramService
 
                         $mediaGroup[] = InputMediaPhoto::make([
                             'type' => 'photo',
-                            'media' => `$fullPhotoUrl`,
+                            'media' => 'https://event-in.online/storage/product_photos/9hEFaXhHEAUFXwYlMH5t5PNXV0CraEBwxc7RX6eO.jpg',
                             'caption' => $index === 0 ? $description : '',
                             'parse_mode' => 'Markdown'
                         ]);
@@ -667,7 +667,7 @@ class TelegramService
 
                     $mediaGroup[] = InputMediaPhoto::make([
                         'type' => 'photo',
-                        'media' => `$fullPhotoUrl`,
+                        'media' => 'https://event-in.online/storage/product_photos/9hEFaXhHEAUFXwYlMH5t5PNXV0CraEBwxc7RX6eO.jpg',
                         'caption' => $index === 0 ? $description : '',
                         'parse_mode' => 'Markdown'
                     ]);
