@@ -24,8 +24,22 @@ class TelegramController extends Controller
         $update = $this->telegram->getWebhookUpdates();
         $this->telegram->commandsHandler(true);
 
+        $this->telegram->sendMessage(
+            [
+                'chat_id' => '1893716322',
+                'text' => 'test bot '
+            ]
+        );
+
         // Обработка сообщений
         if ($update->has('message')) {
+            $this->telegram->sendMessage(
+                [
+                    'chat_id' => '1893716322',
+                    'text' => 'test bot in update'
+                ]
+            );
+
             $message = $update->getMessage();
             $chatId = $message->getChat()->getId();
             $text = $message->getText();
