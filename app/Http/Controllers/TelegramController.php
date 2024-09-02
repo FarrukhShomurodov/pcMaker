@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BotUser;
 use App\Services\TelegramService;
+use Illuminate\Support\Facades\Log;
 use Telegram\Bot\Api;
 use Telegram\Bot\Keyboard\Keyboard;
 
@@ -32,6 +33,7 @@ class TelegramController extends Controller
             $user = BotUser::firstOrCreate(['chat_id' => $chatId]);
 
             if ($text == '/start') {
+                Log::info('work');
                 $user->update(['step' => 'choose_language']);
 
                 $keyboard = [
