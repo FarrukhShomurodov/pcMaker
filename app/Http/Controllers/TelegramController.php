@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\BotUser;
 use App\Services\TelegramService;
-use Illuminate\Support\Facades\Log;
 use Telegram\Bot\Api;
 use Telegram\Bot\Keyboard\Keyboard;
 
@@ -24,22 +23,8 @@ class TelegramController extends Controller
         $update = $this->telegram->getWebhookUpdates();
         $this->telegram->commandsHandler(true);
 
-        $this->telegram->sendMessage(
-            [
-                'chat_id' => '1893716322',
-                'text' => 'test bot '
-            ]
-        );
-
         // Обработка сообщений
         if ($update->has('message')) {
-            $this->telegram->sendMessage(
-                [
-                    'chat_id' => '1893716322',
-                    'text' => 'test bot in update'
-                ]
-            );
-
             $message = $update->getMessage();
             $chatId = $message->getChat()->getId();
             $text = $message->getText();
@@ -47,7 +32,6 @@ class TelegramController extends Controller
             $user = BotUser::firstOrCreate(['chat_id' => $chatId]);
 
             if ($text == '/start') {
-                Log::info('work');
                 $user->update(['step' => 'choose_language']);
 
                 $keyboard = [
