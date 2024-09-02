@@ -32,14 +32,6 @@ class TelegramController extends Controller
             $user = BotUser::firstOrCreate(['chat_id' => $chatId]);
 
             if ($text == '/start') {
-
-                $this->telegram->sendMessage([
-                    'chat_id' => $chatId,
-                    'text' => "just test",
-                ]);
-
-                return;
-
                 $user->update(['step' => 'choose_language']);
 
                 $keyboard = [

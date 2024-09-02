@@ -32,11 +32,7 @@ Route::resource('admin-assembly', AdminAssemblyController::class)->parameter('ad
 Route::prefix('telegram')->group(function () {
     Route::get('/webhook', function () {
         $telegram = new Api(config('telegram.bot_token'));
-        $hook = $telegram->setWebhook(['url' => env('TELEGRAM_WEBHOOK_URL')]);
-//        $telegram->sendMessage([
-//            'chat_id' => '1893716322',
-//            'text' => 'test'
-//        ]);
+        $hook = $telegram->setWebhook(['url' => 'https://event-in.online/telegram/webhook']);
 
         return dd($hook);
     });
