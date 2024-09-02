@@ -33,10 +33,10 @@ Route::prefix('telegram')->group(function () {
     Route::get('/webhook', function () {
         $telegram = new Api(config('telegram.bot_token'));
         $hook = $telegram->setWebhook(['url' => env('TELEGRAM_WEBHOOK_URL')]);
-        $telegram->sendMessage([
-            'chat_id' => '1893716322',
-            'text' => 'test'
-        ]);
+//        $telegram->sendMessage([
+//            'chat_id' => '1893716322',
+//            'text' => 'test'
+//        ]);
 
         return dd($hook);
     });
