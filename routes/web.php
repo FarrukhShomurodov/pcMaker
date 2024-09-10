@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductSubCategoryController;
 use App\Http\Controllers\TelegramController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Telegram\Bot\Api;
 
 Route::get('/', function () {
@@ -37,4 +38,17 @@ Route::prefix('telegram')->group(function () {
         return dd($hook);
     });
     Route::post('/webhook', [TelegramController::class, 'handleWebhook']);
+});
+
+
+Route::get("/test", function (){
+    $products = \App\Models\Product::query()->get();
+
+    $photos = json_decode($products->photos, true);
+
+    foreach ($photos as $index => $photo) {
+        $photoPath = Storage::url('public/' . $photo);
+        $fullPhotoUrl = env('APP_URL') . $photoPath;
+        dd($fullPhotoUrl);
+    }
 });
