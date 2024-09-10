@@ -784,7 +784,6 @@ class TelegramService
         }
     }
 
-
     // Component
     private function showAdminCategory($chatId)
     {
@@ -832,7 +831,7 @@ class TelegramService
             $this->showComponent($chatId, $components);
         }
     }
-//
+
     private function showComponent($chatId, $components)
     {
         foreach ($components as $component) {
