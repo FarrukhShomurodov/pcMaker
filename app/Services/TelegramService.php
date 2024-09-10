@@ -674,7 +674,7 @@ class TelegramService
                 $keyboard = Keyboard::make(['inline_keyboard' => [
                     [
                         ['text' => '-', 'callback_data' => 'add_component_to_bin' . $component->id],
-                        ['text' => $componentQuantities[$component->id] ?? '0', 'callback_data' => 'current_product_count' . $component->id],
+                        ['text' => $componentQuantities[$component->id] ?? '0', 'callback_data' => 'current_component_count' . $component->id],
                         ['text' => '+', 'callback_data' => 'remove_component_from_bin' . $component->id],
                     ]
                 ]]);
