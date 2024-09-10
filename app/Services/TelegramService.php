@@ -302,7 +302,7 @@ class TelegramService
                 foreach ($photos as $index => $photo) {
                     $mediaGroup[] = InputMediaPhoto::make([
                         'type' => 'photo',
-                        'media' => 'https://age.uz/upload/webp/resize_cache/c05/300_300_1/5j3p5xc6pacs9u559h9sc77xr54el5on.webp',
+                        'media' => 'https://test-test.co.uz/storage/product_photos/3x0nWOF23RbifapGwDjMCYDCVkd73PupKU6jp9x2.jpg',
                         'caption' => $index === 0 ? $description : '',
                         'parse_mode' => 'Markdown'
                     ]);
@@ -598,7 +598,7 @@ class TelegramService
 
                         $mediaGroup[] = InputMediaPhoto::make([
                             'type' => 'photo',
-                            'media' => 'https://age.uz/upload/webp/resize_cache/c05/300_300_1/5j3p5xc6pacs9u559h9sc77xr54el5on.webp', // Use the correct photo URL
+                            'media' => 'https://test-test.co.uz/storage/product_photos/3x0nWOF23RbifapGwDjMCYDCVkd73PupKU6jp9x2.jpg', // Use the correct photo URL
                             'caption' => $index === 0 ? $description : '',
                             'parse_mode' => 'Markdown'
                         ]);
@@ -641,7 +641,7 @@ class TelegramService
 
                         $mediaGroup[] = InputMediaPhoto::make([
                             'type' => 'photo',
-                            'media' => 'https://age.uz/upload/webp/resize_cache/c05/300_300_1/5j3p5xc6pacs9u559h9sc77xr54el5on.webp', // Use the correct photo URL
+                            'media' => 'https://test-test.co.uz/storage/product_photos/3x0nWOF23RbifapGwDjMCYDCVkd73PupKU6jp9x2.jpg', // Use the correct photo URL
                             'caption' => $index === 0 ? $description : '',
                             'parse_mode' => 'Markdown'
                         ]);
@@ -689,7 +689,7 @@ class TelegramService
 
                     $mediaGroup[] = InputMediaPhoto::make([
                         'type' => 'photo',
-                        'media' => 'https://age.uz/upload/webp/resize_cache/c05/300_300_1/5j3p5xc6pacs9u559h9sc77xr54el5on.webp',
+                        'media' => 'https://test-test.co.uz/storage/product_photos/3x0nWOF23RbifapGwDjMCYDCVkd73PupKU6jp9x2.jpg',
                         'caption' => $index === 0 ? $description : '',
                         'parse_mode' => 'Markdown'
                     ]);
