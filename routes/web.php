@@ -16,13 +16,13 @@ Route::get('/', function () {
 });
 
 Route::prefix('product')->name('product.')->group(function () {
-    Route::resource('items', ProductController::class);
+    Route::resource('items', ProductController::class)->parameter('item', 'product');
     Route::resource('category', ProductCategoryController::class)->parameter('product-category', 'productCategory');
     Route::resource('sub-category', ProductSubCategoryController::class)->parameter('product-sub-category', 'productSubCategory');
 });
 
 Route::prefix('component')->name('component.')->group(function () {
-    Route::resource('items', ComponentController::class);
+    Route::resource('items', ComponentController::class)->parameter('item', 'component');
     Route::resource('category', ComponentCategoryController::class)->parameter('component-category', 'componentCategory');
     Route::resource('type', ComponentTypeController::class)->parameter('component-type', 'componentType');
 });
