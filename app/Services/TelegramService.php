@@ -302,7 +302,7 @@ class TelegramService
                 foreach ($photos as $index => $photo) {
                     $mediaGroup[] = InputMediaPhoto::make([
                         'type' => 'photo',
-                        'media' => 'https://event-in.online/storage/product_photos/9hEFaXhHEAUFXwYlMH5t5PNXV0CraEBwxc7RX6eO.jpg',
+                        'media' => 'https://age.uz/upload/webp/resize_cache/c05/300_300_1/5j3p5xc6pacs9u559h9sc77xr54el5on.webp',
                         'caption' => $index === 0 ? $description : '',
                         'parse_mode' => 'Markdown'
                     ]);
@@ -482,6 +482,7 @@ class TelegramService
         $productQuantities = [];
         $componentQuantities = [];
         $adminAssemblyQuantities = [];
+        $keyboard = ['inline_keyboard' => []];
 
         foreach ($basketItems as $item) {
             if ($item->product_id) {
@@ -525,7 +526,6 @@ class TelegramService
         }
 
         $totalPrice = $basket->total_price;
-
         $this->telegram->editMessageText([
             'chat_id' => $chatId,
             'message_id' => $callbackQuery->getMessage()->getMessageId(),
@@ -540,8 +540,29 @@ class TelegramService
 
     private function basketItems($chatId)
     {
+        // Retrieve the bot user
         $botUser = BotUser::where('chat_id', $chatId)->first();
+
+        if (!$botUser) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => 'Пользователь не найден! 😕'
+            ]);
+            return;
+        }
+
+        // Retrieve the basket associated with the bot user
         $basket = $botUser->basket()->first();
+
+        if (!$basket) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => 'Корзина не найдена! 😕'
+            ]);
+            return;
+        }
+
+        // Retrieve the basket items
         $basketItems = $basket->basketItems()->get();
 
         if ($basketItems->count() === 0) {
@@ -552,15 +573,17 @@ class TelegramService
             return;
         }
 
+        // Initialize arrays
+        $productQuantities = [];
+
         foreach ($basketItems as $basketItem) {
-            $product = Product::query()->find($basketItem->product_id);
-            $adminAssembly = AdminAssembly::query()->find($basketItem->admin_assembly_id);
+            $product = Product::find($basketItem->product_id);
+            $adminAssembly = AdminAssembly::find($basketItem->admin_assembly_id);
 
             if ($product) {
                 $productQuantities[$basketItem->product_id] = $basketItem->product_count;
 
                 $photos = json_decode($product->photos, true);
-
                 $description = "💻 *{$product->name}* 💻\n\n"
                     . "🔧 *Бренд:* _{$product->brand}_\n"
                     . "💵 *Цена:* *{$product->price} сум*\n"
@@ -575,12 +598,12 @@ class TelegramService
 
                         $mediaGroup[] = InputMediaPhoto::make([
                             'type' => 'photo',
-                            'media' => 'https://event-in.online/storage/product_photos/9hEFaXhHEAUFXwYlMH5t5PNXV0CraEBwxc7RX6eO.jpg',
+                            'media' => 'https://age.uz/upload/webp/resize_cache/c05/300_300_1/5j3p5xc6pacs9u559h9sc77xr54el5on.webp', // Use the correct photo URL
                             'caption' => $index === 0 ? $description : '',
                             'parse_mode' => 'Markdown'
                         ]);
-
                     }
+
                     $this->telegram->sendMediaGroup([
                         'chat_id' => $chatId,
                         'media' => json_encode($mediaGroup)
@@ -606,7 +629,6 @@ class TelegramService
 
             if ($adminAssembly) {
                 $photos = json_decode($adminAssembly->photos, true);
-
                 $description = "*{$adminAssembly->title}* \n\n"
                     . "{$adminAssembly->description}\n\n"
                     . "💵 *Цена:* *{$adminAssembly->price} сум* \n\n";
@@ -619,23 +641,23 @@ class TelegramService
 
                         $mediaGroup[] = InputMediaPhoto::make([
                             'type' => 'photo',
-                            'media' => 'https://event-in.online/storage/product_photos/9hEFaXhHEAUFXwYlMH5t5PNXV0CraEBwxc7RX6eO.jpg',
+                            'media' => 'https://age.uz/upload/webp/resize_cache/c05/300_300_1/5j3p5xc6pacs9u559h9sc77xr54el5on.webp', // Use the correct photo URL
                             'caption' => $index === 0 ? $description : '',
                             'parse_mode' => 'Markdown'
                         ]);
-
                     }
+
                     $this->telegram->sendMediaGroup([
                         'chat_id' => $chatId,
                         'media' => json_encode($mediaGroup)
                     ]);
                 }
+
                 $keyboard = Keyboard::make(['inline_keyboard' => [
                     [
                         ['text' => 'Удалить', 'callback_data' => 'remove_admin_assembly_from_bin' . $adminAssembly->id],
                     ]
-                ]
-                ]);
+                ]]);
 
                 $this->telegram->sendMessage([
                     'chat_id' => $chatId,
@@ -643,9 +665,9 @@ class TelegramService
                     'reply_markup' => $keyboard,
                 ]);
             }
-
         }
     }
+
 
     // Admin Assemblies
     private function adminAssemblies($chatId)
@@ -667,7 +689,7 @@ class TelegramService
 
                     $mediaGroup[] = InputMediaPhoto::make([
                         'type' => 'photo',
-                        'media' => 'https://event-in.online/storage/product_photos/9hEFaXhHEAUFXwYlMH5t5PNXV0CraEBwxc7RX6eO.jpg',
+                        'media' => 'https://age.uz/upload/webp/resize_cache/c05/300_300_1/5j3p5xc6pacs9u559h9sc77xr54el5on.webp',
                         'caption' => $index === 0 ? $description : '',
                         'parse_mode' => 'Markdown'
                     ]);

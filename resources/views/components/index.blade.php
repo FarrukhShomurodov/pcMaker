@@ -45,7 +45,7 @@
                                                 @if($component->photos)
                                                     @foreach(json_decode($component->photos) as $photo)
                                                         <div class="td__img">
-                                                            <img src="storage/{{ $photo }}" class="popup-img"
+                                                            <img src="/storage/{{ $photo }}" class="popup-img"
                                                                  width="100px"/>
                                                         </div>
                                                     @endforeach

@@ -35,7 +35,7 @@ class ComponentCategoryController extends Controller
     public function store(ComponentCategoryRequest $request): RedirectResponse
     {
         $this->componentCategoryService->store($request->validated());
-        return redirect()->route('component-category.index');
+        return redirect()->route('component.category.index');
     }
 
     public function edit(ComponentCategory $componentCategory): View|\Illuminate\Foundation\Application|Factory|Application
@@ -46,12 +46,12 @@ class ComponentCategoryController extends Controller
     public function update(ComponentCategory $componentCategory, ComponentCategoryRequest $request): RedirectResponse
     {
         $this->componentCategoryService->update($request->validated(), $componentCategory);
-        return redirect()->route('component-category.index');
+        return redirect()->route('component.category.index');
     }
 
     public function destroy(ComponentCategory $componentCategory): RedirectResponse
     {
         $this->componentCategoryService->delete($componentCategory);
-        return redirect()->route('component-category.index');
+        return redirect()->route('component.category.index');
     }
 }

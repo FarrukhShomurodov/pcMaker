@@ -30,11 +30,11 @@ Route::prefix('component')->name('component.')->group(function () {
 Route::resource('admin-assembly', AdminAssemblyController::class)->parameter('admin-assembly', 'adminAssembly');
 
 Route::prefix('telegram')->group(function () {
-//    Route::get('/webhook', function () {
-//        $telegram = new Api(config('telegram.bot_token'));
-//        $hook = $telegram->setWebhook(['url' => 'https://event-in.online/telegram/webhook']);
-//
-//        return dd($hook);
-//    });
+    Route::get('/webhook', function () {
+        $telegram = new Api(config('telegram.bot_token'));
+        $hook = $telegram->setWebhook(['url' => env('TELEGRAM_WEBHOOK_URL')]);
+
+        return dd($hook);
+    });
     Route::post('/webhook', [TelegramController::class, 'handleWebhook']);
 });

@@ -32,8 +32,8 @@
                                         <td>
                                             <div class="d-inline-block text-nowrap">
                                                 <button class="btn btn-warning notika-btn-warning btn-sm waves-effect"
-                                                        onclick="location.href='{{ route('component-type.edit', $componentType->id) }}'">Редактировать</button>
-                                                <form action="{{ route('component-type.destroy', $componentType->id) }}" method="POST"
+                                                        onclick="location.href='{{ route('component.type.edit', $componentType->id) }}'">Редактировать</button>
+                                                <form action="{{ route('component.type.destroy', $componentType->id) }}" method="POST"
                                                       style="display:inline;">
                                                     @csrf
                                                     @method('DELETE')

@@ -33,7 +33,7 @@ class ComponentTypeController extends Controller
     public function store(ComponentTypeRequest $request): RedirectResponse
     {
         $this->componentTypeService->store($request->validated());
-        return redirect()->route('component-type.index');
+        return redirect()->route('component.type.index');
     }
 
     public function edit(ComponentType $componentType): View
@@ -44,12 +44,12 @@ class ComponentTypeController extends Controller
     public function update(ComponentType $componentType, ComponentTypeRequest $request): RedirectResponse
     {
         $this->componentTypeService->update($request->validated(), $componentType);
-        return redirect()->route('component-type.index');
+        return redirect()->route('component.type.index');
     }
 
     public function destroy(ComponentType $componentType): RedirectResponse
     {
         $this->componentTypeService->delete($componentType);
-        return redirect()->route('component-type.index');
+        return redirect()->route('component.type.index');
     }
 }

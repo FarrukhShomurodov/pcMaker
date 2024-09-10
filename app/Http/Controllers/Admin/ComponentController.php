@@ -37,7 +37,7 @@ class ComponentController extends Controller
     public function store(ComponentRequest $request): RedirectResponse
     {
         $this->componentService->store($request->validated());
-        return redirect()->route('component.index');
+        return redirect()->route('component.items.index');
     }
 
     public function edit(Component $component): View
@@ -50,12 +50,12 @@ class ComponentController extends Controller
     public function update(Component $component, ComponentRequest $request): RedirectResponse
     {
         $this->componentService->update($request->validated(), $component);
-        return redirect()->route('component.index');
+        return redirect()->route('component.items.index');
     }
 
     public function destroy(Component $component): RedirectResponse
     {
         $this->componentService->delete($component);
-        return redirect()->route('component.index');
+        return redirect()->route('component.items.index');
     }
 }
