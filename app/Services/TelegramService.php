@@ -643,11 +643,11 @@ class TelegramService
             if ($component) {
                 $componentQuantities[$basketItem->component_id] = $component->component_count;
 
-                $photos = json_decode($product->photos, true);
-                $description = "💻 *{$product->name}* 💻\n\n"
-                    . "🔧 *Бренд:* _{$product->brand}_\n"
-                    . "💵 *Цена:* *{$product->price} сум*\n"
-                    . "📦 *В наличии:* _{$product->quantity} шт._\n\n"
+                $photos = json_decode($component->photos, true);
+                $description = "💻 *{$component->name}* 💻\n\n"
+                    . "🔧 *Бренд:* _{$component->brand}_\n"
+                    . "💵 *Цена:* *{$component->price} сум*\n"
+                    . "📦 *В наличии:* _{$component->quantity} шт._\n\n"
                     . "⚡ _Идеальный выбор для вашего оборудования!_";
 
                 $mediaGroup = [];
@@ -672,9 +672,9 @@ class TelegramService
 
                 $keyboard = Keyboard::make(['inline_keyboard' => [
                     [
-                        ['text' => '-', 'callback_data' => 'add_component_to_bin' . $product->id],
-                        ['text' => $componentQuantities[$product->id] ?? '0', 'callback_data' => 'current_product_count' . $product->id],
-                        ['text' => '+', 'callback_data' => 'remove_component_from_bin' . $product->id],
+                        ['text' => '-', 'callback_data' => 'add_component_to_bin' . $component->id],
+                        ['text' => $componentQuantities[$component->id] ?? '0', 'callback_data' => 'current_product_count' . $component->id],
+                        ['text' => '+', 'callback_data' => 'remove_component_from_bin' . $component->id],
                     ]
                 ]]);
 
