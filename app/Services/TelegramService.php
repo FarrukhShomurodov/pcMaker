@@ -587,6 +587,7 @@ class TelegramService
 
         // Initialize arrays
         $productQuantities = [];
+        $componentQuantities = [];
 
         foreach ($basketItems as $basketItem) {
             $product = Product::find($basketItem->product_id);
