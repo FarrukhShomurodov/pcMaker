@@ -591,6 +591,7 @@ class TelegramService
         foreach ($basketItems as $basketItem) {
             $product = Product::find($basketItem->product_id);
             $adminAssembly = AdminAssembly::find($basketItem->admin_assembly_id);
+            $component = Component::find($basketItem->component_id);
 
             if ($product) {
                 $productQuantities[$basketItem->product_id] = $basketItem->product_count;
@@ -627,6 +628,53 @@ class TelegramService
                         ['text' => '-', 'callback_data' => 'remove_product_from_bin' . $product->id],
                         ['text' => $productQuantities[$product->id] ?? '0', 'callback_data' => 'current_product_count' . $product->id],
                         ['text' => '+', 'callback_data' => 'add_product_to_bin' . $product->id],
+                    ]
+                ]]);
+
+                $totalPrice = $basket->total_price;
+
+                $this->telegram->sendMessage([
+                    'chat_id' => $chatId,
+                    'text' => "🛍️ Добавить в корзину\n\nТекущая стоимость: $totalPrice сум",
+                    'reply_markup' => $keyboard,
+                ]);
+            }
+
+            if ($component) {
+                $componentQuantities[$basketItem->component_id] = $component->component_count;
+
+                $photos = json_decode($product->photos, true);
+                $description = "💻 *{$product->name}* 💻\n\n"
+                    . "🔧 *Бренд:* _{$product->brand}_\n"
+                    . "💵 *Цена:* *{$product->price} сум*\n"
+                    . "📦 *В наличии:* _{$product->quantity} шт._\n\n"
+                    . "⚡ _Идеальный выбор для вашего оборудования!_";
+
+                $mediaGroup = [];
+                if (!empty($photos) && is_array($photos)) {
+                    foreach ($photos as $index => $photo) {
+                        $photoPath = Storage::url('public/' . $photo);
+                        $fullPhotoUrl = env('APP_URL') . $photoPath;
+
+                        $mediaGroup[] = InputMediaPhoto::make([
+                            'type' => 'photo',
+                            'media' => $fullPhotoUrl, // Use the correct photo URL
+                            'caption' => $index === 0 ? $description : '',
+                            'parse_mode' => 'Markdown'
+                        ]);
+                    }
+
+                    $this->telegram->sendMediaGroup([
+                        'chat_id' => $chatId,
+                        'media' => json_encode($mediaGroup)
+                    ]);
+                }
+
+                $keyboard = Keyboard::make(['inline_keyboard' => [
+                    [
+                        ['text' => '-', 'callback_data' => 'add_component_to_bin' . $product->id],
+                        ['text' => $componentQuantities[$product->id] ?? '0', 'callback_data' => 'current_product_count' . $product->id],
+                        ['text' => '+', 'callback_data' => 'remove_component_from_bin' . $product->id],
                     ]
                 ]]);
 
