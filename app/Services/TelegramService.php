@@ -642,7 +642,7 @@ class TelegramService
             }
 
             if ($component) {
-                $componentQuantities[$basketItem->component_id] = $component->component_count;
+                $componentQuantities[$basketItem->component_id] = $basketItem->component_count;
 
                 $photos = json_decode($component->photos, true);
                 $description = "💻 *{$component->name}* 💻\n\n"
