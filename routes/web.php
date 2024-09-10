@@ -16,9 +16,9 @@ Route::get('/', function () {
 });
 
 Route::prefix('product')->name('product.')->group(function () {
-    Route::resource('items', ProductController::class)->parameter('item', 'product');
-    Route::resource('category', ProductCategoryController::class)->parameter('product-category', 'productCategory');
-    Route::resource('sub-category', ProductSubCategoryController::class)->parameter('product-sub-category', 'productSubCategory');
+    Route::resource('items', ProductController::class)->parameter('items', 'product');
+    Route::resource('category', ProductCategoryController::class)->parameter('category', 'productCategory');
+    Route::resource('sub-category', ProductSubCategoryController::class)->parameter('sub-category', 'productSubCategory');
 });
 
 Route::prefix('component')->name('component.')->group(function () {
