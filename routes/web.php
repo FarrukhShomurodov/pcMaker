@@ -22,9 +22,9 @@ Route::prefix('product')->name('product.')->group(function () {
 });
 
 Route::prefix('component')->name('component.')->group(function () {
-    Route::resource('items', ComponentController::class)->parameter('item', 'component');
-    Route::resource('category', ComponentCategoryController::class)->parameter('component-category', 'componentCategory');
-    Route::resource('type', ComponentTypeController::class)->parameter('component-type', 'componentType');
+    Route::resource('items', ComponentController::class)->parameter('items', 'component');
+    Route::resource('category', ComponentCategoryController::class)->parameter('category', 'componentCategory');
+    Route::resource('type', ComponentTypeController::class)->parameter('type', 'componentType');
 });
 
 Route::resource('admin-assembly', AdminAssemblyController::class)->parameter('admin-assembly', 'adminAssembly');
