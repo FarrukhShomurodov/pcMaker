@@ -7,6 +7,7 @@ use App\Models\Basket;
 use App\Models\BasketItem;
 use App\Models\BotUser;
 use App\Models\Component;
+use App\Models\ComponentCategory;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductSubCategory;
@@ -29,6 +30,11 @@ class TelegramService
         if (str_starts_with($data, 'sub_category_')) {
             $subCategoryId = str_replace('sub_category_', '', $data);
             $this->showProductsBySubCategory($chatId, $subCategoryId);
+        }
+
+        if (str_starts_with($data, 'component_category_')) {
+            $subCategoryId = str_replace('component_category_', '', $data);
+            $this->showComponentsByCategory($chatId, $subCategoryId);
         }
 
         if (str_starts_with($data, 'add_product_to_bin')) {
@@ -70,6 +76,9 @@ class TelegramService
                 break;
             case '💼 Выбрать сборку':
                 $this->adminAssemblies($chatId);
+                break;
+            case '🔧 Комплектующие':
+                $this->showAdminCategory($chatId);
                 break;
             default:
                 if ($step === 'show_main_menu' || $step === 'show_subcategory') {
@@ -723,6 +732,101 @@ class TelegramService
                 'reply_markup' => $keyboard,
             ]);
 
+        }
+    }
+
+
+    // Component
+    private function showAdminCategory($chatId)
+    {
+        $componentCategories = ComponentCategory::all();
+
+        if ($componentCategories->count() < 1) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => 'Пусто 😕'
+            ]);
+            return;
+        }
+
+        $buttons = $componentCategories->map(fn($cat) => [
+            [
+                'text' => $cat->name,
+                'callback_data' => 'component_category_' . $cat->id
+            ]
+        ])->toArray();
+
+        $keyboard = Keyboard::make(['inline_keyboard' => $buttons]);
+
+        $this->telegram->sendMessage([
+            'chat_id' => $chatId,
+            'text' => "Выберите категорию:",
+            'reply_markup' => $keyboard,
+        ]);
+
+        $this->updateUserStep($chatId, 'show_component_category');
+    }
+
+    private function showComponentsByCategory($chatId, $categoryId)
+    {
+        $category = ComponentCategory::query()->find($categoryId);
+
+        $components = $category->component;
+
+        if ($components->isEmpty()) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => 'В этой категории нет комплектуюших.'
+            ]);
+            return;
+        } else {
+            $this->showComponent($chatId, $components);
+        }
+    }
+//
+    private function showComponent($chatId, $components)
+    {
+        foreach ($components as $component) {
+            $photos = json_decode($component->photos, true);
+
+            $description = "💻 *{$component->name}* 💻\n\n"
+                . "🔧 *Бренд:* _{$component->brand}_\n"
+                . "💵 *Цена:* *{$component->price} сум*\n"
+                . "📦 *В наличии:* _{$component->quantity} шт._\n\n"
+                . "⚡ _Идеальный выбор для вашего оборудования!_";
+
+            $mediaGroup = [];
+            if (!empty($photos) && is_array($photos)) {
+                foreach ($photos as $index => $photo) {
+                    $photoPath = Storage::url('public/' . $photo);
+                    $fullPhotoUrl = env('APP_URL') . $photoPath;
+
+                    $mediaGroup[] = InputMediaPhoto::make([
+                        'type' => 'photo',
+                        'media' => $fullPhotoUrl,
+                        'caption' => $index === 0 ? $description : '',
+                        'parse_mode' => 'Markdown'
+                    ]);
+
+                }
+                $this->telegram->sendMediaGroup([
+                    'chat_id' => $chatId,
+                    'media' => json_encode($mediaGroup)
+                ]);
+            }
+
+            $keyboard = Keyboard::make(['inline_keyboard' => [
+                [
+                    ['text' => '+', 'callback_data' => 'add_component_to_bin' . $component->id],
+                ]
+            ]]);
+
+
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => "🛍️ Добавить в корзину",
+                'reply_markup' => $keyboard,
+            ]);
         }
     }
 }
