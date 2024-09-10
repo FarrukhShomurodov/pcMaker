@@ -677,6 +677,13 @@ class TelegramService
     {
         $adminAssemblies = AdminAssembly::all();
 
+        if ($adminAssemblies->count() < 1) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => 'Сборов админа нету в наличии.'
+            ]);
+            return;
+        }
         foreach ($adminAssemblies as $adminAssembly) {
             $photos = json_decode($adminAssembly->photos, true);
 
