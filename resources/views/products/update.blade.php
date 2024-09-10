@@ -61,6 +61,13 @@
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="form-group">
                                         <div class="nk-int-st">
+                                            <input name="description" type="text" class="form-control" placeholder="description">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="form-group">
+                                        <div class="nk-int-st">
                                             <input name="quantity" type="number" class="form-control"
                                                    placeholder="Количество"  value="{{ $product->quantity }}">
                                         </div>
