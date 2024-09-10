@@ -39,16 +39,3 @@ Route::prefix('telegram')->group(function () {
     });
     Route::post('/webhook', [TelegramController::class, 'handleWebhook']);
 });
-
-
-Route::get("/test", function (){
-    $products = \App\Models\Product::query()->first();
-
-    $photos = json_decode($products->photos, true);
-
-    foreach ($photos as $index => $photo) {
-        $photoPath = Storage::url('public/' . $photo);
-        $fullPhotoUrl = env('APP_URL') . $photoPath;
-        dd($fullPhotoUrl);
-    }
-});
