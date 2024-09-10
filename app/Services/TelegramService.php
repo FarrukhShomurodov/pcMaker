@@ -302,7 +302,7 @@ class TelegramService
                 foreach ($photos as $index => $photo) {
                     $mediaGroup[] = InputMediaPhoto::make([
                         'type' => 'photo',
-                        'media' => '`$fullPhotoUrl`',
+                        'media' => 'https://test-test.co.uz/storage/product_photos/3x0nWOF23RbifapGwDjMCYDCVkd73PupKU6jp9x2.jpg',
                         'caption' => $index === 0 ? $description : '',
                         'parse_mode' => 'Markdown'
                     ]);
@@ -598,7 +598,7 @@ class TelegramService
 
                         $mediaGroup[] = InputMediaPhoto::make([
                             'type' => 'photo',
-                            'media' => '`$fullPhotoUrl`', // Use the correct photo URL
+                            'media' => 'https://test-test.co.uz/storage/product_photos/3x0nWOF23RbifapGwDjMCYDCVkd73PupKU6jp9x2.jpg', // Use the correct photo URL
                             'caption' => $index === 0 ? $description : '',
                             'parse_mode' => 'Markdown'
                         ]);
@@ -639,14 +639,9 @@ class TelegramService
                         $photoPath = Storage::url('public/' . $photo);
                         $fullPhotoUrl = env('APP_URL') . $photoPath;
 
-                        $this->telegram->sendMessage([
-                            'chat_id' => $chatId,
-                            'text' => $fullPhotoUrl,
-                        ]);
-
                         $mediaGroup[] = InputMediaPhoto::make([
                             'type' => 'photo',
-                            'media' => `$fullPhotoUrl`, // Use the correct photo URL
+                            'media' => 'https://test-test.co.uz/storage/product_photos/3x0nWOF23RbifapGwDjMCYDCVkd73PupKU6jp9x2.jpg', // Use the correct photo URL
                             'caption' => $index === 0 ? $description : '',
                             'parse_mode' => 'Markdown'
                         ]);
@@ -694,7 +689,7 @@ class TelegramService
 
                     $mediaGroup[] = InputMediaPhoto::make([
                         'type' => 'photo',
-                        'media' => '`$fullPhotoUrl`',
+                        'media' => 'https://test-test.co.uz/storage/product_photos/3x0nWOF23RbifapGwDjMCYDCVkd73PupKU6jp9x2.jpg',
                         'caption' => $index === 0 ? $description : '',
                         'parse_mode' => 'Markdown'
                     ]);
