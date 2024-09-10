@@ -639,6 +639,11 @@ class TelegramService
                         $photoPath = Storage::url('public/' . $photo);
                         $fullPhotoUrl = env('APP_URL') . $photoPath;
 
+                        $this->telegram->sendMessage([
+                            'chat_id' => $chatId,
+                            'text' => $fullPhotoUrl,
+                        ]);
+
                         $mediaGroup[] = InputMediaPhoto::make([
                             'type' => 'photo',
                             'media' => `$fullPhotoUrl`, // Use the correct photo URL
