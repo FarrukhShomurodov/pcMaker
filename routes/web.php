@@ -42,7 +42,7 @@ Route::prefix('telegram')->group(function () {
 
 
 Route::get("/test", function (){
-    $products = \App\Models\Product::query()->get();
+    $products = \App\Models\Product::query()->first();
 
     $photos = json_decode($products->photos, true);
 
