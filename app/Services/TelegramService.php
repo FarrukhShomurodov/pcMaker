@@ -73,19 +73,19 @@ class TelegramService
 
     public function processMessage($chatId, $text, $step, $message)
     {
-//        switch ($text) {
-//            case '🛍️ Корзина':
-//                $this->basketItems($chatId);
-//                break;
-//            case '💼 Выбрать сборку':
-//                $this->adminAssemblies($chatId);
-//                break;
-//            case '🖥️ Собрать компьютер':
-//                $this->createAssembly($chatId);
-//                break;
-//            case '🔧 Комплектующие':
-//                $this->showAdminCategory($chatId);
-//                break;
+        switch ($text) {
+            case '🛍️ Корзина':
+                $this->basketItems($chatId);
+                break;
+            case '💼 Выбрать сборку':
+                $this->adminAssemblies($chatId);
+                break;
+            case '🖥️ Собрать компьютер':
+                $this->createAssembly($chatId);
+                break;
+            case '🔧 Комплектующие':
+                $this->showAdminCategory($chatId);
+                break;
 //            default:
 //                if ($step === 'show_main_menu' || $step === 'show_subcategory') {
 //                    $this->checkCategory($chatId, $text);
@@ -97,7 +97,7 @@ class TelegramService
 //                    $this->showMainMenu($chatId);
 //                }
 //                break;
-//        }
+        }
 
         switch ($step) {
             case 'choose_language':
