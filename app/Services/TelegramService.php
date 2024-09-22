@@ -984,7 +984,8 @@ class TelegramService
 
     private function checkCompatibility($chatId, $selectedComponentId)
     {
-        $assembly = Assembly::where('bot_user_id', $chatId)->first();
+        $user = BotUser::query()->where('chat_id', $chatId)->first();
+        $assembly = Assembly::where('bot_user_id', $user->id)->first();
         $assemblyComponents = $assembly ? $assembly->components : [];
 
         foreach ($assemblyComponents as $component) {
