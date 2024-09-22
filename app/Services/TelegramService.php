@@ -96,32 +96,33 @@ class TelegramService
 //                } else {
 //                    $this->showMainMenu($chatId);
 //                }
-                switch ($step) {
-                    case 'choose_language':
-                        $this->processLanguageChoice($chatId, $text);
-                        break;
-                    case 'request_phone':
-                        $this->processPhoneRequest($chatId, $message);
-                        break;
-                    case 'confirm_phone':
-                        $this->processPhoneConfirmation($chatId, $text);
-                        break;
-                    case 'request_name':
-                        $this->processNameRequest($chatId, $text);
-                        break;
-                    case 'select_category':
-                        $this->selectCategory($chatId, $text);
-                        break;
-                    case 'select_component':
-                        $this->selectComponent($chatId, $text);
-                        break;
-//            case 'show_main_menu':
-//                $this->showMainMenu($chatId);
 //                break;
-//            default:
-//                $this->showMainMenu($chatId);
-//                break;
-                }
+        }
+
+        switch ($step) {
+            case 'choose_language':
+                $this->processLanguageChoice($chatId, $text);
+                break;
+            case 'request_phone':
+                $this->processPhoneRequest($chatId, $message);
+                break;
+            case 'confirm_phone':
+                $this->processPhoneConfirmation($chatId, $text);
+                break;
+            case 'request_name':
+                $this->processNameRequest($chatId, $text);
+                break;
+            case 'select_category':
+                $this->selectCategory($chatId, $text);
+                break;
+            case 'select_component':
+                $this->selectComponent($chatId, $text);
+                break;
+            case 'show_main_menu':
+                $this->showMainMenu($chatId);
+                break;
+            default:
+                $this->showMainMenu($chatId);
                 break;
         }
     }
