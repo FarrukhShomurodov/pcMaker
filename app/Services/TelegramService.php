@@ -922,6 +922,10 @@ class TelegramService
 
     private function selectComponent($chatId, $component)
     {
+        $this->telegram->sendMessage([
+            'chat_id' => $chatId,
+            'text' => "Этот компонент несовместим с другими в сборке. Попробуйте выбрать другой.",
+        ]);
         $componentId = Component::where('name', $component)->first()->id;
 
         // Проверка совместимости выбранного компонента с уже выбранными
