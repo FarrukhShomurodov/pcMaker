@@ -73,33 +73,31 @@ class TelegramService
 
     public function processMessage($chatId, $text, $step, $message)
     {
-        switch ($text) {
-            case '🛍️ Корзина':
-                $this->basketItems($chatId);
-                break;
-            case '💼 Выбрать сборку':
-                $this->adminAssemblies($chatId);
-                break;
-            case '🖥️ Собрать компьютер':
-                $this->createAssembly($chatId);
-                break;
-            case '🔧 Комплектующие':
-                $this->showAdminCategory($chatId);
-                break;
-            default:
-                if ($step === 'show_main_menu' || $step === 'show_subcategory') {
-                    $this->checkCategory($chatId, $text);
-                } elseif ($step === 'select_category') {
-                    // Пользователь выбрал категорию
-                    $this->selectCategory($chatId, $text);
-                } elseif ($step === 'select_component') {
-                    // Пользователь выбрал компонент
-                    $this->selectComponent($chatId, $text);
-                } else {
-                    $this->showMainMenu($chatId);
-                }
-                break;
-        }
+//        switch ($text) {
+//            case '🛍️ Корзина':
+//                $this->basketItems($chatId);
+//                break;
+//            case '💼 Выбрать сборку':
+//                $this->adminAssemblies($chatId);
+//                break;
+//            case '🖥️ Собрать компьютер':
+//                $this->createAssembly($chatId);
+//                break;
+//            case '🔧 Комплектующие':
+//                $this->showAdminCategory($chatId);
+//                break;
+//            default:
+//                if ($step === 'show_main_menu' || $step === 'show_subcategory') {
+//                    $this->checkCategory($chatId, $text);
+//                } elseif ($step === 'select_category') {
+//                    $this->selectCategory($chatId, $text);
+//                } elseif ($step === 'select_component') {
+//                    $this->selectComponent($chatId, $text);
+//                } else {
+//                    $this->showMainMenu($chatId);
+//                }
+//                break;
+//        }
 
         switch ($step) {
             case 'choose_language':
@@ -926,6 +924,7 @@ class TelegramService
             'chat_id' => $chatId,
             'text' => "Этот компонент несовместим с другими в сборке. Попробуйте выбрать другой.",
         ]);
+
         $componentId = Component::where('name', $component)->first()->id;
 
         // Проверка совместимости выбранного компонента с уже выбранными
