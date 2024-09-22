@@ -89,6 +89,14 @@ class TelegramService
             default:
                 if ($step === 'show_main_menu' || $step === 'show_subcategory') {
                     $this->checkCategory($chatId, $text);
+                } elseif ($step === 'select_category') {
+                    // Пользователь выбрал категорию
+                    $this->selectCategory($chatId, $text);
+                } elseif ($step === 'select_component') {
+                    // Пользователь выбрал компонент
+                    $this->selectComponent($chatId, $text);
+                } else {
+                    $this->showMainMenu($chatId); // Показываем главное меню, если ничего не подходит
                 }
                 break;
         }
@@ -109,11 +117,18 @@ class TelegramService
             case 'show_main_menu':
                 $this->showMainMenu($chatId);
                 break;
-//            default:
-//                $this->showMainMenu($chatId);
-//                break;
+            case 'select_category':
+                $this->selectCategory($chatId, $text);
+                break;
+            case 'select_component':
+                $this->selectComponent($chatId, $text);
+                break;
+            default:
+                $this->showMainMenu($chatId);
+                break;
         }
     }
+
 
     // Auth
     private function processLanguageChoice($chatId, $text)
