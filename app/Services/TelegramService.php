@@ -901,9 +901,9 @@ class TelegramService
     private function createAssembly($chatId)
     {
         $firstCategory = ComponentCategory::first();
-        $this->selectCategory($chatId, $firstCategory->id);  // Переходим к выбору первой категории
+        $this->updateUserStep($chatId, 'select_category');
 
-        $this->updateUserStep($chatId, 'select_category');  // Обновляем шаг пользователя
+        $this->selectCategory($chatId, $firstCategory->id);
     }
 
     private function selectCategory($chatId, $categoryId)
@@ -911,14 +911,13 @@ class TelegramService
         $components = Component::where('component_category_id', $categoryId)->get();
         $buttons = $components->map(fn($comp) => [['text' => $comp->name]])->toArray();
         $keyboard = new Keyboard(['keyboard' => $buttons, 'resize_keyboard' => true, 'one_time_keyboard' => true]);
+        $this->updateUserStep($chatId, 'select_component');
 
         $this->telegram->sendMessage([
             'chat_id' => $chatId,
             'text' => "Выберите компонент для категории: " . ComponentCategory::find($categoryId)->name,
             'reply_markup' => $keyboard,
         ]);
-
-        $this->updateUserStep($chatId, 'select_component');  // Обновляем шаг пользователя
     }
 
     private function selectComponent($chatId, $componentId)
