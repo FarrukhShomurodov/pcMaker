@@ -986,7 +986,7 @@ class TelegramService
         $assembly = Assembly::where('bot_user_id', $user->id)->first();
         $assemblyComponents = $assembly ? $assembly->components : [];
 
-        if ($assemblyComponents > 1) {
+        if ($assemblyComponents->count() > 1) {
             foreach ($assemblyComponents as $component) {
                 $isCompatible = TypeCompatibility::areCompatible($component->component_type_id, $selectedComponentId);
                 if (!$isCompatible) {
