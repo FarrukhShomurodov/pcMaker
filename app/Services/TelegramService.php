@@ -123,9 +123,9 @@ class TelegramService
             case 'select_component':
                 $this->selectComponent($chatId, $text);
                 break;
-            default:
-                $this->showMainMenu($chatId);
-                break;
+//            default:
+//                $this->showMainMenu($chatId);
+//                break;
         }
     }
 
