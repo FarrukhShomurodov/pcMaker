@@ -956,9 +956,11 @@ class TelegramService
 
     private function getNextCategory($chatId)
     {
+        $user = BotUser::query()->where('chat_id', $chatId)->first();
+
         // Получаем ID уже выбранных категорий для сборки
-        $selectedCategoryIds = AssemblyComponent::whereHas('component', function ($query) use ($chatId) {
-            $query->where('assembly_id', Assembly::where('bot_user_id', $chatId)->first()->id);
+        $selectedCategoryIds = AssemblyComponent::whereHas('component', function ($query) use ($user) {
+            $query->where('assembly_id', Assembly::where('bot_user_id', $user->id)->first()->id);
         })->pluck('component_category_id');
 
         // Ищем следующую категорию, которая еще не была выбрана
