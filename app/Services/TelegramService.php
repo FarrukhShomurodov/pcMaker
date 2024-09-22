@@ -114,8 +114,8 @@ class TelegramService
             case 'request_name':
                 $this->processNameRequest($chatId, $text);
                 break;
-//            case 'show_main_menu':
-//                $this->showMainMenu($chatId);
+            case 'show_main_menu':
+                $this->showMainMenu($chatId);
                 break;
             case 'select_category':
                 $this->selectCategory($chatId, $text);
