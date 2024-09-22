@@ -120,12 +120,12 @@ class TelegramService
             case 'select_component':
                 $this->selectComponent($chatId, $text);
                 break;
-            case 'show_main_menu':
-                $this->showMainMenu($chatId);
-                break;
-//            default:
+//            case 'show_main_menu':
 //                $this->showMainMenu($chatId);
 //                break;
+            default:
+                $this->showMainMenu($chatId);
+                break;
         }
     }
 
@@ -901,10 +901,7 @@ class TelegramService
     private function createAssembly($chatId)
     {
         $firstCategory = ComponentCategory::first();
-
-        BotUser::query()->where('chat_id', $chatId)->update([
-            'step' => 'select_category'
-        ]);
+        $this->updateUserStep($chatId, 'select_category');
 
         $this->selectCategory($chatId, $firstCategory->id);
     }
