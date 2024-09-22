@@ -7,7 +7,7 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-element-list">
                         <div class="basic-tb-hd">
-                            <h2>Редактировать продукт</h2>
+                            <h2>Редактировать компонент</h2>
                         </div>
                         @if ($errors->any())
                             <div class="alert alert-solid-danger" role="alert">
@@ -101,7 +101,7 @@
 
                                 </div>
                             </div>
-                            <button class="btn btn-warning notika-btn-warning btn-sm waves-effect">Редактировать
+                            <button class="btn btn-warning notika-btn-warning btn-sm waves-effect mg-t-10">Редактировать
                             </button>
                         </form>
                     </div>
