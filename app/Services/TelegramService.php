@@ -920,8 +920,10 @@ class TelegramService
         ]);
     }
 
-    private function selectComponent($chatId, $componentId)
+    private function selectComponent($chatId, $component)
     {
+        $componentId = Component::where('name', $component)->first()->id;
+
         // Проверка совместимости выбранного компонента с уже выбранными
         if (!$this->checkCompatibility($chatId, $componentId)) {
             $this->telegram->sendMessage([
