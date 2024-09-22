@@ -932,7 +932,8 @@ class TelegramService
         }
 
         // Добавляем компонент в сборку
-        $assembly = Assembly::firstOrCreate(['bot_user_id' => $chatId]);
+        $user = BotUser::query()->where('chat_id', $chatId)->first();
+        $assembly = Assembly::firstOrCreate(['bot_user_id' => $user->id]);
         AssemblyComponent::create([
             'component_id' => $componentId,
             'assembly_id' => $assembly->id,
@@ -952,7 +953,7 @@ class TelegramService
     private function getNextCategory($chatId)
     {
         // Получаем ID уже выбранных категорий для сборки
-        $selectedCategoryIds = AssemblyComponent::whereHas('component', function($query) use ($chatId) {
+        $selectedCategoryIds = AssemblyComponent::whereHas('component', function ($query) use ($chatId) {
             $query->where('assembly_id', Assembly::where('bot_user_id', $chatId)->first()->id);
         })->pluck('component_category_id');
 
@@ -964,7 +965,7 @@ class TelegramService
     {
         // Рассчитываем итоговую стоимость сборки
         $assembly = Assembly::where('bot_user_id', $chatId)->first();
-        $totalPrice = $assembly->components->sum(function($component) {
+        $totalPrice = $assembly->components->sum(function ($component) {
             return $component->price;
         });
 
@@ -995,8 +996,6 @@ class TelegramService
 
         return true; // Если все компоненты совместимы, возвращаем true
     }
-
-
 
 
 }
