@@ -114,14 +114,14 @@ class TelegramService
             case 'request_name':
                 $this->processNameRequest($chatId, $text);
                 break;
-            case 'show_main_menu':
-                $this->showMainMenu($chatId);
-                break;
             case 'select_category':
                 $this->selectCategory($chatId, $text);
                 break;
             case 'select_component':
                 $this->selectComponent($chatId, $text);
+                break;
+            case 'show_main_menu':
+                $this->showMainMenu($chatId);
                 break;
 //            default:
 //                $this->showMainMenu($chatId);
@@ -215,7 +215,7 @@ class TelegramService
     // Update user step
     private function updateUserStep($chatId, $step)
     {
-        BotUser::updateOrCreate(['chat_id' => $chatId], ['step' => $step]);
+        BotUser::query()->updateOrCreate(['chat_id' => $chatId], ['step' => $step]);
     }
 
     // Main menu
