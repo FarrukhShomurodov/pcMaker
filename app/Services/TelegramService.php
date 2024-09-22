@@ -96,7 +96,7 @@ class TelegramService
                     // Пользователь выбрал компонент
                     $this->selectComponent($chatId, $text);
                 } else {
-//                    $this->showMainMenu($chatId);
+                    $this->showMainMenu($chatId);
                 }
                 break;
         }
