@@ -38,7 +38,7 @@ class AdminAssemblyController extends Controller
 
     public function edit(AdminAssembly $adminAssembly): View
     {
-        return view('adminAssemblies.update', compact('adminAssembly'));
+        return view('adminAssemblies.edit', compact('adminAssembly'));
     }
 
     public function update(AdminAssembly $adminAssembly, AdminAssemblyRequest $request): RedirectResponse

@@ -17,7 +17,8 @@ class Component extends Model
         'brand',
         'quantity',
         'price',
-        'photos'
+        'photos',
+        'description',
     ];
 
     public function category(): BelongsTo

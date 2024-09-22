@@ -28,8 +28,8 @@ class ProductRequest extends FormRequest
             'product_sub_category_id' => 'nullable|integer|exists:product_sub_categories,id',
             'brand' => 'required|string|max:500',
             'quantity' => 'required|int',
-            'price' => 'required|decimal:2',
-            'description' => 'required|string',
+            'price' => 'required|int',
+            'description' => 'nullable|string',
             'photos' => 'sometimes|array',
             'photos.*' => 'image',
         ];

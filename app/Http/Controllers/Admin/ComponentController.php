@@ -44,7 +44,7 @@ class ComponentController extends Controller
     {
         $componentCategories = ComponentCategory::all();
         $componentTypes = ComponentType::all();
-        return view('components.update', compact('component', 'componentCategories', 'componentTypes'));
+        return view('components.edit', compact('component', 'componentCategories', 'componentTypes'));
     }
 
     public function update(Component $component, ComponentRequest $request): RedirectResponse

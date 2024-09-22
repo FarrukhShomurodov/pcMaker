@@ -29,7 +29,7 @@
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="form-group">
                                         <div class="nk-int-st">
-                                            <input name="description" type="text" class="form-control" placeholder="Описание">
+                                            <textarea name="description" class="form-control" placeholder="Описание"></textarea>
                                         </div>
                                     </div>
                                 </div>

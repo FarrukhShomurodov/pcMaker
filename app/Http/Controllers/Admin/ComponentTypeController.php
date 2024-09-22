@@ -38,7 +38,7 @@ class ComponentTypeController extends Controller
 
     public function edit(ComponentType $componentType): View
     {
-        return view('components.type.update', compact('componentType'));
+        return view('components.type.edit', compact('componentType'));
     }
 
     public function update(ComponentType $componentType, ComponentTypeRequest $request): RedirectResponse

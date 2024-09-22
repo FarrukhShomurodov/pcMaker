@@ -8,7 +8,7 @@
                     <div class="data-table-list">
                         <div class="basic-tb-hd">
                             <div style="display: flex; align-items: center; justify-content: space-between;">
-                                <h2 style="margin: 0;">Категории</h2>
+                                <h2 style="margin: 0;">Продукты</h2>
                                 <a href="{{ route('product.items.create') }}">
                                     <button class="btn btn-success notika-btn-success btn-sm waves-effect">Создать
                                     </button>
@@ -24,6 +24,7 @@
                                     <th>Категория</th>
                                     <th>Под категория</th>
                                     <th>Бренд</th>
+                                    <th>Описание</th>
                                     <th>Количество</th>
                                     <th>Цена</th>
                                     <th>Фото</th>
@@ -36,8 +37,9 @@
                                         <td>{{ $product->id }}</td>
                                         <td>{{ $product->name }}</td>
                                         <td>{{ $product->category->name }}</td>
-                                        <td>{{ isset($product->subCategory) ? $product->subCategory->name: '' }}</td>
+                                        <td>{{ isset($product->subCategory) ? $product->subCategory->name: '-' }}</td>
                                         <td>{{ $product->brand }}</td>
+                                        <td>{{ $product->description ?? '-' }}</td>
                                         <td>{{ $product->quantity }}</td>
                                         <td>{{ $product->price }}</td>
                                         <td>

@@ -24,6 +24,7 @@
                                     <th>Категория</th>
                                     <th>Тип</th>
                                     <th>Бренд</th>
+                                    <th>Описание</th>
                                     <th>Количество</th>
                                     <th>Цена</th>
                                     <th>Фото</th>
@@ -38,6 +39,7 @@
                                         <td>{{ $component->category->name }}</td>
                                         <td>{{ $component->type->name }}</td>
                                         <td>{{ $component->brand }}</td>
+                                        <td>{{ $component->description ?? '-' }}</td>
                                         <td>{{ $component->quantity }}</td>
                                         <td>{{ $component->price }}</td>
                                         <td>

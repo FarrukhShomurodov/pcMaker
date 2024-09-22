@@ -35,7 +35,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-success notika-btn-success btn-sm waves-effect">
+                            <button type="submit" class="btn btn-warning notika-btn-warning btn-sm waves-effect">
                                 Редактировать
                             </button>
                         </form>

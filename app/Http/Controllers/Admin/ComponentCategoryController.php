@@ -40,7 +40,7 @@ class ComponentCategoryController extends Controller
 
     public function edit(ComponentCategory $componentCategory): View|\Illuminate\Foundation\Application|Factory|Application
     {
-        return view('components.category.update', compact('componentCategory'));
+        return view('components.category.edit', compact('componentCategory'));
     }
 
     public function update(ComponentCategory $componentCategory, ComponentCategoryRequest $request): RedirectResponse

@@ -40,7 +40,7 @@ class ProductCategoryController extends Controller
 
     public function edit(ProductCategory $productCategory): View|\Illuminate\Foundation\Application|Factory|Application
     {
-        return view('products.category.update', compact('productCategory'));
+        return view('products.category.edit', compact('productCategory'));
     }
 
     public function update(ProductCategory $productCategory, ProductCategoryRequest $request): RedirectResponse

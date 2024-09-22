@@ -16,7 +16,7 @@
                                 @endforeach
                             </div>
                         @endif
-                        <form action="{{ route('component.update', $component->id) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('component.items.update', $component->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             <div class="row">
@@ -64,6 +64,13 @@
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="form-group">
                                         <div class="nk-int-st">
+                                            <textarea name="description" class="form-control" placeholder="Описание">{{ $component->description }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="form-group">
+                                        <div class="nk-int-st">
                                             <input name="quantity" type="number" class="form-control"
                                                    placeholder="Количество"  value="{{ $component->quantity }}">
                                         </div>
@@ -94,7 +101,7 @@
 
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-success notika-btn-success btn-sm waves-effect" style="margin-top: 10px">Создать
+                            <button class="btn btn-warning notika-btn-warning btn-sm waves-effect">Редактировать
                             </button>
                         </form>
                     </div>

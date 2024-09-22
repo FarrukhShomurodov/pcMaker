@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->json('photos');
-            $table->decimal('price');
+            $table->integer('price');
             $table->text('description');
             $table->timestamps();
         });

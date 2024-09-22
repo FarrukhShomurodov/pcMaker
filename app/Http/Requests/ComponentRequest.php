@@ -28,8 +28,9 @@ class ComponentRequest extends FormRequest
             'component_type_id' => 'required|integer|exists:component_types,id',
             'brand' => 'required|string|max:500',
             'quantity' => 'required|int',
-            'price' => 'required|decimal:2',
+            'price' => 'required|int',
             'photos' => 'sometimes|array',
+            'description' => 'nullable|string',
             'photos.*' => 'image',
         ];
     }

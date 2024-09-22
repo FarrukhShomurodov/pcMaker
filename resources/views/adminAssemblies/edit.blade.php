@@ -7,7 +7,7 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-element-list">
                         <div class="basic-tb-hd">
-                            <h2>Редактировать продукт</h2>
+                            <h2>Редактировать сборки админа</h2>
                         </div>
                         @if ($errors->any())
                             <div class="alert alert-solid-danger" role="alert">
@@ -16,63 +16,28 @@
                                 @endforeach
                             </div>
                         @endif
-                        <form action="{{ route('component.items.update', $component->id) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('admin-assembly.update', $adminAssembly->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             <div class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="form-group">
                                         <div class="nk-int-st">
-                                            <input name="name" type="text" class="form-control" placeholder="Название" value="{{ $component->name }}">
+                                            <input name="title" type="text" class="form-control" placeholder="Название" value="{{ $adminAssembly->title }}">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="form-group">
                                         <div class="nk-int-st">
-                                            <select class="form-select select2" style="width: 100%"
-                                                    name="component_category_id" id="product_category_select">
-                                                @foreach($componentCategories as $componentCategory)
-                                                    <option
-                                                        value="{{$componentCategory->id}}" @selected($component->component_category_id ==  $componentCategory->id)>{{$componentCategory->name}}</option>
-                                                @endforeach
-                                            </select>
+                                            <input name="price" type="number" class="form-control" placeholder="Цена" value="{{ $adminAssembly->price }}">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <div class="form-group">
                                         <div class="nk-int-st">
-                                            <select class="form-select select2" style="width: 100%"
-                                                    name="component_type_id" id="product_sub_category_select">
-                                                @foreach($componentTypes as $componentType)
-                                                    <option
-                                                        value="{{$componentType->id}}" @selected($component->component_type_id ==  $componentType->id)>{{$componentType->name}}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="form-group">
-                                        <div class="nk-int-st">
-                                            <input name="brand" type="text" class="form-control" placeholder="Бренд" value="{{ $component->brand }}">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="form-group">
-                                        <div class="nk-int-st">
-                                            <input name="quantity" type="number" class="form-control"
-                                                   placeholder="Количество"  value="{{ $component->quantity }}">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <div class="form-group">
-                                        <div class="nk-int-st">
-                                            <input name="price" type="number" class="form-control" placeholder="Цена" value="{{ $component->price }}">
+                                            <textarea name="description" class="form-control" placeholder="Описание">{{ $adminAssembly->description }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -80,8 +45,8 @@
                                     <label for="imageInput" class="form-label">Выберите фото</label>
                                     <input type="file" name="photos[]" id="imageInput" class="form-control" multiple>
                                     <div id="imagePreview" class="mb-3 main__td">
-                                        @if($component->photos)
-                                            @foreach(json_decode($component->photos) as $photo)
+                                        @if($adminAssembly->photos)
+                                            @foreach(json_decode($adminAssembly->photos) as $photo)
                                                 <div class="image-container td__img" data-photo-path="{{ $photo }}">
                                                     <img src="{{ asset('storage/' . $photo) }}" class="uploaded-image">
                                                     <button type="button" class="btn btn-danger btn-sm delete-image"
@@ -94,7 +59,7 @@
 
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-success notika-btn-success btn-sm waves-effect" style="margin-top: 10px">Создать
+                            <button class="btn btn-warning notika-btn-warning btn-sm waves-effect mg-t-10">Редактировать
                             </button>
                         </form>
                     </div>

@@ -181,7 +181,6 @@ class TelegramService
         BotUser::where('chat_id', $chatId)->update(['lang' => $lang]);
     }
 
-
     private function saveUserPhone($chatId, $phone)
     {
         BotUser::where('chat_id', $chatId)->update(['phone_number' => $phone]);
@@ -728,7 +727,6 @@ class TelegramService
             }
         }
     }
-
 
     // Admin Assemblies
     private function adminAssemblies($chatId)

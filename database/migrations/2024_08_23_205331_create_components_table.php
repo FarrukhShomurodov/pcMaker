@@ -18,8 +18,9 @@ return new class extends Migration
             $table->foreignId('component_type_id')->constrained('component_types')->onDelete('cascade');
             $table->string('brand');
             $table->integer('quantity');
-            $table->decimal('price');
-            $table->json('photos');
+            $table->integer('price');
+            $table->json('photos')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

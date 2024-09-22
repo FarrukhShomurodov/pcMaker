@@ -7,7 +7,7 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="form-element-list">
                         <div class="basic-tb-hd">
-                            <h2>Создать продукт</h2>
+                            <h2>Создать компонент</h2>
                         </div>
                         @if ($errors->any())
                             <div class="alert alert-solid-danger" role="alert">
@@ -57,6 +57,13 @@
                                     <div class="form-group">
                                         <div class="nk-int-st">
                                             <input name="brand" type="text" class="form-control" placeholder="Бренд">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="form-group">
+                                        <div class="nk-int-st">
+                                            <textarea name="description" class="form-control" placeholder="Описание"></textarea>
                                         </div>
                                     </div>
                                 </div>

@@ -42,7 +42,7 @@ class ProductSubCategoryController extends Controller
     public function edit(ProductSubCategory $productSubCategory): View|\Illuminate\Foundation\Application|Factory|Application
     {
         $productCategories = ProductCategory::query()->get();
-        return view('products.subCategory.update', compact('productSubCategory', 'productCategories'));
+        return view('products.subCategory.edit', compact('productSubCategory', 'productCategories'));
     }
 
     public function update(ProductSubCategory $productSubCategory, ProductSubCategoryRequest $request): RedirectResponse

@@ -27,7 +27,10 @@
                             'component.category.update',
                             'component.type.index',
                             'component.type.edit',
-                            'component.type.update'
+                            'component.type.update',
+                            'component.compatibility.index',
+                            'component.compatibility.edit',
+                            'component.compatibility.update'
                         ];
                     @endphp
 
@@ -40,12 +43,14 @@
                     <li><a data-toggle="tab" href="#client_assemblies"><i class="fa-solid fa-users"></i> Сборки клиента</a>
                     </li>
                     <li @if($currentRouteName == 'admin-assembly') class="active" @endif>
-                        <a data-toggle="tab" href="#admin_assemblies"><i class="fa-solid fa-screwdriver-wrench"></i> Сборки Админа</a>
+                        <a data-toggle="tab" href="#admin_assemblies"><i class="fa-solid fa-screwdriver-wrench"></i>
+                            Сборки Админа</a>
                     </li>
                     <li><a data-toggle="tab" href="#orders"><i class="fa-solid fa-shopping-cart"></i> Заказы</a></li>
                 </ul>
                 <div class="tab-content custom-menu-content">
-                    <div id="products" class="tab-pane notika-tab-menu-bg animated fade @if(in_array($currentRouteName, $productRouteNames)) active in @endif ">
+                    <div id="products"
+                         class="tab-pane notika-tab-menu-bg animated fade @if(in_array($currentRouteName, $productRouteNames)) active in @endif ">
                         <ul class="notika-main-menu-dropdown">
                             <li><a href="{{ route('product.category.index') }}">Категория</a>
                             </li>
@@ -55,7 +60,8 @@
                             </li>
                         </ul>
                     </div>
-                    <div id="components" class="tab-pane notika-tab-menu-bg animated fade @if(in_array($currentRouteName, $componentRouteNames)) active in @endif ">
+                    <div id="components"
+                         class="tab-pane notika-tab-menu-bg animated fade @if(in_array($currentRouteName, $componentRouteNames)) active in @endif ">
                         <ul class="notika-main-menu-dropdown">
                             <li><a href="{{ route('component.category.index') }}">Категория</a>
                             </li>
@@ -63,15 +69,15 @@
                             </li>
                             <li><a href="{{ route('component.items.index') }}">Компоненты</a>
                             </li>
-                            <li><a href="index-3.html">Совместимости</a>
+                            <li><a href="{{ route('component.compatibility.index') }}">Совместимости</a>
                             </li>
                         </ul>
                     </div>
                     <div id="client_assemblies" class="tab-pane notika-tab-menu-bg animated fade">
                         <ul class="notika-main-menu-dropdown">
-                            <li><a href="animations.html">Собраные</a>
+                            <li><a href="#">Собраные</a>
                             </li>
-                            <li><a href="animations.html">Новые</a>
+                            <li><a href="#">Новые</a>
                             </li>
                         </ul>
                     </div>
@@ -85,13 +91,13 @@
                     </div>
                     <div id="orders" class="tab-pane notika-tab-menu-bg animated fade">
                         <ul class="notika-main-menu-dropdown">
-                            <li><a href="normal-table.html">Все</a>
+                            <li><a href="#">Все</a>
                             </li>
-                            <li><a href="data-table.html">Продукты</a>
+                            <li><a href="#">Продукты</a>
                             </li>
-                            <li><a href="data-table.html">Сборки клиента</a>
+                            <li><a href="#">Сборки клиента</a>
                             </li>
-                            <li><a href="data-table.html">Сборки админа</a>
+                            <li><a href="#">Сборки админа</a>
                             </li>
                         </ul>
                     </div>

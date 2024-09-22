@@ -18,9 +18,9 @@ return new class extends Migration
             $table->foreignId('product_sub_category_id')->nullable()->constrained('product_sub_categories')->onDelete('cascade');
             $table->string('brand');
             $table->integer('quantity');
-            $table->decimal('price');
-            $table->text('description');
-            $table->json('photos');
+            $table->integer('price');
+            $table->text('description')->nullable();
+            $table->json('photos')->nullable();
             $table->timestamps();
         });
     }

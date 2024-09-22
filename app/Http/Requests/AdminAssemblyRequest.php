@@ -24,7 +24,7 @@ class AdminAssemblyRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:500',
-            'price' => 'required|decimal:2',
+            'price' => 'required|int',
             'photos' => 'sometimes|array',
             'photos.*' => 'image',
             'description' => 'required|string',

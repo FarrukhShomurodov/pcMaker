@@ -43,7 +43,7 @@ class ProductController extends Controller
     public function edit(Product $product): View|Application|Factory|\Illuminate\Contracts\Foundation\Application
     {
         $productCategories = ProductCategory::all();
-        return view('products.update', compact('product', 'productCategories'));
+        return view('products.edit', compact('product', 'productCategories'));
     }
 
     public function update(Product $product, ProductRequest $request): RedirectResponse
