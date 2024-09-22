@@ -924,7 +924,7 @@ class TelegramService
                 'chat_id' => $chatId,
                 'text' => "Что то пошло не так повторите попытку.",
             ]);
-            $this->showMainMenu();
+            $this->showMainMenu($chatId);
             return;
 
         }
