@@ -13,4 +13,3 @@ class ComponentType extends Model
         'name'
     ];
 }
-git
