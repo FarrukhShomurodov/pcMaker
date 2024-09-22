@@ -901,7 +901,10 @@ class TelegramService
     private function createAssembly($chatId)
     {
         $firstCategory = ComponentCategory::first();
-        $this->updateUserStep($chatId, 'select_category');
+
+        BotUser::query()->where('chat_id', $chatId)->update([
+            'step' => 'select_category'
+        ]);
 
         $this->selectCategory($chatId, $firstCategory->id);
     }
