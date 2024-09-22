@@ -123,9 +123,9 @@ class TelegramService
 //            case 'show_main_menu':
 //                $this->showMainMenu($chatId);
 //                break;
-            default:
-                $this->showMainMenu($chatId);
-                break;
+//            default:
+//                $this->showMainMenu($chatId);
+//                break;
         }
     }
 
