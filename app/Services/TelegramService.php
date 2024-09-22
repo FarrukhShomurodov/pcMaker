@@ -930,7 +930,13 @@ class TelegramService
 
         // Добавляем компонент в сборку
         $user = BotUser::query()->where('chat_id', $chatId)->first();
-        $assembly = Assembly::firstOrCreate(['bot_user_id' => $user->id], ['total_price', $component->price]);
+        $assembly = Assembly::query()->firstOrCreate(
+            ['bot_user_id' => $user->id],
+            ['total_price' => 0]
+        );
+
+        $assembly->total_price += $component->price;
+        $assembly->save();
 
         AssemblyComponent::create([
             'component_id' => $component->id,
