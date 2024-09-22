@@ -917,15 +917,10 @@ class TelegramService
 
     private function selectComponent($chatId, $component)
     {
-        $this->telegram->sendMessage([
-            'chat_id' => $chatId,
-            'text' => "Этот компонент несовместим с другими в сборке. Попробуйте выбрать другой.",
-        ]);
-
-        $componentId = Component::where('name', $component)->first()->id;
+        $component = Component::query()->where('name', $component)->first();
 
         // Проверка совместимости выбранного компонента с уже выбранными
-        if (!$this->checkCompatibility($chatId, $componentId)) {
+        if (!$this->checkCompatibility($chatId, $component->id)) {
             $this->telegram->sendMessage([
                 'chat_id' => $chatId,
                 'text' => "Этот компонент несовместим с другими в сборке. Попробуйте выбрать другой.",
@@ -935,9 +930,10 @@ class TelegramService
 
         // Добавляем компонент в сборку
         $user = BotUser::query()->where('chat_id', $chatId)->first();
-        $assembly = Assembly::firstOrCreate(['bot_user_id' => $user->id]);
+        $assembly = Assembly::firstOrCreate(['bot_user_id' => $user->id], ['total_price', $component->price]);
+
         AssemblyComponent::create([
-            'component_id' => $componentId,
+            'component_id' => $component->id,
             'assembly_id' => $assembly->id,
         ]);
 
@@ -990,14 +986,17 @@ class TelegramService
         $assembly = Assembly::where('bot_user_id', $user->id)->first();
         $assemblyComponents = $assembly ? $assembly->components : [];
 
-        foreach ($assemblyComponents as $component) {
-            $isCompatible = TypeCompatibility::areCompatible($component->component_type_id, $selectedComponentId);
-            if (!$isCompatible) {
-                return false; // Если хотя бы один компонент несовместим, возвращаем false
+        if ($assemblyComponents > 1) {
+            foreach ($assemblyComponents as $component) {
+                $isCompatible = TypeCompatibility::areCompatible($component->component_type_id, $selectedComponentId);
+                if (!$isCompatible) {
+                    return false; // Если хотя бы один компонент несовместим, возвращаем false
+                }
             }
         }
 
-        return true; // Если все компоненты совместимы, возвращаем true
+
+        return true;
     }
 
 
