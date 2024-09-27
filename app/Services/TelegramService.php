@@ -956,7 +956,7 @@ class TelegramService
         }
 
         // Проверка совместимости выбранного компонента с уже выбранными
-        if (!$this->checkCompatibility($chatId, $component->id)) {
+        if (!$this->checkCompatibility($chatId, $component->component_type_id)) {
             $this->telegram->sendMessage([
                 'chat_id' => $chatId,
                 'text' => "Этот компонент несовместим с другими в сборке. Попробуйте выбрать другой.",
