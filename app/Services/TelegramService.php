@@ -1045,16 +1045,15 @@ class TelegramService
                 // Проверка совместимости в обе стороны
                 $isCompatibleDirect = TypeCompatibility::query()
                     ->where('component_type_id', $selectedComponentId)
-                    ->where('compatible_type_id', $component->component_type_id)
+                    ->where('compatible_type_id', c)
                     ->exists();
 
-                $isCompatibleReverse = TypeCompatibility::query()
-                    ->where('component_type_id', $component->component_type_id)
-                    ->where('compatible_type_id', $selectedComponentId)
-                    ->exists();
+                $this->telegram->sendMessage([
+                    'chat_id' => $chatId,
+                    'text' => 'component_type_id:' . $selectedComponentId .'\n'. 'compatible_type_id:'. $component->component_type_id
+                ]);
 
-                // Если не найдено совместимости ни в одном направлении
-                if (!$isCompatibleDirect && !$isCompatibleReverse) {
+                if (!$isCompatibleDirect ) {
                     return false;
                 }
             }
