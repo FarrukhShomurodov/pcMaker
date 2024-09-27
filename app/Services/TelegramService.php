@@ -895,15 +895,35 @@ class TelegramService
     // User Assemblies
     private function createAssembly($chatId)
     {
-        $firstCategory = ComponentCategory::first();
-        $this->updateUserStep($chatId, 'select_category');
+        $firstCategory = ComponentCategory::query()->first();
 
+        if (!$firstCategory) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => "Категории для выбора не найдены.",
+            ]);
+            $this->showMainMenu($chatId);
+            return;
+        }
+
+        $this->updateUserStep($chatId, 'select_category');
         $this->selectCategory($chatId, $firstCategory->id);
     }
 
+
     private function selectCategory($chatId, $categoryId)
     {
-        $components = Component::query()->where('component_category_id', $categoryId)->get();
+        $components = Component::where('component_category_id', $categoryId)->get();
+
+        if ($components->isEmpty()) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => "Нет компонентов для выбранной категории.",
+            ]);
+            $this->showMainMenu($chatId);
+            return;
+        }
+
         $buttons = $components->map(fn($comp) => [['text' => $comp->name]])->toArray();
         $keyboard = new Keyboard(['keyboard' => $buttons, 'resize_keyboard' => true, 'one_time_keyboard' => true]);
         $this->updateUserStep($chatId, 'select_component');
@@ -914,6 +934,7 @@ class TelegramService
             'reply_markup' => $keyboard,
         ]);
     }
+
 
     private function selectComponent($chatId, $component)
     {
@@ -948,9 +969,8 @@ class TelegramService
         $assembly->total_price += $component->price;
         $assembly->save();
 
-        AssemblyComponent::create([
-            'component_id' => $component->id,
-            'assembly_id' => $assembly->id,
+        $assembly->components->create([
+            'component_id' => $component->id
         ]);
 
         // Проверяем, есть ли еще категории для выбора
@@ -966,54 +986,67 @@ class TelegramService
 
     private function getNextCategory($chatId)
     {
-        $user = BotUser::query()->where('chat_id', $chatId)->first();
+        $user = BotUser::where('chat_id', $chatId)->first();
+        if (!$user) {
+            return null;
+        }
 
-        // Получаем ID уже выбранных категорий для сборки
-        $selectedCategoryIds = AssemblyComponent::whereHas('component', function ($query) use ($user) {
-            $query->where('assembly_id', Assembly::where('bot_user_id', $user->id)->first()->id);
-        })->component->pluck('component_category_id');
+        $assembly = Assembly::where('bot_user_id', $user->id)->first();
+        if (!$assembly) {
+            return ComponentCategory::first();
+        }
 
-        // Ищем следующую категорию, которая еще не была выбрана
+        $selectedCategoryIds = AssemblyComponent::where('assembly_id', $assembly->id)
+            ->pluck('component_category_id');
+
         return ComponentCategory::whereNotIn('id', $selectedCategoryIds)->first();
     }
 
+
     private function completeAssembly($chatId)
     {
-        // Рассчитываем итоговую стоимость сборки
-        $assembly = Assembly::where('bot_user_id', $chatId)->first();
-        $totalPrice = $assembly->components->sum(function ($component) {
-            return $component->price;
-        });
+        $user = BotUser::where('chat_id', $chatId)->first();
+        if (!$user) {
+            return;
+        }
 
-        // Обновляем информацию о сборке
+        $assembly = Assembly::where('bot_user_id', $user->id)->first();
+        if (!$assembly) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => "Ошибка: Сборка не найдена.",
+            ]);
+            return;
+        }
+
+        $totalPrice = $assembly->components->sum('component.price');
         $assembly->update(['total_price' => $totalPrice]);
 
-        // Отправляем сообщение об успешной сборке
         $this->telegram->sendMessage([
             'chat_id' => $chatId,
             'text' => "Сборка завершена! Итоговая стоимость: $totalPrice.",
         ]);
 
-        // Можно добавить шаг для сохранения или дальнейших действий
         $this->updateUserStep($chatId, 'assembly_completed');
     }
 
+
     private function checkCompatibility($chatId, $selectedComponentId)
     {
-//        $user = BotUser::query()->where('chat_id', $chatId)->first();
-//        $assembly = Assembly::where('bot_user_id', $user->id)->first();
-//        $assemblyComponents = $assembly ? $assembly->components : collect();
-//
-//        if ($assemblyComponents->count() > 1) {
-//            foreach ($assemblyComponents as $component) {
-//                $isCompatible = TypeCompatibility::areCompatible($component->component_type_id, $selectedComponentId);
-//                if (!$isCompatible) {
-//                    return false;
-//                }
-//            }
-//        } else {
-//            return true;
-//        }
+        $user = BotUser::query()->where('chat_id', $chatId)->first();
+        $assembly = Assembly::where('bot_user_id', $user->id)->first();
+        $assemblyComponents = $assembly ? $assembly->components : collect();
+
+        if ($assemblyComponents->count() > 1) {
+            foreach ($assemblyComponents as $component) {
+                $isCompatible = TypeCompatibility::areCompatible($component->component_type_id, $selectedComponentId);
+                if (!$isCompatible) {
+                    return false;
+                }
+            }
+        } else {
+            return true;
+        }
 
         return true;
     }
