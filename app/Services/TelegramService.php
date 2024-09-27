@@ -1040,18 +1040,24 @@ class TelegramService
         $assembly = Assembly::where('bot_user_id', $user->id)->first();
         $assemblyComponents = $assembly ? $assembly->components : collect();
 
-        if ($assemblyComponents->count() > 1) {
+        if ($assemblyComponents->count() > 0) {
             foreach ($assemblyComponents as $component) {
-                $isCompatible = TypeCompatibility::query()->where('component_type_id', $selectedComponentId)
+                // Проверка совместимости в обе стороны
+                $isCompatibleDirect = TypeCompatibility::query()
+                    ->where('component_type_id', $selectedComponentId)
                     ->where('compatible_type_id', $component->component_type_id)
                     ->exists();
 
-                if (!$isCompatible) {
+                $isCompatibleReverse = TypeCompatibility::query()
+                    ->where('component_type_id', $component->component_type_id)
+                    ->where('compatible_type_id', $selectedComponentId)
+                    ->exists();
+
+                // Если не найдено совместимости ни в одном направлении
+                if (!$isCompatibleDirect && !$isCompatibleReverse) {
                     return false;
                 }
             }
-        } else {
-            return true;
         }
 
         return true;
