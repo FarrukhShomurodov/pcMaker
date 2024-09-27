@@ -940,6 +940,11 @@ class TelegramService
     {
         $component = Component::query()->where('name', $component)->first();
 
+        $this->telegram->sendMessage([
+            'chat_id' => $chatId,
+            'text' => "name".$component->name.'id'.$component->id,
+        ]);
+
         if ($component == null) {
             $this->telegram->sendMessage([
                 'chat_id' => $chatId,
