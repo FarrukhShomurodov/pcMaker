@@ -969,7 +969,9 @@ class TelegramService
         $assembly->total_price += $component->price;
         $assembly->save();
 
-        $assembly->components->create([
+
+        AssemblyComponent::create([
+            'assembly_id' => $assembly->id,
             'component_id' => $component->id
         ]);
 
