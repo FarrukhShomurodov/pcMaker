@@ -919,7 +919,7 @@ class TelegramService
     {
         $component = Component::query()->where('name', $component)->first();
 
-        if($component == null){
+        if ($component == null) {
             $this->telegram->sendMessage([
                 'chat_id' => $chatId,
                 'text' => "Что то пошло не так повторите попытку.",
@@ -1011,6 +1011,8 @@ class TelegramService
                     return false;
                 }
             }
+        } else {
+            return false;
         }
 
         return true;
