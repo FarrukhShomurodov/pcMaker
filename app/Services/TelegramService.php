@@ -1041,26 +1041,26 @@ class TelegramService
         $assemblyComponents = $assembly ? $assembly->components : collect();
 
         if ($assemblyComponents->count() > 0) {
-            foreach ($assemblyComponents as $components) {
-                foreach ($components->component as $component) {
-                    $isCompatibleDirect = TypeCompatibility::query()
-                        ->where('component_type_id', $selectedComponentId)
-                        ->where('compatible_type_id', $component->component_type_id)
-                        ->exists();
+            foreach ($assemblyComponents as $assemblyComponent) {
+                $component = $assemblyComponent->component;
 
-                    $this->telegram->sendMessage([
-                        'chat_id' => $chatId,
-                        'text' => 'component_type_id:' . $selectedComponentId . '\n' . 'compatible_type_id:' . $component->component_type_id
-                    ]);
+                $isCompatibleDirect = TypeCompatibility::query()
+                    ->where('component_type_id', $selectedComponentId)
+                    ->where('compatible_type_id', $component->component_type_id)
+                    ->exists();
 
-                    if (!$isCompatibleDirect) {
-                        return false;
-                    }
+                // Отправляем сообщение для отладки
+                $this->telegram->sendMessage([
+                    'chat_id' => $chatId,
+                    'text' => 'component_type_id: ' . $selectedComponentId . '\n' . 'compatible_type_id: ' . $component->component_type_id
+                ]);
+
+                if (!$isCompatibleDirect) {
+                    return false;
                 }
             }
         }
 
         return true;
     }
-
 }
