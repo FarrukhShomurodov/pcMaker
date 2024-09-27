@@ -1060,7 +1060,6 @@ class TelegramService
                 }
             }
         }
-
         return true;
     }
 }
