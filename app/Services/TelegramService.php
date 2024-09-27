@@ -999,7 +999,8 @@ class TelegramService
         }
 
         $selectedCategoryIds = AssemblyComponent::where('assembly_id', $assembly->id)
-            ->pluck('component_category_id');
+            ->join('components', 'assembly_components.component_id', '=', 'components.id')
+            ->pluck('components.component_category_id');
 
         return ComponentCategory::whereNotIn('id', $selectedCategoryIds)->first();
     }
