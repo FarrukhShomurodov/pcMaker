@@ -903,7 +903,7 @@ class TelegramService
 
     private function selectCategory($chatId, $categoryId)
     {
-        $components = Component::where('component_category_id', $categoryId)->get();
+        $components = Component::query()->where('component_category_id', $categoryId)->get();
         $buttons = $components->map(fn($comp) => [['text' => $comp->name]])->toArray();
         $keyboard = new Keyboard(['keyboard' => $buttons, 'resize_keyboard' => true, 'one_time_keyboard' => true]);
         $this->updateUserStep($chatId, 'select_component');
@@ -971,7 +971,7 @@ class TelegramService
         // Получаем ID уже выбранных категорий для сборки
         $selectedCategoryIds = AssemblyComponent::whereHas('component', function ($query) use ($user) {
             $query->where('assembly_id', Assembly::where('bot_user_id', $user->id)->first()->id);
-        })->pluck('component_category_id');
+        })->component->pluck('component_category_id');
 
         // Ищем следующую категорию, которая еще не была выбрана
         return ComponentCategory::whereNotIn('id', $selectedCategoryIds)->first();
@@ -1012,7 +1012,7 @@ class TelegramService
                 }
             }
         } else {
-            return false;
+            return true;
         }
 
         return true;
