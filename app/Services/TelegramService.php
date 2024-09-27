@@ -1042,7 +1042,10 @@ class TelegramService
 
         if ($assemblyComponents->count() > 1) {
             foreach ($assemblyComponents as $component) {
-                $isCompatible = TypeCompatibility::areCompatible($selectedComponentId, $component->component_type_id);
+                $isCompatible = TypeCompatibility::query()->where('component_type_id', $selectedComponentId)
+                    ->where('compatible_type_id', $component->component_type_id)
+                    ->exists();
+
                 if (!$isCompatible) {
                     return false;
                 }
