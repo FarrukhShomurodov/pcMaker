@@ -1002,9 +1002,9 @@ class TelegramService
     {
         $user = BotUser::query()->where('chat_id', $chatId)->first();
         $assembly = Assembly::where('bot_user_id', $user->id)->first();
-        $assemblyComponents = $assembly ? $assembly->components : [];
+        $assemblyComponents = $assembly ? $assembly->components : collect();
 
-        if (count($assemblyComponents) > 1) {
+        if ($assemblyComponents->count() > 1) {
             foreach ($assemblyComponents as $component) {
                 $isCompatible = TypeCompatibility::areCompatible($component->component_type_id, $selectedComponentId);
                 if (!$isCompatible) {
