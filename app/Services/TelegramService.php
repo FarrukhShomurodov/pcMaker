@@ -1049,13 +1049,17 @@ class TelegramService
                     ->where('compatible_type_id', $component->component_type_id)
                     ->exists();
 
-                // Отправляем сообщение для отладки
+                $isCompatibleReverse = TypeCompatibility::query()
+                    ->where('component_type_id', $component->component_type_id )
+                    ->where('compatible_type_id', $selectedComponentId)
+                    ->exists();
+
                 $this->telegram->sendMessage([
                     'chat_id' => $chatId,
                     'text' => 'component_type_id: ' . $selectedComponentId . '\n' . 'compatible_type_id: ' . $component->component_type_id
                 ]);
 
-                if (!$isCompatibleDirect) {
+                if (!$isCompatibleDirect && !$isCompatibleReverse) {
                     return false;
                 }
             }
