@@ -1000,20 +1000,20 @@ class TelegramService
 
     private function checkCompatibility($chatId, $selectedComponentId)
     {
-        $user = BotUser::query()->where('chat_id', $chatId)->first();
-        $assembly = Assembly::where('bot_user_id', $user->id)->first();
-        $assemblyComponents = $assembly ? $assembly->components : collect();
-
-        if ($assemblyComponents->count() > 1) {
-            foreach ($assemblyComponents as $component) {
-                $isCompatible = TypeCompatibility::areCompatible($component->component_type_id, $selectedComponentId);
-                if (!$isCompatible) {
-                    return false;
-                }
-            }
-        } else {
-            return true;
-        }
+//        $user = BotUser::query()->where('chat_id', $chatId)->first();
+//        $assembly = Assembly::where('bot_user_id', $user->id)->first();
+//        $assemblyComponents = $assembly ? $assembly->components : collect();
+//
+//        if ($assemblyComponents->count() > 1) {
+//            foreach ($assemblyComponents as $component) {
+//                $isCompatible = TypeCompatibility::areCompatible($component->component_type_id, $selectedComponentId);
+//                if (!$isCompatible) {
+//                    return false;
+//                }
+//            }
+//        } else {
+//            return true;
+//        }
 
         return true;
     }
