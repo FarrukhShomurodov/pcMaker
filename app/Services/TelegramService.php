@@ -1045,7 +1045,7 @@ class TelegramService
                 // Проверка совместимости в обе стороны
                 $isCompatibleDirect = TypeCompatibility::query()
                     ->where('component_type_id', $selectedComponentId)
-                    ->where('compatible_type_id', c)
+                    ->where('compatible_type_id', $component->component_type_id)
                     ->exists();
 
                 $this->telegram->sendMessage([
