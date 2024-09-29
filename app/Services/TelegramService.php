@@ -907,6 +907,13 @@ class TelegramService
             return;
         }
 
+        $user = BotUser::query()->where('chat_id', $chatId)->first();
+
+        $assembly = Assembly::create([
+            'bot_user_id' => $user->id,
+            'total_price' => 0
+        ]);
+
         $this->updateUserStep($chatId, 'select_category');
         $this->selectCategory($chatId, $firstCategory->id);
     }
@@ -963,17 +970,17 @@ class TelegramService
             return;
         }
 
-        // Добавляем компонент в сборку
+        // Получаем пользователя
         $user = BotUser::query()->where('chat_id', $chatId)->first();
-        $assembly = Assembly::query()->firstOrCreate(
-            ['bot_user_id' => $user->id],
-            ['total_price' => 0]
-        );
 
+        // Находим последнюю активную сборку пользователя
+        $assembly = Assembly::where('bot_user_id', $user->id)->latest()->first();
+
+        // Обновляем общую цену сборки
         $assembly->total_price += $component->price;
         $assembly->save();
 
-
+        // Добавляем компонент в сборку
         AssemblyComponent::create([
             'assembly_id' => $assembly->id,
             'component_id' => $component->id
