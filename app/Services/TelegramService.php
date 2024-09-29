@@ -1048,6 +1048,11 @@ class TelegramService
                     ->where('compatible_category_id', $component->component_category_id)
                     ->exists();
 
+                $this->telegram->sendMessage([
+                    'chat_id' => $chatId,
+                    'text' => 'component_category_id: '.$selectedComponent->component_category_id.'compatible_category_id: '.$component->component_category_id
+                ]);
+
                 if ($isCategoryCompatible) {
                     $this->telegram->sendMessage([
                         'chat_id' => $chatId,
