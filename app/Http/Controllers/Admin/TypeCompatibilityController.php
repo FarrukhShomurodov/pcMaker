@@ -55,7 +55,7 @@ class TypeCompatibilityController extends Controller
 
 
         foreach ($data['compatible_with_id'] as $compatibleTypeId) {
-            TypeCompatibility::create([
+            $typeCompatibility::query()->create([
                 'component_type_id' => $data['component_type_id'],
                 'compatible_type_id' => $compatibleTypeId,
             ]);

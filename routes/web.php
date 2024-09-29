@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminAssemblyController;
+use App\Http\Controllers\Admin\CategoryCompatibilityController;
 use App\Http\Controllers\Admin\ComponentCategoryController;
 use App\Http\Controllers\Admin\ComponentCompatibilityController;
 use App\Http\Controllers\Admin\ComponentController;
@@ -28,6 +29,7 @@ Route::prefix('component')->name('component.')->group(function () {
     Route::resource('category', ComponentCategoryController::class)->parameter('category', 'componentCategory');
     Route::resource('type', ComponentTypeController::class)->parameter('type', 'componentType');
     Route::resource('compatibility', TypeCompatibilityController::class)->parameter('compatibility', 'typeCompatibility');
+    Route::resource('category-compatibility', CategoryCompatibilityController::class)->parameter('category-compatibility', 'categoryCompatibility');
 });
 
 Route::resource('admin-assembly', AdminAssemblyController::class)->parameter('admin-assembly', 'adminAssembly');

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,7 +24,7 @@ class TypeCompatibility extends Model
 
     public static function areCompatible($type1, $type2)
     {
-        return self::where('component_type_id', $type1)
+        return self::query()->where('component_type_id', $type1)
             ->where('compatible_type_id', $type2)
             ->exists();
     }

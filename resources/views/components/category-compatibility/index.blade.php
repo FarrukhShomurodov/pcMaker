@@ -8,8 +8,8 @@
                     <div class="data-table-list">
                         <div class="basic-tb-hd">
                             <div style="display: flex; align-items: center; justify-content: space-between;">
-                                <h2 style="margin: 0;">Совместимость типов</h2>
-                                <a href="{{ route('component.compatibility.create') }}">
+                                <h2 style="margin: 0;">Совместимость котегории</h2>
+                                <a href="{{ route('component.category-compatibility.create') }}">
                                     <button class="btn btn-success notika-btn-success btn-sm waves-effect">Создать
                                     </button>
                                 </a>
@@ -20,8 +20,8 @@
                                 <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Тип</th>
-                                    <th>Совместимые типы</th>
+                                    <th>Категория</th>
+                                    <th>Совместимые котегория</th>
                                     <th>Действия</th>
                                 </tr>
                                 </thead>
@@ -29,11 +29,11 @@
                                 @foreach($compatibilities as $compatibility)
                                     <tr>
                                         <td>{{ $compatibility->id }}</td>
-                                        <td>{{ $compatibility->componentType->name }}</td>
-                                        <td>{{ $compatibility->compatibleType->name }}</td>
+                                        <td>{{ $compatibility->componentCategory->name }}</td>
+                                        <td>{{ $compatibility->compatibleCategory->name }}</td>
                                         <td>
-                                            <a href="{{ route('component.compatibility.edit', $compatibility->id) }}" class="btn btn-warning">Редактировать</a>
-                                            <form action="{{ route('component.compatibility.destroy', $compatibility->id) }}" method="POST" style="display:inline;">
+                                            <a href="{{ route('component.category-compatibility.edit', $compatibility->id) }}" class="btn btn-warning">Редактировать</a>
+                                            <form action="{{ route('component.category-compatibility.destroy', $compatibility->id) }}" method="POST" style="display:inline;">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button class="btn btn-danger">Удалить</button>

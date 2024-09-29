@@ -30,7 +30,10 @@
                             'component.type.update',
                             'component.compatibility.index',
                             'component.compatibility.edit',
-                            'component.compatibility.update'
+                            'component.compatibility.update',
+                            'component.category-compatibility.index',
+                            'component.category-compatibility.edit',
+                            'component.category-compatibility.update'
                         ];
                     @endphp
 
@@ -70,6 +73,8 @@
                             <li><a href="{{ route('component.items.index') }}">Компоненты</a>
                             </li>
                             <li><a href="{{ route('component.compatibility.index') }}">Совместимости</a>
+                            </li>
+                            <li><a href="{{ route('component.category-compatibility.index') }}">Совместимость категории</a>
                             </li>
                         </ul>
                     </div>
