@@ -87,17 +87,17 @@ class TelegramService
             case '🔧 Комплектующие':
                 $this->showAdminCategory($chatId);
                 break;
-//            default:
-//                if ($step === 'show_main_menu' || $step === 'show_subcategory') {
-//                    $this->checkCategory($chatId, $text);
-//                } elseif ($step === 'select_category') {
-//                    $this->selectCategory($chatId, $text);
-//                } elseif ($step === 'select_component') {
-//                    $this->selectComponent($chatId, $text);
-//                } else {
-//                    $this->showMainMenu($chatId);
-//                }
-//                break;
+            default:
+                if ($step === 'show_main_menu' || $step === 'show_subcategory') {
+                    $this->checkCategory($chatId, $text);
+                } elseif ($step === 'select_category') {
+                    $this->selectCategory($chatId, $text);
+                } elseif ($step === 'select_component') {
+                    $this->selectComponent($chatId, $text);
+                } else {
+                    $this->showMainMenu($chatId);
+                }
+                break;
         }
 
         switch ($step) {
@@ -1037,6 +1037,7 @@ class TelegramService
         ]);
 
         $this->updateUserStep($chatId, 'assembly_completed');
+        $this->showMainMenu($chatId);
     }
 
 
