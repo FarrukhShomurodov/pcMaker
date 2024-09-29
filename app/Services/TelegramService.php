@@ -74,32 +74,20 @@ class TelegramService
 
     public function processMessage($chatId, $text, $step, $message)
     {
-        switch ($text) {
-            case '🛍️ Корзина':
-                $this->basketItems($chatId);
-                break;
-            case '💼 Выбрать сборку':
-                $this->adminAssemblies($chatId);
-                break;
-            case '🖥️ Собрать компьютер':
-                $this->createAssembly($chatId);
-                break;
-            case '🔧 Комплектующие':
-                $this->showAdminCategory($chatId);
-                break;
-//            default:
-//                if ($step === 'show_main_menu' || $step === 'show_subcategory') {
-//                    $this->checkCategory($chatId, $text);
-//                } elseif ($step === 'select_category') {
-//                    $this->selectCategory($chatId, $text);
-//                } elseif ($step === 'select_component') {
-//                    $this->selectComponent($chatId, $text);
-//                } else {
-//                    $this->showMainMenu($chatId);
-//                }
-//                break;
+        // Handle pre-defined commands
+        $commands = [
+            '🛍️ Корзина' => 'basketItems',
+            '💼 Выбрать сборку' => 'adminAssemblies',
+            '🖥️ Собрать компьютер' => 'createAssembly',
+            '🔧 Комплектующие' => 'showAdminCategory'
+        ];
+
+        if (array_key_exists($text, $commands)) {
+            $this->{$commands[$text]}($chatId);
+            return;
         }
 
+        // Handle user steps
         switch ($step) {
             case 'choose_language':
                 $this->processLanguageChoice($chatId, $text);
@@ -118,6 +106,10 @@ class TelegramService
                 break;
             case 'select_component':
                 $this->selectComponent($chatId, $text);
+                break;
+            case 'show_main_menu':
+            case 'show_subcategory':
+                $this->checkCategory($chatId, $text);
                 break;
             default:
                 $this->showMainMenu($chatId);
