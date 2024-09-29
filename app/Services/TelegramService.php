@@ -1066,13 +1066,7 @@ class TelegramService
                         ->where('compatible_type_id', $component->component_type_id)
                         ->exists();
 
-                    $isCompatibleReverse = TypeCompatibility::query()
-                        ->where('component_type_id', $component->component_type_id)
-                        ->where('compatible_type_id', $selectedComponent->component_type_id)
-                        ->exists();
-
-
-                    if (!$isCompatibleDirect && !$isCompatibleReverse) {
+                    if (!$isCompatibleDirect) {
                         return false;
                     }
                 }
