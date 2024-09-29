@@ -87,17 +87,17 @@ class TelegramService
             case '🔧 Комплектующие':
                 $this->showAdminCategory($chatId);
                 break;
-            default:
-                if ($step === 'show_main_menu' || $step === 'show_subcategory') {
-                    $this->checkCategory($chatId, $text);
-                } elseif ($step === 'select_category') {
-                    $this->selectCategory($chatId, $text);
-                } elseif ($step === 'select_component') {
-                    $this->selectComponent($chatId, $text);
-                } else {
-                    $this->showMainMenu($chatId);
-                }
-                break;
+//            default:
+//                if ($step === 'show_main_menu' || $step === 'show_subcategory') {
+//                    $this->checkCategory($chatId, $text);
+//                } elseif ($step === 'select_category') {
+//                    $this->selectCategory($chatId, $text);
+//                } elseif ($step === 'select_component') {
+//                    $this->selectComponent($chatId, $text);
+//                } else {
+//                    $this->showMainMenu($chatId);
+//                }
+//                break;
         }
 
         switch ($step) {
@@ -113,15 +113,15 @@ class TelegramService
             case 'request_name':
                 $this->processNameRequest($chatId, $text);
                 break;
-//            case 'select_category':
-//                $this->selectCategory($chatId, $text);
-//                break;
-//            case 'select_component':
-//                $this->selectComponent($chatId, $text);
-//                break;
-//            default:
-//                $this->showMainMenu($chatId);
-//                break;
+            case 'select_category':
+                $this->selectCategory($chatId, $text);
+                break;
+            case 'select_component':
+                $this->selectComponent($chatId, $text);
+                break;
+            default:
+                $this->showMainMenu($chatId);
+                break;
         }
     }
 
