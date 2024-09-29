@@ -220,6 +220,10 @@ class TelegramService
             ['text' => '🛍️ Корзина']
         ];
 
+        $buttons[] = [
+            ['text' => '🧩🖥️ Мои сборки'],
+        ];
+
         $keyboard = new Keyboard(['keyboard' => $buttons, 'resize_keyboard' => true, 'one_time_keyboard' => true]);
 
         $this->telegram->sendMessage([
