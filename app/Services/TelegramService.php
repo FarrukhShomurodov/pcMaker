@@ -221,7 +221,7 @@ class TelegramService
         ];
 
         $buttons[] = [
-            ['text' => '🧩🖥️ Мои сборки'],
+            ['text' => '🧩 Мои сборки'],
         ];
 
         $keyboard = new Keyboard(['keyboard' => $buttons, 'resize_keyboard' => true, 'one_time_keyboard' => true]);
