@@ -8,6 +8,7 @@ use App\Models\AssemblyComponent;
 use App\Models\Basket;
 use App\Models\BasketItem;
 use App\Models\BotUser;
+use App\Models\CategoryCompatibility;
 use App\Models\Component;
 use App\Models\ComponentCategory;
 use App\Models\Product;
@@ -942,7 +943,7 @@ class TelegramService
 
         $this->telegram->sendMessage([
             'chat_id' => $chatId,
-            'text' => "name".$component->name.'id'.$component->id,
+            'text' => "name" . $component->name . 'id' . $component->id,
         ]);
 
         if ($component == null) {
@@ -956,7 +957,7 @@ class TelegramService
         }
 
         // Проверка совместимости выбранного компонента с уже выбранными
-        if (!$this->checkCompatibility($chatId, $component->component_type_id)) {
+        if (!$this->checkCompatibility($chatId, $component)) {
             $this->telegram->sendMessage([
                 'chat_id' => $chatId,
                 'text' => "Этот компонент несовместим с другими в сборке. Попробуйте выбрать другой.",
@@ -1039,7 +1040,7 @@ class TelegramService
     }
 
 
-    private function checkCompatibility($chatId, $selectedComponentId)
+    private function checkCompatibility($chatId, $selectedComponent)
     {
         $user = BotUser::query()->where('chat_id', $chatId)->first();
         $assembly = Assembly::where('bot_user_id', $user->id)->first();
@@ -1049,26 +1050,30 @@ class TelegramService
             foreach ($assemblyComponents as $assemblyComponent) {
                 $component = $assemblyComponent->component;
 
-                $isCompatibleDirect = TypeCompatibility::query()
-                    ->where('component_type_id', $selectedComponentId)
-                    ->where('compatible_type_id', $component->component_type_id)
+                $isCategoryCompatible = CategoryCompatibility::query()
+                    ->where('component_category_id', $selectedComponent->component_category_id)
+                    ->where('compatible_category_id', $component->component_category_id)
                     ->exists();
 
-                $isCompatibleReverse = TypeCompatibility::query()
-                    ->where('component_type_id', $component->component_type_id )
-                    ->where('compatible_type_id', $selectedComponentId)
-                    ->exists();
+                if ($isCategoryCompatible) {
+                    $isCompatibleDirect = TypeCompatibility::query()
+                        ->where('component_type_id', $selectedComponent->component_type_id)
+                        ->where('compatible_type_id', $component->component_type_id)
+                        ->exists();
 
-                $this->telegram->sendMessage([
-                    'chat_id' => $chatId,
-                    'text' => 'component_type_id: ' . $selectedComponentId . '\n' . 'compatible_type_id: ' . $component->component_type_id
-                ]);
+                    $isCompatibleReverse = TypeCompatibility::query()
+                        ->where('component_type_id', $component->component_type_id)
+                        ->where('compatible_type_id', $selectedComponent->component_type_id)
+                        ->exists();
 
-                if (!$isCompatibleDirect && !$isCompatibleReverse) {
-                    return false;
+
+                    if (!$isCompatibleDirect && !$isCompatibleReverse) {
+                        return false;
+                    }
                 }
             }
         }
+
         return true;
     }
 }
