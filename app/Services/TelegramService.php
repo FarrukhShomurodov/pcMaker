@@ -1044,19 +1044,14 @@ class TelegramService
                 $component = $assemblyComponent->component;
 
                 $isCategoryCompatible = CategoryCompatibility::query()
-                    ->where('component_category_id', $selectedComponent->component_category_id)
-                    ->where('compatible_category_id', $component->component_category_id)
+                    ->where('component_category_id', $component->component_category_id)
+                    ->where('compatible_category_id', $selectedComponent->component_category_id)
                     ->exists();
-
-                $this->telegram->sendMessage([
-                    'chat_id' => $chatId,
-                    'text' => 'component_category_id: '.$selectedComponent->component_category_id.'compatible_category_id: '.$component->component_category_id
-                ]);
 
                 if ($isCategoryCompatible) {
                     $this->telegram->sendMessage([
                         'chat_id' => $chatId,
-                        'text' => 'component_type_id: '.$selectedComponent->component_type_id.'compatible_type_id: '.$component->component_type_id
+                        'text' => 'component_type_id: ' . $selectedComponent->component_type_id . 'compatible_type_id: ' . $component->component_type_id
                     ]);
 
                     $isCompatibleDirect = TypeCompatibility::query()
