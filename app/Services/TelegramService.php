@@ -113,12 +113,12 @@ class TelegramService
             case 'request_name':
                 $this->processNameRequest($chatId, $text);
                 break;
-            case 'select_category':
-                $this->selectCategory($chatId, $text);
-                break;
-            case 'select_component':
-                $this->selectComponent($chatId, $text);
-                break;
+//            case 'select_category':
+//                $this->selectCategory($chatId, $text);
+//                break;
+//            case 'select_component':
+//                $this->selectComponent($chatId, $text);
+//                break;
 //            default:
 //                $this->showMainMenu($chatId);
 //                break;
@@ -909,7 +909,7 @@ class TelegramService
 
         $user = BotUser::query()->where('chat_id', $chatId)->first();
 
-        $assembly = Assembly::create([
+        Assembly::create([
             'bot_user_id' => $user->id,
             'total_price' => 0
         ]);
@@ -924,7 +924,6 @@ class TelegramService
         $components = Component::where('component_category_id', $categoryId)
             ->where('quantity', '>', 0)
             ->get();
-
 
         if ($components->isEmpty()) {
             $this->telegram->sendMessage([
@@ -958,10 +957,8 @@ class TelegramService
             ]);
             $this->showMainMenu($chatId);
             return;
-
         }
 
-        // Проверка совместимости выбранного компонента с уже выбранными
         if (!$this->checkCompatibility($chatId, $component)) {
             $this->telegram->sendMessage([
                 'chat_id' => $chatId,
@@ -970,23 +967,18 @@ class TelegramService
             return;
         }
 
-        // Получаем пользователя
         $user = BotUser::query()->where('chat_id', $chatId)->first();
 
-        // Находим последнюю активную сборку пользователя
         $assembly = Assembly::where('bot_user_id', $user->id)->latest()->first();
 
-        // Обновляем общую цену сборки
         $assembly->total_price += $component->price;
         $assembly->save();
 
-        // Добавляем компонент в сборку
         AssemblyComponent::create([
             'assembly_id' => $assembly->id,
             'component_id' => $component->id
         ]);
 
-        // Проверяем, есть ли еще категории для выбора
         $nextCategory = $this->getNextCategory($chatId);
         if ($nextCategory) {
             // Переходим к выбору следующей категории
