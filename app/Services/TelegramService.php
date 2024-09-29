@@ -1049,6 +1049,11 @@ class TelegramService
                     ->exists();
 
                 if ($isCategoryCompatible) {
+                    $this->telegram->sendMessage([
+                        'chat_id' => $chatId,
+                        'text' => 'component_type_id: '.$selectedComponent->component_type_id.'compatible_type_id: '.$component->component_type_id
+                    ]);
+
                     $isCompatibleDirect = TypeCompatibility::query()
                         ->where('component_type_id', $selectedComponent->component_type_id)
                         ->where('compatible_type_id', $component->component_type_id)
