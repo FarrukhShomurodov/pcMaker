@@ -1035,37 +1035,49 @@ class TelegramService
 
     private function checkCompatibility($chatId, $selectedComponent)
     {
+        // Получаем пользователя и его последнюю сборку
         $user = BotUser::query()->where('chat_id', $chatId)->first();
         $assembly = Assembly::where('bot_user_id', $user->id)->latest()->first();
         $assemblyComponents = $assembly ? $assembly->components : collect();
 
         if ($assemblyComponents->count() > 0) {
             foreach ($assemblyComponents as $assemblyComponent) {
-                $component = $assemblyComponent->component;
+                $existingComponent = $assemblyComponent->component;
 
-                $isCategoryCompatible = CategoryCompatibility::query()
-                    ->where('component_category_id', $component->component_category_id)
-                    ->where('compatible_category_id', $selectedComponent->component_category_id)
-                    ->exists();
+                $isCategoryCompatible = CategoryCompatibility::areCompatible(
+                    $existingComponent->component_category_id,
+                    $selectedComponent->component_category_id
+                );
 
                 if ($isCategoryCompatible) {
                     $this->telegram->sendMessage([
                         'chat_id' => $chatId,
-                        'text' => 'component_type_id: ' . $selectedComponent->component_type_id . 'compatible_type_id: ' . $component->component_type_id
+                        'text' => 'Категория компонента совместима. Проверяем типы...'
                     ]);
 
-                    $isCompatibleDirect = TypeCompatibility::query()
-                        ->where('component_type_id', $selectedComponent->component_type_id)
-                        ->where('compatible_type_id', $component->component_type_id)
-                        ->exists();
+                    $isCompatibleDirect = TypeCompatibility::areCompatible(
+                        $selectedComponent->component_type_id,
+                        $existingComponent->component_type_id
+                    );
 
                     if (!$isCompatibleDirect) {
+                        $this->telegram->sendMessage([
+                            'chat_id' => $chatId,
+                            'text' => 'Типы компонентов несовместимы!'
+                        ]);
                         return false;
                     }
+                } else {
+                    $this->telegram->sendMessage([
+                        'chat_id' => $chatId,
+                        'text' => 'Категории компонентов несовместимы!'
+                    ]);
+                    return false;
                 }
             }
         }
 
         return true;
     }
+
 }
