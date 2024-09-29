@@ -1003,8 +1003,7 @@ class TelegramService
         if (!$user) {
             return null;
         }
-
-        $assembly = Assembly::where('bot_user_id', $user->id)->first();
+        $assembly = Assembly::where('bot_user_id', $user->id)->latest()->first();
         if (!$assembly) {
             return ComponentCategory::first();
         }
@@ -1024,7 +1023,7 @@ class TelegramService
             return;
         }
 
-        $assembly = Assembly::where('bot_user_id', $user->id)->first();
+        $assembly = Assembly::where('bot_user_id', $user->id)->latest()->first();
         if (!$assembly) {
             $this->telegram->sendMessage([
                 'chat_id' => $chatId,
