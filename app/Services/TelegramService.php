@@ -914,7 +914,10 @@ class TelegramService
 
     private function selectCategory($chatId, $categoryId)
     {
-        $components = Component::where('component_category_id', $categoryId)->get();
+        $components = Component::where('component_category_id', $categoryId)
+            ->where('quantity', '>', 0)
+            ->get();
+
 
         if ($components->isEmpty()) {
             $this->telegram->sendMessage([
@@ -940,11 +943,6 @@ class TelegramService
     private function selectComponent($chatId, $component)
     {
         $component = Component::query()->where('name', $component)->first();
-
-        $this->telegram->sendMessage([
-            'chat_id' => $chatId,
-            'text' => "name" . $component->name . 'id' . $component->id,
-        ]);
 
         if ($component == null) {
             $this->telegram->sendMessage([
