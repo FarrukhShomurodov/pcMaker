@@ -1061,6 +1061,11 @@ class TelegramService
                         'text' => 'Категория компонента совместима. Проверяем типы...'
                     ]);
 
+                    $this->telegram->sendMessage([
+                        'chat_id' => $chatId,
+                        'text' => 'component_type_id:' .  $selectedComponent->component_type_id. 'compatible_type_id:' . $existingComponent->component_type_id
+                    ]);
+
                     $isCompatibleDirect = TypeCompatibility::areCompatible(
                         $selectedComponent->component_type_id,
                         $existingComponent->component_type_id
