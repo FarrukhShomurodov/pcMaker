@@ -108,7 +108,15 @@ class TelegramService
                 if ($text == 'Отменить') {
                     $this->cancelAssembly($chatId);
                 } else if ($text === 'Назад') {
-                    $this->getPrevCategory($chatId);
+                    $lastCategory = $this->getPrevCategory($chatId);
+                    if ($lastCategory) {
+                        $this->selectCategory($chatId, $lastCategory->id);
+                    } else {
+                        $this->telegram->sendMessage([
+                            'chat_id' => $chatId,
+                            'text' => 'Что то пошло не так повторите попытку.'
+                        ]);
+                    }
                 } else {
                     $this->selectComponent($chatId, $text);
                 }
