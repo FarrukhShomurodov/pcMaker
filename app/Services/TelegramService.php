@@ -1050,7 +1050,7 @@ class TelegramService
                 );
 
                 if ($isCategoryCompatible) {
-                    $existingComponentType = $assembly->component()->where('component_category_id', $existingComponent->component_category_id)->get();
+                    $existingComponentType = $assembly->components()->where('component_category_id', $existingComponent->component_category_id)->get();
 
                     foreach ($existingComponentType as $type) {
                         $this->telegram->sendMessage([
