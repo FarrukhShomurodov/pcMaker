@@ -1039,7 +1039,7 @@ class TelegramService
         $assembly = Assembly::where('bot_user_id', $user->id)->latest()->first();
         $assemblyComponents = $assembly ? $assembly->components : collect();
 
-        if ($assemblyComponents->count() > 0) {
+        if ($assemblyComponents->count() > 3) {
             foreach ($assemblyComponents as $assemblyComponent) {
                 $existingComponent = $assemblyComponent->component;
 
