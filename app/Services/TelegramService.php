@@ -79,7 +79,8 @@ class TelegramService
             '🛍️ Корзина' => 'basketItems',
             '💼 Выбрать сборку' => 'adminAssemblies',
             '🖥️ Собрать компьютер' => 'createAssembly',
-            '🔧 Комплектующие' => 'showAdminCategory'
+            '🔧 Комплектующие' => 'showAdminCategory',
+            '🧩 Мои сборки' => 'myAssembly'
         ];
 
         if (array_key_exists($text, $commands)) {
@@ -1105,6 +1106,53 @@ class TelegramService
             'text' => $text,
             'parse_mode' => 'Markdown',
         ]);
+
+        $this->updateUserStep($chatId, 'assembly_completed');
+        $this->showMainMenu($chatId);
+    }
+
+    private function myAssembly($chatId)
+    {
+        $user = BotUser::query()->where('chat_id', $chatId)->first();
+        if (!$user) {
+            return;
+        }
+
+        $assemblies = Assembly::query()->where('bot_user_id', $user->id)->get();
+
+        if (!$assemblies) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => "Ошибка: Сборка не найдена.",
+            ]);
+            return;
+        }
+
+        foreach ($assemblies as $assembly) {
+            $text = "🔧 *Сборка завершена!* 🔧\n\n";
+            $text .= "💰 *Итоговая стоимость:* {$assembly->total_price} сум\n\n";
+            $text .= "📦 *Детали сборки:* \n\n";
+
+            foreach ($assembly->components as $assemblyComponent) {
+                $component = $assemblyComponent->component;
+                $category = $component->category->name;
+                $brand = $component->brand;
+                $price = $component->price;
+                $name = $component->name;
+
+                $text .= "📂 *Категория*: {$category}\n";
+                $text .= "🏷️ *Название*: {$name}\n";
+                $text .= "🏢 *Бренд*: {$brand}\n";
+                $text .= "💵 *Цена*: {$price} сум\n\n";
+            }
+
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => $text,
+                'parse_mode' => 'Markdown',
+            ]);
+        }
+
 
         $this->updateUserStep($chatId, 'assembly_completed');
         $this->showMainMenu($chatId);
