@@ -1063,7 +1063,7 @@ class TelegramService
                 $selectedComponentType = $selectedComponent->component_type_id;
 
                 // Проверяем совместимость типов
-                if (!TypeCompatibility::areCompatible($existingComponentType, $selectedComponentType)) {
+                if (!TypeCompatibility::areCompatible($selectedComponentType, $existingComponentType)) {
                     $this->telegram->sendMessage([
                         'chat_id' => $chatId,
                         'text' => 'Типы комплектующих несовместимы! Например, плата не совместима с процессором.'
