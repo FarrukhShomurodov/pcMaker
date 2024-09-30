@@ -931,7 +931,7 @@ class TelegramService
         }
 
         $buttons = $components->map(fn($comp) => [['text' => $comp->name]])->toArray();
-        $buttons[] = [['Назад'], ['Отменить']];
+        $buttons[] = [['text' => 'Назад'], ['text' =>  'Отменить']];
 
         $keyboard = new Keyboard(['keyboard' => $buttons, 'resize_keyboard' => true, 'one_time_keyboard' => true]);
         $this->updateUserStep($chatId, 'select_component');
