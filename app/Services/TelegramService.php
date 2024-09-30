@@ -1083,15 +1083,32 @@ class TelegramService
         $totalPrice = $assembly->components->sum('component.price');
         $assembly->update(['total_price' => $totalPrice]);
 
+        $text = "🔧 *Сборка завершена!* 🔧\n\n";
+        $text .= "💰 *Итоговая стоимость:* {$totalPrice} сум\n\n";
+        $text .= "📦 *Детали сборки:* \n\n";
+
+        foreach ($assembly->components as $assemblyComponent) {
+            $component = $assemblyComponent->component;
+            $category = $component->category->name;
+            $brand = $component->brand;
+            $price = $component->price;
+            $name = $component->name;
+
+            $text .= "📂 *Категория*: {$category}\n";
+            $text .= "🏷️ *Название*: {$name}\n";
+            $text .= "🏢 *Бренд*: {$brand}\n";
+            $text .= "💵 *Цена*: {$price} сум\n\n";
+        }
+
         $this->telegram->sendMessage([
             'chat_id' => $chatId,
-            'text' => "Сборка завершена! Итоговая стоимость: $totalPrice.",
+            'text' => $text,
+            'parse_mode' => 'Markdown',
         ]);
 
         $this->updateUserStep($chatId, 'assembly_completed');
         $this->showMainMenu($chatId);
     }
-
 
     private function checkCompatibility($chatId, $selectedComponent)
     {
