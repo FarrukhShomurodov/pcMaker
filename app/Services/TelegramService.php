@@ -1113,22 +1113,30 @@ class TelegramService
 
     private function myAssembly($chatId)
     {
+        // Получаем пользователя по chat_id
         $user = BotUser::query()->where('chat_id', $chatId)->first();
         if (!$user) {
             return;
         }
 
+        // Получаем все сборки пользователя
         $assemblies = Assembly::query()->where('bot_user_id', $user->id)->get();
 
-        if (!$assemblies) {
+        if ($assemblies->isEmpty()) {
             $this->telegram->sendMessage([
                 'chat_id' => $chatId,
-                'text' => "Ошибка: Сборка не найдена.",
+                'text' => "Ошибка: У вас нет сборок.",
             ]);
             return;
         }
 
+        // Проходимся по каждой сборке и формируем сообщение
         foreach ($assemblies as $assembly) {
+            $text = "💻 *Сборка №{$assembly->id}*\n";
+            $text .= "💰 *Итоговая стоимость*: {$assembly->total_price} сум\n\n";
+            $text .= "📦 *Детали сборки:* \n\n";
+
+            // Формируем описание для каждого компонента сборки
             foreach ($assembly->components as $assemblyComponent) {
                 $component = $assemblyComponent->component;
                 $category = $component->category->name;
@@ -1136,14 +1144,13 @@ class TelegramService
                 $price = $component->price;
                 $name = $component->name;
 
-                $text = "💰 *Итоговая стоимость:* {$assembly->total_price} сум\n\n";
-                $text .= "📦 *Детали сборки:* \n\n";
                 $text .= "📂 *Категория*: {$category}\n";
                 $text .= "🏷️ *Название*: {$name}\n";
                 $text .= "🏢 *Бренд*: {$brand}\n";
                 $text .= "💵 *Цена*: {$price} сум\n\n";
             }
 
+            // Отправляем собранную информацию пользователю
             $this->telegram->sendMessage([
                 'chat_id' => $chatId,
                 'text' => $text,
@@ -1151,8 +1158,8 @@ class TelegramService
             ]);
         }
 
-
-        $this->updateUserStep($chatId, 'assembly_completed');
+        // Обновляем шаг пользователя
+        $this->updateUserStep($chatId, 'assembly_viewed');
         $this->showMainMenu($chatId);
     }
 
