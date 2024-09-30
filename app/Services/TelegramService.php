@@ -105,7 +105,11 @@ class TelegramService
                 $this->selectCategory($chatId, $text);
                 break;
             case 'select_component':
-                $this->selectComponent($chatId, $text);
+                if ($text == 'Отменить') {
+                    $this->cancelAssembly($chatId);
+                } else {
+                    $this->selectComponent($chatId, $text);
+                }
                 break;
             case 'show_main_menu':
             case 'show_subcategory':
@@ -914,6 +918,20 @@ class TelegramService
         $this->selectCategory($chatId, $firstCategory->id, true);
     }
 
+    private function cancelAssembly($chatId)
+    {
+        $user = BotUser::query()->where('chat_id', $chatId)->first();
+
+        Assembly::query()->where('bot_user_id', $user->id)->latest()->first()->delete();
+
+        $this->telegram->sendMessage([
+            'chat_id' => $chatId,
+            'text' => 'Сборка отменина.'
+        ]);
+
+        $this->updateUserStep($chatId, 'show_main_menu');
+        $this->showMainMenu($chatId);
+    }
 
     private function selectCategory($chatId, $categoryId, $isFirst = false)
     {
@@ -935,7 +953,6 @@ class TelegramService
         $buttons[] = $isFirst
             ? [['text' => 'Отменить']]
             : [['text' => 'Назад'], ['text' => 'Отменить']];
-
 
 
         $keyboard = new Keyboard(['keyboard' => $buttons, 'resize_keyboard' => true, 'one_time_keyboard' => true]);
