@@ -911,11 +911,11 @@ class TelegramService
         ]);
 
         $this->updateUserStep($chatId, 'select_category');
-        $this->selectCategory($chatId, $firstCategory->id);
+        $this->selectCategory($chatId, $firstCategory->id, true);
     }
 
 
-    private function selectCategory($chatId, $categoryId)
+    private function selectCategory($chatId, $categoryId, $isFirst = false)
     {
         $components = Component::query()->where('component_category_id', $categoryId)
             ->where('quantity', '>', 0)
@@ -931,14 +931,19 @@ class TelegramService
         }
 
         $buttons = $components->map(fn($comp) => [['text' => $comp->name]])->toArray();
-        $buttons[] = [['text' => 'Назад'], ['text' =>  'Отменить']];
+
+        $buttons[] = $isFirst
+            ? [['text' => 'Отменить']]
+            : [['text' => 'Назад'], ['text' => 'Отменить']];
+
+
 
         $keyboard = new Keyboard(['keyboard' => $buttons, 'resize_keyboard' => true, 'one_time_keyboard' => true]);
         $this->updateUserStep($chatId, 'select_component');
 
         $this->telegram->sendMessage([
             'chat_id' => $chatId,
-            'text' => "Выберите компонент для категории: " . ComponentCategory::find($categoryId)->name,
+            'text' => "Выберите компонент для категории: " . ComponentCategory::query()->find($categoryId)->name,
             'reply_markup' => $keyboard,
         ]);
     }
