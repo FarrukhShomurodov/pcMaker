@@ -1060,24 +1060,11 @@ class TelegramService
                 $existingComponentType = $existingComponent->component_type_id;
                 $selectedComponentType = $selectedComponent->component_type_id;
 
-                $this->telegram->sendMessage(
-                    [
-                        'chat_id' => $chatId,
-                        'text' => '$selectedComponentcate'.$existingComponent->component_category_id.'$selectedComponentcate'.$selectedComponent->component_category_id
-                    ]
-                );
-
-                $this->telegram->sendMessage(
-                    [
-                        'chat_id' => $chatId,
-                        'text' => '$existingComponentType'.$existingComponentType.'$selectedComponentType'.$selectedComponent->component_type_id
-                    ]
-                );
 
                 if (!TypeCompatibility::areCompatible($existingComponentType, $selectedComponentType)) {
                     $this->telegram->sendMessage([
                         'chat_id' => $chatId,
-                        'text' => 'Типы комплектующих несовместимы! Например, плата не совместима с процессором.'
+                        'text' => 'Типы комплектующих несовместимы! Выберите другой.'
                     ]);
                     return false;
                 }
