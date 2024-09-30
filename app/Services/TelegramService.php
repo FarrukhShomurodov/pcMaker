@@ -1129,10 +1129,6 @@ class TelegramService
         }
 
         foreach ($assemblies as $assembly) {
-            $text = "🔧 *Сборка завершена!* 🔧\n\n";
-            $text .= "💰 *Итоговая стоимость:* {$assembly->total_price} сум\n\n";
-            $text .= "📦 *Детали сборки:* \n\n";
-
             foreach ($assembly->components as $assemblyComponent) {
                 $component = $assemblyComponent->component;
                 $category = $component->category->name;
@@ -1140,6 +1136,8 @@ class TelegramService
                 $price = $component->price;
                 $name = $component->name;
 
+                $text = "💰 *Итоговая стоимость:* {$assembly->total_price} сум\n\n";
+                $text .= "📦 *Детали сборки:* \n\n";
                 $text .= "📂 *Категория*: {$category}\n";
                 $text .= "🏷️ *Название*: {$name}\n";
                 $text .= "🏢 *Бренд*: {$brand}\n";
