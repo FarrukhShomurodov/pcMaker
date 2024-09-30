@@ -107,6 +107,8 @@ class TelegramService
             case 'select_component':
                 if ($text == 'Отменить') {
                     $this->cancelAssembly($chatId);
+                } else if ($text === 'Назад') {
+                    $this->getPrevCategory($chatId);
                 } else {
                     $this->selectComponent($chatId, $text);
                 }
@@ -1025,6 +1027,34 @@ class TelegramService
         return ComponentCategory::whereNotIn('id', $selectedCategoryIds)->first();
     }
 
+    private function getPrevCategory($chatId)
+    {
+        $user = BotUser::query()->where('chat_id', $chatId)->first();
+        if (!$user) {
+            return null;
+        }
+
+        $assembly = Assembly::query()->where('bot_user_id', $user->id)->latest()->first();
+
+        if (!$assembly) {
+            return null;
+        }
+
+        $selectedCategoryIds = AssemblyComponent::query()->where('assembly_id', $assembly->id)
+            ->join('components', 'assembly_components.component_id', '=', 'components.id')
+            ->pluck('components.component_category_id')
+            ->toArray();
+
+        if (empty($selectedCategoryIds)) {
+            return null;
+        }
+
+        $assembly->components()->latest()->first()->delete();
+
+        $lastSelectedCategoryId = end($selectedCategoryIds);
+
+        return ComponentCategory::query()->find($lastSelectedCategoryId);
+    }
 
     private function completeAssembly($chatId)
     {
