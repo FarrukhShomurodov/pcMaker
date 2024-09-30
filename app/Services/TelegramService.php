@@ -917,7 +917,7 @@ class TelegramService
 
     private function selectCategory($chatId, $categoryId)
     {
-        $components = Component::where('component_category_id', $categoryId)
+        $components = Component::query()->where('component_category_id', $categoryId)
             ->where('quantity', '>', 0)
             ->get();
 
@@ -931,6 +931,8 @@ class TelegramService
         }
 
         $buttons = $components->map(fn($comp) => [['text' => $comp->name]])->toArray();
+        $buttons[] = [['Назад'], ['Отменить']];
+
         $keyboard = new Keyboard(['keyboard' => $buttons, 'resize_keyboard' => true, 'one_time_keyboard' => true]);
         $this->updateUserStep($chatId, 'select_component');
 
@@ -977,26 +979,24 @@ class TelegramService
 
         $nextCategory = $this->getNextCategory($chatId);
         if ($nextCategory) {
-            // Переходим к выбору следующей категории
             $this->selectCategory($chatId, $nextCategory->id);
         } else {
-            // Все категории выбраны, сборка завершена
             $this->completeAssembly($chatId);
         }
     }
 
     private function getNextCategory($chatId)
     {
-        $user = BotUser::where('chat_id', $chatId)->first();
+        $user = BotUser::query()->where('chat_id', $chatId)->first();
         if (!$user) {
             return null;
         }
-        $assembly = Assembly::where('bot_user_id', $user->id)->latest()->first();
+        $assembly = Assembly::query()->where('bot_user_id', $user->id)->latest()->first();
         if (!$assembly) {
-            return ComponentCategory::first();
+            return ComponentCategory::query()->first();
         }
 
-        $selectedCategoryIds = AssemblyComponent::where('assembly_id', $assembly->id)
+        $selectedCategoryIds = AssemblyComponent::query()->where('assembly_id', $assembly->id)
             ->join('components', 'assembly_components.component_id', '=', 'components.id')
             ->pluck('components.component_category_id');
 
@@ -1006,12 +1006,12 @@ class TelegramService
 
     private function completeAssembly($chatId)
     {
-        $user = BotUser::where('chat_id', $chatId)->first();
+        $user = BotUser::query()->where('chat_id', $chatId)->first();
         if (!$user) {
             return;
         }
 
-        $assembly = Assembly::where('bot_user_id', $user->id)->latest()->first();
+        $assembly = Assembly::query()->where('bot_user_id', $user->id)->latest()->first();
         if (!$assembly) {
             $this->telegram->sendMessage([
                 'chat_id' => $chatId,
@@ -1035,7 +1035,6 @@ class TelegramService
 
     private function checkCompatibility($chatId, $selectedComponent)
     {
-        // Получаем пользователя и его последнюю сборку
         $user = BotUser::query()->where('chat_id', $chatId)->first();
         if (!$user) {
             $this->telegram->sendMessage([
@@ -1045,14 +1044,11 @@ class TelegramService
             return false;
         }
 
-        // Получаем последнюю сборку пользователя
-        $assembly = Assembly::where('bot_user_id', $user->id)->latest()->with('components.component')->first();
+        $assembly = Assembly::query()->where('bot_user_id', $user->id)->latest()->with('components.component')->first();
         if (!$assembly || $assembly->components->isEmpty()) {
-            // Если сборка отсутствует или пуста, можно добавить любой компонент
             return true;
         }
 
-        // Проверяем совместимость по категориям и типам
         foreach ($assembly->components as $assemblyComponent) {
             $existingComponent = $assemblyComponent->component;
 
