@@ -1150,7 +1150,6 @@ class TelegramService
                 $text .= "💵 *Цена*: {$price} сум\n\n";
             }
 
-            // Отправляем собранную информацию пользователю
             $this->telegram->sendMessage([
                 'chat_id' => $chatId,
                 'text' => $text,
