@@ -1049,6 +1049,12 @@ class TelegramService
                     $selectedComponent->component_category_id
                 );
 
+                $this->telegram->sendMessage([
+                    'chat_id' => $chatId,
+                    'text' => 'component_category_id:' . $existingComponent->component_category_id . 'compatible_category_id:' . $selectedComponent->component_category_id
+                ]);
+
+
                 if ($isCategoryCompatible) {
                     $this->telegram->sendMessage([
                         'chat_id' => $chatId,
@@ -1063,16 +1069,10 @@ class TelegramService
                     if (!$isCompatibleDirect) {
                         $this->telegram->sendMessage([
                             'chat_id' => $chatId,
-                            'text' => 'Типы компонентов несовместимы!'
+                            'text' => 'Типы комлектуюших несовместимы! Выберите дргой комлектуюший.'
                         ]);
                         return false;
                     }
-                } else {
-                    $this->telegram->sendMessage([
-                        'chat_id' => $chatId,
-                        'text' => 'Категории компонентов несовместимы!'
-                    ]);
-                    return false;
                 }
             }
         }
