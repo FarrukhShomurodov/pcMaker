@@ -1056,31 +1056,34 @@ class TelegramService
         foreach ($assembly->components as $assemblyComponent) {
             $existingComponent = $assemblyComponent->component;
 
-            // Проверка совместимости категорий
             if (CategoryCompatibility::areCompatible($existingComponent->component_category_id, $selectedComponent->component_category_id)) {
-                // Категории совместимы, переходим к проверке типов
                 $existingComponentType = $existingComponent->component_type_id;
                 $selectedComponentType = $selectedComponent->component_type_id;
 
-                // Проверяем совместимость типов
-                if (!TypeCompatibility::areCompatible($selectedComponentType, $existingComponentType)) {
+                $this->telegram->sendMessage(
+                    [
+                        'chat_id' => $chatId,
+                        'text' => '$selectedComponentcate'.$existingComponent->component_category_id.'$selectedComponentcate'.$selectedComponent->component_category_id
+                    ]
+                );
+
+                $this->telegram->sendMessage(
+                    [
+                        'chat_id' => $chatId,
+                        'text' => '$existingComponentType'.$existingComponentType.'$selectedComponentType'.$selectedComponent->component_type_id
+                    ]
+                );
+
+                if (!TypeCompatibility::areCompatible($existingComponentType, $selectedComponentType)) {
                     $this->telegram->sendMessage([
                         'chat_id' => $chatId,
                         'text' => 'Типы комплектующих несовместимы! Например, плата не совместима с процессором.'
                     ]);
                     return false;
                 }
-            } else {
-                // Если категория несовместима, продолжаем проверять с другими компонентами сборки
-                $this->telegram->sendMessage([
-                    'chat_id' => $chatId,
-                    'text' => 'Категории несовместимы! Например, плата не совместима с кулером. Проверьте вашу сборку.'
-                ]);
-                return false;
             }
         }
 
-        // Если все компоненты совместимы
         return true;
     }
 }
