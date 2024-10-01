@@ -1097,6 +1097,7 @@ class TelegramService
         $assembly->update(['total_price' => $totalPrice]);
 
         $text = "🔧 *Сборка завершена!* 🔧\n\n";
+        $text = "💻 *Сборка №* {$assembly->id} \n\n";
         $text .= "💰 *Итоговая стоимость:* {$totalPrice} сум\n\n";
         $text .= "📦 *Детали сборки:* \n\n";
 
