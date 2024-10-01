@@ -45,7 +45,7 @@ class TelegramService
 
         if (str_starts_with($data, 'delete_assembly_')) {
             $assemblyId = str_replace('delete_assembly_', '', $data);
-            $this->deleteAssembly($chatId, $assemblyId);
+            $this->deleteAssembly($chatId, $assemblyId, $callbackQuery);
         }
 
         if (str_starts_with($data, 'component_category_')) {
@@ -1184,13 +1184,21 @@ class TelegramService
         $this->showMainMenu($chatId);
     }
 
-    private function deleteAssembly($chatId, $assemblyId)
+    private function deleteAssembly($chatId, $assemblyId, $callbackQuery)
     {
         Assembly::query()->find($assemblyId)->delete();
 
-        $this->telegram->sendMessage([
+        $messageId = $callbackQuery->getMessage()->getMessageId();
+
+        $this->telegram->deleteMessage([
             'chat_id' => $chatId,
-            'text' => 'Сборка Удалена.'
+            'message_id' => $messageId,
+        ]);
+
+        $this->telegram->answerCallbackQuery([
+            'callback_query_id' => $callbackQuery->getId(),
+            'text' => 'Сборка успешно удалена.',
+            'show_alert' => false,
         ]);
 
         $this->updateUserStep($chatId, 'show_main_menu');
