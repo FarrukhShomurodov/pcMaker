@@ -1147,7 +1147,6 @@ class TelegramService
             $text .= "💰 *Итоговая стоимость*: {$assembly->total_price} сум\n\n";
             $text .= "📦 *Детали сборки:* \n\n";
 
-            // Формируем описание для каждого компонента сборки
             foreach ($assembly->components as $assemblyComponent) {
                 $component = $assemblyComponent->component;
                 $category = $component->category->name;
@@ -1161,10 +1160,16 @@ class TelegramService
                 $text .= "💵 *Цена*: {$price} сум\n\n";
             }
 
+            $keyboard = OrderItem::query()->where('assembly_id', $assembly->id)->exists() ? Keyboard::make(['inline_keyboard' => []]) : Keyboard::make(['inline_keyboard' => [
+                [
+                    ['text' => 'Оформить', 'callback_data' => 'confirm_assembly_' . $assembly->id],
+                ]
+            ]]);
 
             $this->telegram->sendMessage([
                 'chat_id' => $chatId,
                 'text' => $text,
+                'reply_markup' => $keyboard,
                 'parse_mode' => 'Markdown',
             ]);
         }
