@@ -1228,7 +1228,7 @@ class TelegramService
             return;
         }
 
-        Order::query()->create([
+        $order = Order::query()->create([
             'bot_user_id' => $user->id,
             'total_price' => $assembly->total_price,
             'status' => 'waiting',
