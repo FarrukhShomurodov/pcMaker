@@ -43,6 +43,11 @@ class TelegramService
             $this->assemblyConfirmation($chatId, $assemblyId);
         }
 
+        if (str_starts_with($data, 'delete_assembly_')) {
+            $assemblyId = str_replace('delete_assembly_', '', $data);
+            $this->deleteAssembly($chatId, $assemblyId);
+        }
+
         if (str_starts_with($data, 'component_category_')) {
             $subCategoryId = str_replace('component_category_', '', $data);
             $this->showComponentsByCategory($chatId, $subCategoryId);
@@ -1163,6 +1168,7 @@ class TelegramService
             $keyboard = OrderItem::query()->where('assembly_id', $assembly->id)->exists() ? Keyboard::make(['inline_keyboard' => []]) : Keyboard::make(['inline_keyboard' => [
                 [
                     ['text' => 'Оформить', 'callback_data' => 'confirm_assembly_' . $assembly->id],
+                    ['text' => 'Удалить', 'callback_data' => 'delete_assembly_' . $assembly->id],
                 ]
             ]]);
 
@@ -1175,6 +1181,19 @@ class TelegramService
         }
 
         $this->updateUserStep($chatId, 'assembly_viewed');
+        $this->showMainMenu($chatId);
+    }
+
+    private function deleteAssembly($chatId, $assemblyId)
+    {
+        Assembly::query()->find($assemblyId)->delete();
+
+        $this->telegram->sendMessage([
+            'chat_id' => $chatId,
+            'text' => 'Сборка Удалена.'
+        ]);
+
+        $this->updateUserStep($chatId, 'show_main_menu');
         $this->showMainMenu($chatId);
     }
 
