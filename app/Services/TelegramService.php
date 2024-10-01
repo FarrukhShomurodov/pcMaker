@@ -1200,9 +1200,6 @@ class TelegramService
             'text' => 'Сборка успешно удалена.',
             'show_alert' => false,
         ]);
-
-        $this->updateUserStep($chatId, 'show_main_menu');
-        $this->showMainMenu($chatId);
     }
 
     private function checkCompatibility($chatId, $selectedComponent)
