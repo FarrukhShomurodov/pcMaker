@@ -11,6 +11,8 @@ use App\Models\BotUser;
 use App\Models\CategoryCompatibility;
 use App\Models\Component;
 use App\Models\ComponentCategory;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductSubCategory;
@@ -34,6 +36,11 @@ class TelegramService
         if (str_starts_with($data, 'sub_category_')) {
             $subCategoryId = str_replace('sub_category_', '', $data);
             $this->showProductsBySubCategory($chatId, $subCategoryId);
+        }
+
+        if (str_starts_with($data, 'confirm_assembly_')) {
+            $assemblyId = str_replace('confirm_assembly_', '', $data);
+            $this->assemblyConfirmation($chatId, $assemblyId);
         }
 
         if (str_starts_with($data, 'component_category_')) {
@@ -1101,10 +1108,17 @@ class TelegramService
             $text .= "💵 *Цена*: {$price} сум\n\n";
         }
 
+        $keyboard = Keyboard::make(['inline_keyboard' => [
+            [
+                ['text' => 'Оформить', 'callback_data' => 'confirm_assembly_' . $assembly->id],
+            ]
+        ]]);
+
         $this->telegram->sendMessage([
             'chat_id' => $chatId,
             'text' => $text,
             'parse_mode' => 'Markdown',
+            'reply_markup' => $keyboard,
         ]);
 
         $this->updateUserStep($chatId, 'assembly_completed');
@@ -1113,13 +1127,11 @@ class TelegramService
 
     private function myAssembly($chatId)
     {
-        // Получаем пользователя по chat_id
         $user = BotUser::query()->where('chat_id', $chatId)->first();
         if (!$user) {
             return;
         }
 
-        // Получаем все сборки пользователя
         $assemblies = Assembly::query()->where('bot_user_id', $user->id)->get();
 
         if ($assemblies->isEmpty()) {
@@ -1130,7 +1142,6 @@ class TelegramService
             return;
         }
 
-        // Проходимся по каждой сборке и формируем сообщение
         foreach ($assemblies as $assembly) {
             $text = "💻 *Сборка №{$assembly->id}*\n";
             $text .= "💰 *Итоговая стоимость*: {$assembly->total_price} сум\n\n";
@@ -1150,6 +1161,7 @@ class TelegramService
                 $text .= "💵 *Цена*: {$price} сум\n\n";
             }
 
+
             $this->telegram->sendMessage([
                 'chat_id' => $chatId,
                 'text' => $text,
@@ -1157,7 +1169,6 @@ class TelegramService
             ]);
         }
 
-        // Обновляем шаг пользователя
         $this->updateUserStep($chatId, 'assembly_viewed');
         $this->showMainMenu($chatId);
     }
@@ -1197,5 +1208,43 @@ class TelegramService
         }
 
         return true;
+    }
+
+    private function assemblyConfirmation($chatId, $assemblyId)
+    {
+        $user = BotUser::query()->where('chat_id', $chatId)->first();
+
+        if (!$user) {
+            return;
+        }
+
+        $assembly = Assembly::query()->find($assemblyId);
+
+        if (!$assembly) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => "Ошибка: Сборка не найдена.",
+            ]);
+            return;
+        }
+
+        Order::query()->create([
+            'bot_user_id' => $user->id,
+            'total_price' => $assembly->total_price,
+            'status' => 'waiting',
+            'type' => 'assembly',
+        ]);
+
+        OrderItem::query()->create([
+            'order_id' => $order->id,
+            'assembly_id' => $assembly->id,
+            'quantity' => 1,
+            'price' => $assembly->total_price,
+        ]);
+
+        $this->telegram->sendMessage([
+            'chat_id' => $chatId,
+            'text' => "Благодарим за выбор нашей компании и покупку у нас! \nЕсли вам требуется помощь в быстрой сборке, свяжитесь с нашими администраторами:\n\n📞 Тел: 999340799\n📞 Тел: 931311100\n\nСвязь через Telegram:\n🔹 @meaning_03 (УЗ-РУ)\n🔹 @muhtar_pc (РУ)\n\nМы всегда готовы помочь вам! ✅"
+        ]);
     }
 }
