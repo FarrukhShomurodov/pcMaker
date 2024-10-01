@@ -1117,6 +1117,7 @@ class TelegramService
         $keyboard = Keyboard::make(['inline_keyboard' => [
             [
                 ['text' => 'Оформить', 'callback_data' => 'confirm_assembly_' . $assembly->id],
+                ['text' => 'Удалить', 'callback_data' => 'delete_assembly_' . $assembly->id],
             ]
         ]]);
 
