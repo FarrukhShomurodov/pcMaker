@@ -27,7 +27,7 @@
                                 @foreach($orders as $order)
                                     <tr>
                                         <td>{{ $order->id }}</td>
-                                        <td><a href="https://t.me/{{$order->user->uname}}">{{ $order->user->uname }}</a>
+                                        <td><a href="https://t.me/{{$order->user->uname}}" target="_blank">{{ $order->user->uname }}</a>
                                         </td>
                                         <td>{{ $order->total_price}}</td>
                                         <td>{{ $order->status }}</td>
