@@ -16,7 +16,7 @@
                                 <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>ID пользователя бота</th>
+                                    <th>User name</th>
                                     <th>Сумма</th>
                                     <th>Тип</th>
                                     <th>Тип Оплаты</th>
@@ -27,7 +27,7 @@
                                 @foreach($orders as $order)
                                     <tr>
                                         <td>{{ $order->id }}</td>
-                                        <td>{{ $order->bot_user_id }}</td>
+                                        <td>@{ $order->user->uname }}</td>
                                         <td>{{ $order->total_price}}</td>
                                         <td>{{ $order->status }}</td>
                                         <td>{{ $order->type }}</td>
