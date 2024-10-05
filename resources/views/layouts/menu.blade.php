@@ -18,6 +18,10 @@
                             'product.sub-category.update'
                         ];
 
+                         $orderRouteNames = [
+                            'orders.index',
+                        ];
+
                         $componentRouteNames = [
                             'component.items.index',
                             'component.edit',
@@ -43,13 +47,16 @@
                     <li @if(in_array($currentRouteName, $componentRouteNames)) class="active" @endif>
                         <a data-toggle="tab" href="#components"><i class="fa-solid fa-cogs"></i> Компоненты</a>
                     </li>
-                    <li><a data-toggle="tab" href="#client_assemblies"><i class="fa-solid fa-users"></i> Сборки клиента</a>
-                    </li>
                     <li @if($currentRouteName == 'admin-assembly') class="active" @endif>
                         <a data-toggle="tab" href="#admin_assemblies"><i class="fa-solid fa-screwdriver-wrench"></i>
                             Сборки Админа</a>
                     </li>
-                    <li><a data-toggle="tab" href="#orders"><i class="fa-solid fa-shopping-cart"></i> Заказы</a></li>
+                    <li @if(in_array($currentRouteName, $orderRouteNames)) class="active" @endif ><a data-toggle="tab"
+                                                                                                     href="#orders"><i
+                                class="fa-solid fa-shopping-cart"></i> Заказы</a></li>
+                    <li @if($currentRouteName == 'bot-users') class="active" @endif>
+                        <a href="{{ route('bot-users') }}"><i class="fa-solid fa-box"></i> Пользователи бота</a>
+                    </li>
                 </ul>
                 <div class="tab-content custom-menu-content">
                     <div id="products"
@@ -74,15 +81,8 @@
                             </li>
                             <li><a href="{{ route('component.compatibility.index') }}">Совместимости</a>
                             </li>
-                            <li><a href="{{ route('component.category-compatibility.index') }}">Совместимость категории</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div id="client_assemblies" class="tab-pane notika-tab-menu-bg animated fade">
-                        <ul class="notika-main-menu-dropdown">
-                            <li><a href="#">Собраные</a>
-                            </li>
-                            <li><a href="#">Новые</a>
+                            <li><a href="{{ route('component.category-compatibility.index') }}">Совместимость
+                                    категории</a>
                             </li>
                         </ul>
                     </div>
@@ -94,9 +94,10 @@
                             </li>
                         </ul>
                     </div>
-                    <div id="orders" class="tab-pane notika-tab-menu-bg animated fade">
+                    <div id="orders"
+                         class="tab-pane notika-tab-menu-bg animated fade @if(in_array($currentRouteName, $orderRouteNames)) active in @endif ">
                         <ul class="notika-main-menu-dropdown">
-                            <li><a href="#">Все</a>
+                            <li><a href="{{route('orders.index')}}">Все</a>
                             </li>
                             <li><a href="#">Продукты</a>
                             </li>

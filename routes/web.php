@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminAssemblyController;
+use App\Http\Controllers\Admin\BotUserController;
 use App\Http\Controllers\Admin\CategoryCompatibilityController;
 use App\Http\Controllers\Admin\ComponentCategoryController;
 use App\Http\Controllers\Admin\ComponentCompatibilityController;
 use App\Http\Controllers\Admin\ComponentController;
 use App\Http\Controllers\Admin\ComponentTypeController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductCategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductSubCategoryController;
@@ -33,6 +35,10 @@ Route::prefix('component')->name('component.')->group(function () {
 });
 
 Route::resource('admin-assembly', AdminAssemblyController::class)->parameter('admin-assembly', 'adminAssembly');
+
+Route::resource('orders', OrderController::class);
+
+Route::get('bot-users', [BotUserController::class, 'index'])->name('bot-users');
 
 Route::prefix('telegram')->group(function () {
     Route::get('/webhook', function () {
