@@ -18,6 +18,7 @@
                                     <th>ID</th>
                                     <th>User name</th>
                                     <th>Сумма</th>
+                                    <th>Статус</th>
                                     <th>Тип</th>
                                     <th>Тип Оплаты</th>
                                     <th>Тип доставки</th>
@@ -27,7 +28,8 @@
                                 @foreach($orders as $order)
                                     <tr>
                                         <td>{{ $order->id }}</td>
-                                        <td><a href="https://t.me/{{$order->user->uname}}" target="_blank">{{ $order->user->uname }}</a>
+                                        <td><a href="https://t.me/{{$order->user->uname}}"
+                                               target="_blank">{{ $order->user->uname }}</a>
                                         </td>
                                         <td>{{ $order->total_price}}</td>
                                         <td>{{ $order->status }}</td>
@@ -46,16 +48,16 @@
     </div>
 @endsection
 @section('scripts')
-<script>
-    $('.popup-img').on('click', function () {
-        let src = $(this).attr('src');
-        let popup = `
+    <script>
+        $('.popup-img').on('click', function () {
+            let src = $(this).attr('src');
+            let popup = `
                 <div class="popup-overlay" onclick="$(this).remove()">
                     <img src="${src}" class="popup-img-expanded">
                 </div>
             `;
-        $('body').append(popup);
-    });
+            $('body').append(popup);
+        });
 
-</script>
+    </script>
 @endsection
