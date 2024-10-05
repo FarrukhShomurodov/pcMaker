@@ -16,7 +16,8 @@ class BotUser extends Model
         'full_name',
         'step',
         'lang',
-        'photo_url'
+        'uname',
+        'sms_code',
     ];
 
     public function assemblies(): HasMany

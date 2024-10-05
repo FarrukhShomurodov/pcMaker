@@ -21,6 +21,7 @@
                                     <th>full_name</th>
                                     <th>step</th>
                                     <th>lang</th>
+                                    <th>uname</th>
                                     <th>created at</th>
                                 </tr>
                                 </thead>
@@ -35,10 +36,11 @@
                                         <td>{{ $userCount++ }}</td>
                                         <td>{{ $user->chat_id }}</td>
                                         <td>{{ $user->phone_number }}</td>
-                                        <td>{{ $user->full_name}}</td>
-                                        <td>{{ $user->step}}</td>
-                                        <td>{{ $user->lang}}</td>
-                                        <td>{{ $user->created_at}}</td>
+                                        <td>{{ $user->full_name }}</td>
+                                        <td>{{ $user->step }}</td>
+                                        <td>{{ $user->lang }}</td>
+                                        <td>{{ $user->uname }}</td>
+                                        <td>{{ $user->created_at }}</td>
                                     </tr>
                                 @endforeach
                                 </tbody>
