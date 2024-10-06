@@ -14,8 +14,8 @@
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
+                                <th>Номер</th>
                                 <tr>
-                                    <th>Номер</th>
                                     <th>Название</th>
                                     <th>Категория</th>
                                 </tr>
@@ -23,13 +23,13 @@
                                 <tbody>
                                 @foreach($order->items as $items)
                                     @if($items->assembly_id)
-                                        <tr>
-                                            <td>{{ $items->assembly_id }}</td>
-                                            @foreach($items->assembly->components as $components)
+                                        <td>{{ $items->assembly_id }}</td>
+                                        @foreach($items->assembly->components as $components)
+                                            <tr>
                                                 <td>{{ $components->component->name }}</td>
                                                 <td>{{ $components->component->category->name }}</td>
-                                            @endforeach
-                                        </tr>
+                                            </tr>
+                                        @endforeach
                                     @endif
                                 @endforeach
                                 </tbody>
