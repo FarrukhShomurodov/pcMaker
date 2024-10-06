@@ -14,25 +14,27 @@
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Номер продукт</th>
-                                    <th>Номер сборки</th>
-                                    <th>Номер сборка админа</th>
-                                    <th>Количество</th>
-                                    <th>Цена</th>
-                                </tr>
+                                @foreach($order->items as $items)
+                                    @if($items->assembly_id )
+                                        @foreach($items->assembly as $assembly)
+                                            <th>Название</th>
+                                            <th>Категория</th>
+                                        @endforeach
+                                    @endif
+                                @endforeach
                                 </thead>
                                 <tbody>
                                 @foreach($order->items as $items)
-                                    <tr>
-                                        <td>{{ $items->id }}</td>
-                                        <td>{{ $items->product_id }}</td>
-                                        <td>{{ $items->assembly_id }}</td>
-                                        <td>{{ $items->admin_assembly_id }}</td>
-                                        <td>{{ $items->quantity }}</td>
-                                        <td>{{ $items->price }}</td>
-                                    </tr>
+                                    @if($items->assembly_id )
+                                        @foreach($items->assembly as $assembly)
+                                            @foreach($assembly as $components)
+                                                <tr>
+                                                    <td>{{ $components->component->name }}</td>
+                                                    <td>{{ $components->component->category->name }}</td>
+                                                </tr>
+                                            @endforeach
+                                        @endforeach
+                                    @endif
                                 @endforeach
                                 </tbody>
                             </table>
