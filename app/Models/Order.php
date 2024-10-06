@@ -11,7 +11,7 @@ class Order extends Model
 {
     use HasFactory;
 
-    //cancelled, paid , waiting, done
+    // 'cancelled', 'paid', 'waiting', 'done'
     // 'product', 'assembly' или 'admin_assembly'
     protected $fillable = [
         'bot_user_id',
