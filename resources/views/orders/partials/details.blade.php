@@ -2,7 +2,7 @@
     <h3>Детали сборки:</h3>
     <ul>
         @foreach($orderDetails as $item)
-            <li><b>Номер сборки:</b> {{ $component['number'] }}</li>
+            <li><b>Номер сборки:</b> {{ $item['number'] }}</li>
             @foreach($item['component'] as $component)
                 <li><b>{{ $component['category'] }}:</b> {{ $component['name'] }} (Цена: {{ $component['price'] }})</li>
             @endforeach
