@@ -36,7 +36,11 @@ Route::prefix('component')->name('component.')->group(function () {
 
 Route::resource('admin-assembly', AdminAssemblyController::class)->parameter('admin-assembly', 'adminAssembly');
 
+// Orders
 Route::resource('orders', OrderController::class);
+Route::get('orders/assembly', [OrderController::class, 'showAssemblyOrder'])->name('orders.assembly');
+Route::get('orders/admin-assembly', [OrderController::class, 'showAdminAssemblyOrder'])->name('orders.admin.assembly');
+Route::get('orders/products', [OrderController::class, 'showProductsOrder'])->name('orders.product');
 
 Route::get('bot-users', [BotUserController::class, 'index'])->name('bot-users');
 
