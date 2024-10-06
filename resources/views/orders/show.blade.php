@@ -14,14 +14,10 @@
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
-                                @foreach($order->items as $items)
-                                    @if($items->assembly_id )
-                                        @foreach($items->assembly as $assembly)
-                                            <th>Название</th>
-                                            <th>Категория</th>
-                                        @endforeach
-                                    @endif
-                                @endforeach
+                                <tr>
+                                    <th>Название</th>
+                                    <th>Категория</th>
+                                </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($order->items as $items)
