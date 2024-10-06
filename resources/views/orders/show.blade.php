@@ -28,6 +28,7 @@
                                     @if($items->assembly_id )
                                         @foreach($items->assembly as $assembly)
                                             @foreach($assembly->components as $components)
+                                                @dd($components)
                                                 <tr>
                                                     <td>{{ $components->component->name }}</td>
                                                     <td>{{ $components->component->category->name }}</td>
