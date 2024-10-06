@@ -36,7 +36,7 @@
                                         <td>{{ $order->status }}</td>
                                         <td>{{ $order->type }}</td>
                                         <td>
-                                            <a href="{{ route('orders.show'.$order->id) }}">
+                                            <a href="{{ route('orders.show',$order->id) }}">
                                                 <button class="btn btn-success notika-btn-success btn-sm waves-effect">
                                                     Смотреть
                                                 </button>
