@@ -15,6 +15,7 @@
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
+                                    <th>Номер</th>
                                     <th>Название</th>
                                     <th>Категория</th>
                                 </tr>
@@ -22,12 +23,13 @@
                                 <tbody>
                                 @foreach($order->items as $items)
                                     @if($items->assembly_id)
-                                        @foreach($items->assembly->components as $components)
-                                            <tr>
+                                        <tr>
+                                            <td>{{ $components->assembly_id }}</td>
+                                            @foreach($items->assembly->components as $components)
                                                 <td>{{ $components->component->name }}</td>
                                                 <td>{{ $components->component->category->name }}</td>
-                                            </tr>
-                                        @endforeach
+                                            @endforeach
+                                        </tr>
                                     @endif
                                 @endforeach
                                 </tbody>
