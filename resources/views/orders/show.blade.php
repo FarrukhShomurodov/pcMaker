@@ -25,15 +25,12 @@
                                 </thead>
                                 <tbody>
                                 @foreach($order->items as $items)
-                                    @if($items->assembly_id )
-                                        @foreach($items->assembly as $assembly)
-                                            @foreach($assembly->components as $components)
-                                                @dd($components)
-                                                <tr>
-                                                    <td>{{ $components->component->name }}</td>
-                                                    <td>{{ $components->component->category->name }}</td>
-                                                </tr>
-                                            @endforeach
+                                    @if($items->assembly_id)
+                                        @foreach($items->assembly->components as $components)
+                                            <tr>
+                                                <td>{{ $components->component->name }}</td>
+                                                <td>{{ $components->component->category->name }}</td>
+                                            </tr>
                                         @endforeach
                                     @endif
                                 @endforeach
