@@ -27,7 +27,7 @@
                                 @foreach($order->items as $items)
                                     @if($items->assembly_id )
                                         @foreach($items->assembly as $assembly)
-                                            @foreach($assembly as $components)
+                                            @foreach($assembly->components as $components)
                                                 <tr>
                                                     <td>{{ $components->component->name }}</td>
                                                     <td>{{ $components->component->category->name }}</td>
