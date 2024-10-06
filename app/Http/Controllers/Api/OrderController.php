@@ -14,6 +14,7 @@ class OrderController extends Controller
         if ($order->type === 'assembly') {
             $orderDetails = $order->items->map(function ($item) {
                 return [
+                    'number' => $item->assembly->id,
                     'component' => $item->assembly ? $item->assembly->components->map(function ($component) {
                         return [
                             'name' => $component->component->name,
