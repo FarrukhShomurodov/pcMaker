@@ -11,7 +11,6 @@ class OrderController extends Controller
     {
         $orderDetails = [];
 
-        // Проверяем тип заказа и подгружаем соответствующие данные
         if ($order->type === 'assembly') {
             $orderDetails = $order->items->map(function ($item) {
                 return [
@@ -35,7 +34,6 @@ class OrderController extends Controller
                 ];
             });
         } else {
-            // Продуктовый заказ
             $orderDetails = $order->items->map(function ($item) {
                 return [
                     'product' => $item->product ? [

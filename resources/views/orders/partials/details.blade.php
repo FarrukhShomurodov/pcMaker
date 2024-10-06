@@ -3,7 +3,7 @@
     <ul>
         @foreach($orderDetails as $item)
             @foreach($item['component'] as $component)
-                <li>{{ $component['category'] }}: {{ $component['name'] }} (Цена: {{ $component['price'] }})</li>
+                <li><b>{{ $component['category'] }}:</b> {{ $component['name'] }} (Цена: {{ $component['price'] }})</li>
             @endforeach
         @endforeach
     </ul>

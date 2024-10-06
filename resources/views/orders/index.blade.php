@@ -52,7 +52,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно для деталей заказа -->
     <div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -63,7 +62,6 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- Контент будет загружен через AJAX -->
                     <div id="order-details-content"></div>
                 </div>
             </div>
