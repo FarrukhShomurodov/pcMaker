@@ -18,19 +18,19 @@ class OrderController extends Controller
     public function showProductsOrder(): View
     {
         $orders = Order::query()->where('type', 'product')->get();
-        return view('orders.product-orders.index', compact('orders'));
+        return view('orders.product-orders', compact('orders'));
     }
 
     public function showAssemblyOrder(): View
     {
         $orders = Order::query()->where('type', 'assembly')->get();
-        return view('orders.assembly-orders.index', compact('orders'));
+        return view('orders.assembly-orders', compact('orders'));
     }
 
     public function showAdminAssemblyOrder(): View
     {
         $orders = Order::query()->where('type', 'admin_assembly')->get();
-        return view('orders.admin-assembly-orders.index', compact('orders'));
+        return view('orders.admin-assembly-orders', compact('orders'));
     }
 
 }
