@@ -16,8 +16,6 @@
                                 <thead>
                                 <tr>
                                     <th>Номер</th>
-                                </tr>
-                                <tr>
                                     <th>Название</th>
                                     <th>Категория</th>
                                 </tr>
@@ -25,12 +23,9 @@
                                 <tbody>
                                 @foreach($order->items as $items)
                                     @if($items->assembly_id)
-                                        <tr>
-                                            <td>{{ $items->assembly_id }}</td>
-                                        </tr>
-
                                         @foreach($items->assembly->components as $components)
                                             <tr>
+                                                <td>{{ $items->assembly_id }}</td>
                                                 <td>{{ $components->component->name }}</td>
                                                 <td>{{ $components->component->category->name }}</td>
                                             </tr>
