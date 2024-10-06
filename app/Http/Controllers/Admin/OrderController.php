@@ -33,4 +33,9 @@ class OrderController extends Controller
         return view('orders.admin-assembly-orders', compact('orders'));
     }
 
+    public function show(Order $order): View
+    {
+        return view('orders.show', compact('order'));
+    }
+
 }

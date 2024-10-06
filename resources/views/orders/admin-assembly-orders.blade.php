@@ -8,7 +8,7 @@
                     <div class="data-table-list">
                         <div class="basic-tb-hd">
                             <div style="display: flex; align-items: center; justify-content: space-between;">
-                                <h2 style="margin: 0;">Продукты</h2>
+                                <h2 style="margin: 0;">Заказы сборки админа</h2>
                             </div>
                         </div>
                         <div class="table-responsive">
@@ -20,6 +20,7 @@
                                     <th>Сумма</th>
                                     <th>Статус</th>
                                     <th>Тип</th>
+                                    <th>Детали</th>
                                     <th>Тип Оплаты</th>
                                     <th>Тип доставки</th>
                                 </tr>
@@ -34,6 +35,13 @@
                                         <td>{{ $order->total_price}}</td>
                                         <td>{{ $order->status }}</td>
                                         <td>{{ $order->type }}</td>
+                                        <td>
+                                            <a href="{{ route('orders.show'.$order->id) }}">
+                                                <button class="btn btn-success notika-btn-success btn-sm waves-effect">
+                                                    Смотреть
+                                                </button>
+                                            </a>
+                                        </td>
                                         <td>{{ $order->payment_method_id ?? '-' }}</td>
                                         <td>{{ $order->delivery_method_id ?? '-' }}</td>
                                     </tr>
