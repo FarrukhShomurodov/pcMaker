@@ -20,9 +20,9 @@
 
                          $orderRouteNames = [
                             'orders.index',
-                            'orders.assembly',
-                            'orders.admin.assembly',
-                            'orders.product',
+                            'order.assemblies',
+                            'order.admin.assemblies',
+                            'order.products',
                         ];
 
                         $componentRouteNames = [
@@ -102,11 +102,11 @@
                         <ul class="notika-main-menu-dropdown">
                             <li><a href="{{route('orders.index')}}">Все</a>
                             </li>
-                            <li><a href="{{route('orders.product')}}" >Продукты</a>
+                            <li><a href="{{route('order.products')}}" >Продукты</a>
                             </li>
-                            <li><a href="{{route('orders.assembly')}}" >Сборки клиента</a>
+                            <li><a href="{{route('order.assemblies')}}" >Сборки клиента</a>
                             </li>
-                            <li><a href="{{route('orders.admin.assembly')}}" >Сборки админа</a>
+                            <li><a href="{{route('order.admin.assemblies')}}" >Сборки админа</a>
                             </li>
                         </ul>
                     </div>

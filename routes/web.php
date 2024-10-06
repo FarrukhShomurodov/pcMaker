@@ -38,9 +38,9 @@ Route::resource('admin-assembly', AdminAssemblyController::class)->parameter('ad
 
 // Orders
 Route::resource('orders', OrderController::class);
-Route::get('orders/assembly', [OrderController::class, 'showAssemblyOrder'])->name('orders.assembly');
-Route::get('orders/admin-assembly', [OrderController::class, 'showAdminAssemblyOrder'])->name('orders.admin.assembly');
-Route::get('orders/products', [OrderController::class, 'showProductsOrder'])->name('orders.product');
+Route::get('orders/assembly', [OrderController::class, 'showAssemblyOrder'])->name('order.assemblies');
+Route::get('orders/admin-assembly', [OrderController::class, 'showAdminAssemblyOrder'])->name('order.admin.assemblies');
+Route::get('orders/products', [OrderController::class, 'showProductsOrder'])->name('order.products');
 
 Route::get('bot-users', [BotUserController::class, 'index'])->name('bot-users');
 
