@@ -152,14 +152,13 @@ class TelegramService
                         'text' => "Пожалуйста, выберите язык.\n\nIltimos, tilni tanlang.",
                         'reply_markup' => $reply_markup
                     ]);
-                }elseif ($text = 'Полное имя'){
+                } elseif ($text == 'Полное имя'){
                     $this->telegram->sendMessage([
                         'chat_id' => $chatId,
                         'text' => "Введите полное имя."
                     ]);
                     $this->updateUserStep($chatId, 'change_full_name');
-                }
-                elseif ($text == 'Русский' || $text == "O'zbekcha") {
+                } elseif ($text == 'Русский' || $text == "O'zbekcha") {
                         $this->updateUserLang($chatId, $text == 'Русский' ? 'ru' : 'uz');
                         $this->telegram->sendMessage([
                             'chat_id' => $chatId,
