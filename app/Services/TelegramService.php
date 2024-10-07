@@ -1281,7 +1281,7 @@ class TelegramService
     // Setting
     private function setting($chatId)
     {
-        $user = BotUser::query()->where('chat_id', $chatId)->get();
+        $user = BotUser::query()->where('chat_id', $chatId)->first();
 
         $keyboard = [
             ['Язык', 'Номер телефона', 'Полное имя'],
