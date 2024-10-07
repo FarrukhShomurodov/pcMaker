@@ -774,9 +774,6 @@ class TelegramService
             }
         }
         
-        $inlineKeyboard[] = [
-            ['text' => 'Оформить', 'callback_data' => 'confirm_basket_items_' . $basket->id],
-        ];
 
         // Создание клавиатуры с кнопками
         $keyboard = Keyboard::make(['inline_keyboard' => $inlineKeyboard]);
@@ -942,6 +939,9 @@ class TelegramService
         // Добавление общей стоимости в сообщение
         $messageText .= "🛍️ *Общая стоимость:* *{$basket->total_price} сум*";
 
+        $inlineKeyboard[] = [
+            ['text' => 'Оформить', 'callback_data' => 'confirm_basket_items_' . $basket->id],
+        ];
         // Создание клавиатуры с кнопками
         $keyboard = Keyboard::make(['inline_keyboard' => $inlineKeyboard]);
 
