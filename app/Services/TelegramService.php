@@ -137,10 +137,26 @@ class TelegramService
                 if ($text == 'Назад') {
                     $this->showMainMenu($chatId);
                 } elseif ($text == 'Язык'){
+                    $keyboard = [
+                        ["🇷🇺 Русский", "🇺🇿 O'zbekcha"]
+                    ];
+
+                    $reply_markup = Keyboard::make([
+                        'keyboard' => $keyboard,
+                        'resize_keyboard' => true,
+                        'one_time_keyboard' => true
+                    ]);
+
+                    $this->telegram->sendMessage([
+                        'chat_id' => $chatId,
+                        'text' => "Пожалуйста, выберите язык.\n\nIltimos, tilni tanlang.",
+                        'reply_markup' => $reply_markup
+                    ]);
+                } elseif($text == '🇷🇺 Русский' || $text == '🇺🇿 O‘zbekcha'){
                     $this->updateUserLang($chatId, 'ru');
                     $this->telegram->sendMessage([
                         'chat_id' => $chatId,
-                        'text' => 'Язык успешно изменен.'
+                        'text' => `Язык успешно изменен на $text.`
                     ]);
                     $this->setting($chatId);
                 }
