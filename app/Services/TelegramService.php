@@ -138,10 +138,7 @@ class TelegramService
                     $this->showMainMenu($chatId);
                 } elseif ($text == 'Язык'){
                     $keyboard = [
-                        ["Русский", "O'zbekcha"]
-                    ];
-
-                    $keyboard[] = [
+                        ["Русский", "O'zbekcha"],
                         ["Назад"]
                     ];
 
