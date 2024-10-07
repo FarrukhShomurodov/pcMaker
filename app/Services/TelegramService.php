@@ -153,9 +153,20 @@ class TelegramService
                         'reply_markup' => $reply_markup
                     ]);
                 } elseif ($text == 'Полное имя'){
+                    $keyboard = [
+                        ["Назад"]
+                    ];
+
+                    $reply_markup = Keyboard::make([
+                        'keyboard' => $keyboard,
+                        'resize_keyboard' => true,
+                        'one_time_keyboard' => true
+                    ]);
+
                     $this->telegram->sendMessage([
                         'chat_id' => $chatId,
-                        'text' => "Введите полное имя."
+                        'text' => "Введите новое полное имя.",
+                        'reply_markup' => $reply_markup
                     ]);
                     $this->updateUserStep($chatId, 'change_full_name');
                 } elseif ($text == 'Русский' || $text == "O'zbekcha") {
@@ -168,7 +179,10 @@ class TelegramService
                     }
                 break;
             case 'change_full_name':
-                $this->changeUserFullName($chatId, $text);
+                if ($text !== 'Назад') {
+                    $this->changeUserFullName($chatId, $text);
+                }
+
                 $this->setting($chatId);
                 break;
             case 'show_main_menu':
