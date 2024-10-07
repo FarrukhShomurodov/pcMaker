@@ -152,7 +152,14 @@ class TelegramService
                         'text' => "Пожалуйста, выберите язык.\n\nIltimos, tilni tanlang.",
                         'reply_markup' => $reply_markup
                     ]);
-                }elseif ($text == 'Русский' || $text == "O'zbekcha") {
+                }elseif ($text = 'Полное имя'){
+                    $this->telegram->sendMessage([
+                        'chat_id' => $chatId,
+                        'text' => "Введите полное имя."
+                    ]);
+                    $this->updateUserStep($chatId, 'change_full_name');
+                }
+                elseif ($text == 'Русский' || $text == "O'zbekcha") {
                         $this->updateUserLang($chatId, $text == 'Русский' ? 'ru' : 'uz');
                         $this->telegram->sendMessage([
                             'chat_id' => $chatId,
@@ -160,6 +167,10 @@ class TelegramService
                         ]);
                         $this->setting($chatId);
                     }
+                break;
+            case 'change_full_name':
+                $this->changeUserFullName($chatId, $text);
+                $this->setting($chatId);
                 break;
             case 'show_main_menu':
             case 'show_subcategory':
@@ -1308,9 +1319,6 @@ class TelegramService
 
         $keyboard[] = [
             [
-                'text' => 'Номер телефона',
-            ],
-            [
                 'text' => 'Полное имя'
             ],
             [
@@ -1342,5 +1350,9 @@ class TelegramService
         ]);
 
         $this->updateUserStep($chatId, 'setting');
+    }
+
+    private function changeUserFullName($chatId, $fullName){
+        BotUser::query()->where('chat_id', $chatId)->update(['full_name' => $fullName]);
     }
 }
