@@ -563,7 +563,7 @@ class TelegramService
                 return null;
         }
     }
-    
+
     // Basket
     private function addProductToBasket($chatId, $productId = null, $componentId = null, $adminAssemblyId = null, $callbackQuery)
     {
@@ -957,16 +957,17 @@ class TelegramService
         if ($adminAssemblies->count() < 1) {
             $this->telegram->sendMessage([
                 'chat_id' => $chatId,
-                'text' => 'Сборов админа нету в наличии.'
+                'text' => 'Сборок админа нету в наличии.'
             ]);
             return;
         }
+
         foreach ($adminAssemblies as $adminAssembly) {
             $photos = json_decode($adminAssembly->photos, true);
 
-            $description = "*{$adminAssembly->title}* \n\n"
-                . "{$adminAssembly->description}\n\n"
-                . "💵 *Цена:* *{$adminAssembly->price} сум* \n\n";
+            $description = "*{$adminAssembly->title}*\n\n"
+            . "{$adminAssembly->description}\n\n"
+            . "💵 *Цена:* *{$adminAssembly->price} сум*\n\n";
 
             $mediaGroup = [];
             if (!empty($photos) && is_array($photos)) {
@@ -974,24 +975,25 @@ class TelegramService
                     $photoPath = Storage::url('public/' . $photo);
                     $fullPhotoUrl = env('APP_URL') . $photoPath;
 
-                    $mediaGroup[] = InputMediaPhoto::make([
+                    $mediaGroup[] = [
                         'type' => 'photo',
                         'media' => $fullPhotoUrl,
                         'caption' => $index === 0 ? $description : '',
                         'parse_mode' => 'Markdown'
-                    ]);
+                    ];
                 }
+
                 $this->telegram->sendMediaGroup([
                     'chat_id' => $chatId,
                     'media' => json_encode($mediaGroup)
                 ]);
             }
+
             $keyboard = Keyboard::make(['inline_keyboard' => [
                 [
-                    ['text' => '+', 'callback_data' => 'add_admin_assembly_to_bin' . $adminAssembly->id],
+                    ['text' => '+', 'callback_data' => 'add:admin_assembly:' . $adminAssembly->id],
                 ]
             ]]);
-
 
             $this->telegram->sendMessage([
                 'chat_id' => $chatId,
