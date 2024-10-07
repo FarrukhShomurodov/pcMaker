@@ -250,7 +250,7 @@ class TelegramService
             ['text' => '⚙️ Настройки'],
         ];
 
-        $keyboard = new Keyboard(['keyboard' => $buttons, 'resize_keyboard' => true, 'one_time_keyboard' => true]);
+        $keyboard = new Keyboard(['keyboard' => $buttons, 'resize_keyboard' => true, 'one_time_keyboard' => false]);
 
         $this->telegram->sendMessage([
             'chat_id' => $chatId,
@@ -1281,9 +1281,27 @@ class TelegramService
     // Setting
     private function setting($chatId)
     {
+        $user = BotUser::query()->where('chat_id', $chatId)->get();
+
+        $keyboard = [
+            ['Язык', 'Номер телефона', 'Полное имя'],
+            'Назад'
+        ];
+
+        $reply_markup = Keyboard::make([
+            'keyboard' => $keyboard,
+            'resize_keyboard' => true,
+        ]);
+
+        $lang = $user->lang == 'ru' ? 'Русский' : "O'zbekcha";
+
         $this->telegram->sendMessage([
             'chat_id' => $chatId,
-            'text' => 'text'
+            'text' => __('telegram.settings') . PHP_EOL .
+                'Язык' . ': ' . $lang . PHP_EOL .
+                'Полное имя' . ': ' . $user->full_name . PHP_EOL .
+                'Номер телефона' . ': ' . $user->phone_number,
+            'reply_markup' => $reply_markup
         ]);
     }
 }
