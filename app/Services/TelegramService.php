@@ -574,7 +574,15 @@ class TelegramService
     {
         $basketItems = BasketItem::where('basket_id', $basketId)->get();
         $totalPrice = $basketItems->sum(function ($item) {
-            return $item->price * $item->product_count;
+            $itemTotal = $item->price;
+            if ($item->product_count) {
+                $itemTotal *= $item->product_count;
+            } elseif ($item->component_count) {
+                $itemTotal *= $item->component_count;
+            } elseif ($item->admin_assembly_id) {
+                $itemTotal *= 1;
+            }
+            return $itemTotal;
         });
 
         $basket = Basket::find($basketId);
@@ -583,55 +591,39 @@ class TelegramService
         $this->updateBasketMessage($chatId, $basket, $callbackQuery);
     }
 
+
     private function updateBasketMessage($chatId, $basket, $callbackQuery)
     {
         $basketItems = BasketItem::where('basket_id', $basket->id)->get();
-        $productQuantities = [];
-        $componentQuantities = [];
-        $adminAssemblyQuantities = [];
-        $keyboard = ['inline_keyboard' => []];
+        $totalPrice = $basket->total_price;
+        $inlineKeyboard = [];
 
         foreach ($basketItems as $item) {
             if ($item->product_id) {
-                $productQuantities[$item->product_id] = $item->product_count;
+                $inlineKeyboard[] = [
+                    ['text' => '-', 'callback_data' => 'remove_product_from_bin:' . $item->product_id],
+                    ['text' => $item->product_count, 'callback_data' => 'current_product_count:' . $item->product_id],
+                    ['text' => '+', 'callback_data' => 'add_product_to_bin:' . $item->product_id],
+                ];
             }
+
             if ($item->component_id) {
-                $componentQuantities[$item->component_id] = $item->component_count;
+                $inlineKeyboard[] = [
+                    ['text' => '-', 'callback_data' => 'remove_component_from_bin:' . $item->component_id],
+                    ['text' => $item->component_count, 'callback_data' => 'current_component_count:' . $item->component_id],
+                    ['text' => '+', 'callback_data' => 'add_component_to_bin:' . $item->component_id],
+                ];
             }
+
             if ($item->admin_assembly_id) {
-                $adminAssemblyQuantities[$item->admin_assembly_id] = 1;
+                $inlineKeyboard[] = [
+                    ['text' => 'Удалить', 'callback_data' => 'remove_admin_assembly_from_bin:' . $item->admin_assembly_id],
+                ];
             }
         }
 
-        foreach ($productQuantities as $productId => $count) {
-            $keyboard = Keyboard::make(['inline_keyboard' => [
-                [
-                    ['text' => '-', 'callback_data' => 'remove_product_from_bin' . $productId],
-                    ['text' => $count, 'callback_data' => 'current_product_count' . $productId],
-                    ['text' => '+', 'callback_data' => 'add_product_to_bin' . $productId],
-                ]
-            ]]);
-        }
+        $keyboard = Keyboard::make(['inline_keyboard' => $inlineKeyboard]);
 
-        foreach ($componentQuantities as $componentId => $count) {
-            $keyboard = Keyboard::make(['inline_keyboard' => [
-                [
-                    ['text' => '-', 'callback_data' => 'remove_component_from_bin' . $componentId],
-                    ['text' => $count, 'callback_data' => 'current_component_count' . $componentId],
-                    ['text' => '+', 'callback_data' => 'add_component_to_bin' . $componentId],
-                ]
-            ]]);
-        }
-
-        foreach ($adminAssemblyQuantities as $adminAssemblyId => $count) {
-            $keyboard = Keyboard::make(['inline_keyboard' => [
-                [
-                    ['text' => 'Удалить', 'callback_data' => 'remove_admin_assembly_from_bin' . $adminAssemblyId],
-                ]
-            ]]);
-        }
-
-        $totalPrice = $basket->total_price;
         $this->telegram->editMessageText([
             'chat_id' => $chatId,
             'message_id' => $callbackQuery->getMessage()->getMessageId(),
@@ -682,146 +674,132 @@ class TelegramService
         // Initialize arrays
         $productQuantities = [];
         $componentQuantities = [];
+        $adminAssemblyQuantities = [];
+        $inlineKeyboard = [];
+        $messageText = "🛍️ Ваша корзина:\n\n";
+        $mediaGroup = [];
 
         foreach ($basketItems as $basketItem) {
-            $product = Product::find($basketItem->product_id);
-            $adminAssembly = AdminAssembly::find($basketItem->admin_assembly_id);
-            $component = Component::find($basketItem->component_id);
-
-            if ($product) {
-                $productQuantities[$basketItem->product_id] = $basketItem->product_count;
-
-                $photos = json_decode($product->photos, true);
-                $description = "💻 *{$product->name}* 💻\n\n"
+            if ($basketItem->product_id) {
+                $product = Product::find($basketItem->product_id);
+                if ($product) {
+                    $productQuantities[$product->id] = $basketItem->product_count;
+                    $messageText .= "💻 *{$product->name}*\n"
                     . "🔧 *Бренд:* _{$product->brand}_\n"
                     . "💵 *Цена:* *{$product->price} сум*\n"
-                    . "📦 *В наличии:* _{$product->quantity} шт._\n\n"
-                    . "⚡ _Идеальный выбор для вашего оборудования!_";
+                    . "📦 *В наличии:* _{$product->quantity} шт._\n"
+                    . "📊 *Количество:* {$basketItem->product_count}\n\n";
 
-                $mediaGroup = [];
-                if (!empty($photos) && is_array($photos)) {
-                    foreach ($photos as $index => $photo) {
-                        $photoPath = Storage::url('public/' . $photo);
-                        $fullPhotoUrl = env('APP_URL') . $photoPath;
+                    // Добавление фото в медиа-группу
+                    $photos = json_decode($product->photos, true);
+                    if (!empty($photos) && is_array($photos)) {
+                        foreach ($photos as $photo) {
+                            $photoPath = Storage::url('public/' . $photo);
+                            $fullPhotoUrl = env('APP_URL') . $photoPath;
 
-                        $mediaGroup[] = InputMediaPhoto::make([
-                            'type' => 'photo',
-                            'media' => $fullPhotoUrl, // Use the correct photo URL
-                            'caption' => $index === 0 ? $description : '',
-                            'parse_mode' => 'Markdown'
-                        ]);
+                            $mediaGroup[] = [
+                                'type' => 'photo',
+                                'media' => $fullPhotoUrl,
+                            ];
+                        }
                     }
 
-                    $this->telegram->sendMediaGroup([
-                        'chat_id' => $chatId,
-                        'media' => json_encode($mediaGroup)
-                    ]);
+                    // Добавление кнопок
+                    $inlineKeyboard[] = [
+                        ['text' => '-', 'callback_data' => 'remove_product_from_bin:' . $product->id],
+                        ['text' => $basketItem->product_count, 'callback_data' => 'current_product_count:' . $product->id],
+                        ['text' => '+', 'callback_data' => 'add_product_to_bin:' . $product->id],
+                    ];
                 }
-
-                $keyboard = Keyboard::make(['inline_keyboard' => [
-                    [
-                        ['text' => '-', 'callback_data' => 'remove_product_from_bin' . $product->id],
-                        ['text' => $productQuantities[$product->id] ?? '0', 'callback_data' => 'current_product_count' . $product->id],
-                        ['text' => '+', 'callback_data' => 'add_product_to_bin' . $product->id],
-                    ]
-                ]]);
-
-                $totalPrice = $basket->total_price;
-
-                $this->telegram->sendMessage([
-                    'chat_id' => $chatId,
-                    'text' => "🛍️ Добавить в корзину\n\nТекущая стоимость: $totalPrice сум",
-                    'reply_markup' => $keyboard,
-                ]);
             }
 
-            if ($component) {
-                $componentQuantities[$basketItem->component_id] = $basketItem->component_count;
-
-                $photos = json_decode($component->photos, true);
-                $description = "💻 *{$component->name}* 💻\n\n"
+            if ($basketItem->component_id) {
+                $component = Component::find($basketItem->component_id);
+                if ($component) {
+                    $componentQuantities[$component->id] = $basketItem->component_count;
+                    $messageText .= "🔧 *{$component->name}*\n"
                     . "🔧 *Бренд:* _{$component->brand}_\n"
                     . "💵 *Цена:* *{$component->price} сум*\n"
-                    . "📦 *В наличии:* _{$component->quantity} шт._\n\n"
-                    . "⚡ _Идеальный выбор для вашего оборудования!_";
+                    . "📦 *В наличии:* _{$component->quantity} шт._\n"
+                    . "📊 *Количество:* {$basketItem->component_count}\n\n";
 
-                $mediaGroup = [];
-                if (!empty($photos) && is_array($photos)) {
-                    foreach ($photos as $index => $photo) {
-                        $photoPath = Storage::url('public/' . $photo);
-                        $fullPhotoUrl = env('APP_URL') . $photoPath;
+                    // Добавление фото в медиа-группу
+                    $photos = json_decode($component->photos, true);
+                    if (!empty($photos) && is_array($photos)) {
+                        foreach ($photos as $photo) {
+                            $photoPath = Storage::url('public/' . $photo);
+                            $fullPhotoUrl = env('APP_URL') . $photoPath;
 
-                        $mediaGroup[] = InputMediaPhoto::make([
-                            'type' => 'photo',
-                            'media' => $fullPhotoUrl, // Use the correct photo URL
-                            'caption' => $index === 0 ? $description : '',
-                            'parse_mode' => 'Markdown'
-                        ]);
+                            $mediaGroup[] = [
+                                'type' => 'photo',
+                                'media' => $fullPhotoUrl,
+                            ];
+                        }
                     }
 
-                    $this->telegram->sendMediaGroup([
-                        'chat_id' => $chatId,
-                        'media' => json_encode($mediaGroup)
-                    ]);
+                    // Добавление кнопок
+                    $inlineKeyboard[] = [
+                        ['text' => '-', 'callback_data' => 'remove_component_from_bin:' . $component->id],
+                        ['text' => $basketItem->component_count, 'callback_data' => 'current_component_count:' . $component->id],
+                        ['text' => '+', 'callback_data' => 'add_component_to_bin:' . $component->id],
+                    ];
                 }
-
-                $keyboard = Keyboard::make(['inline_keyboard' => [
-                    [
-                        ['text' => '-', 'callback_data' => 'add_component_to_bin' . $component->id],
-                        ['text' => $componentQuantities[$component->id] ?? '0', 'callback_data' => 'current_component_count' . $component->id],
-                        ['text' => '+', 'callback_data' => 'remove_component_from_bin' . $component->id],
-                    ]
-                ]]);
-
-                $totalPrice = $basket->total_price;
-
-                $this->telegram->sendMessage([
-                    'chat_id' => $chatId,
-                    'text' => "🛍️ Добавить в корзину\n\nТекущая стоимость: $totalPrice сум",
-                    'reply_markup' => $keyboard,
-                ]);
             }
 
-            if ($adminAssembly) {
-                $photos = json_decode($adminAssembly->photos, true);
-                $description = "*{$adminAssembly->title}* \n\n"
-                    . "{$adminAssembly->description}\n\n"
-                    . "💵 *Цена:* *{$adminAssembly->price} сум* \n\n";
+            if ($basketItem->admin_assembly_id) {
+                $adminAssembly = AdminAssembly::find($basketItem->admin_assembly_id);
+                if ($adminAssembly) {
+                    $adminAssemblyQuantities[$adminAssembly->id] = 1; // Предполагается, что количество для сборок админа всегда 1
+                    $messageText .= "*{$adminAssembly->title}*\n"
+                    . "{$adminAssembly->description}\n"
+                    . "💵 *Цена:* *{$adminAssembly->price} сум*\n"
+                    . "\n";
 
-                $mediaGroup = [];
-                if (!empty($photos) && is_array($photos)) {
-                    foreach ($photos as $index => $photo) {
-                        $photoPath = Storage::url('public/' . $photo);
-                        $fullPhotoUrl = env('APP_URL') . $photoPath;
+                    // Добавление фото в медиа-группу
+                    $photos = json_decode($adminAssembly->photos, true);
+                    if (!empty($photos) && is_array($photos)) {
+                        foreach ($photos as $photo) {
+                            $photoPath = Storage::url('public/' . $photo);
+                            $fullPhotoUrl = env('APP_URL') . $photoPath;
 
-                        $mediaGroup[] = InputMediaPhoto::make([
-                            'type' => 'photo',
-                            'media' => $fullPhotoUrl, // Use the correct photo URL
-                            'caption' => $index === 0 ? $description : '',
-                            'parse_mode' => 'Markdown'
-                        ]);
+                            $mediaGroup[] = [
+                                'type' => 'photo',
+                                'media' => $fullPhotoUrl,
+                            ];
+                        }
                     }
 
-                    $this->telegram->sendMediaGroup([
-                        'chat_id' => $chatId,
-                        'media' => json_encode($mediaGroup)
-                    ]);
+                    // Добавление кнопок
+                    $inlineKeyboard[] = [
+                        ['text' => 'Удалить', 'callback_data' => 'remove_admin_assembly_from_bin:' . $adminAssembly->id],
+                    ];
                 }
-
-                $keyboard = Keyboard::make(['inline_keyboard' => [
-                    [
-                        ['text' => 'Удалить', 'callback_data' => 'remove_admin_assembly_from_bin' . $adminAssembly->id],
-                    ]
-                ]]);
-
-                $this->telegram->sendMessage([
-                    'chat_id' => $chatId,
-                    'text' => "🛍️ Добавить в корзину",
-                    'reply_markup' => $keyboard,
-                ]);
             }
         }
+
+        // Отправка медиа-группы, если есть фото
+        if (!empty($mediaGroup)) {
+            $this->telegram->sendMediaGroup([
+                'chat_id' => $chatId,
+                'media' => json_encode($mediaGroup),
+            ]);
+        }
+
+        // Добавление общей стоимости
+        $messageText .= "🛍️ *Общая стоимость:* *{$basket->total_price} сум*";
+
+        // Создание клавиатуры
+        $keyboard = Keyboard::make(['inline_keyboard' => $inlineKeyboard]);
+
+        // Отправка сообщения с корзиной
+        $this->telegram->sendMessage([
+            'chat_id' => $chatId,
+            'text' => $messageText,
+            'parse_mode' => 'Markdown',
+            'reply_markup' => $keyboard,
+        ]);
     }
+
 
     // Admin Assemblies
     private function adminAssemblies($chatId)
