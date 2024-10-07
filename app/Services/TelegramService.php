@@ -136,6 +136,13 @@ class TelegramService
             case 'setting':
                 if ($text == 'Назад') {
                     $this->showMainMenu($chatId);
+                } elseif ($text == 'Язык'){
+                    $this->updateUserLang($chatId, 'ru');
+                    $this->telegram->sendMessage([
+                        'chat_id' => $chatId,
+                        'text' => 'Язык успешно изменен.'
+                    ]);
+                    $this->setting($chatId);
                 }
 
                 break;
