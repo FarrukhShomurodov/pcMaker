@@ -141,6 +141,10 @@ class TelegramService
                         ["Русский", "O'zbekcha"]
                     ];
 
+                    $keyboard[] = [
+                        ["Назад"]
+                    ];
+
                     $reply_markup = Keyboard::make([
                         'keyboard' => $keyboard,
                         'resize_keyboard' => true,
