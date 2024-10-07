@@ -133,6 +133,12 @@ class TelegramService
                     $this->selectComponent($chatId, $text);
                 }
                 break;
+            case 'setting':
+                if ($text == 'Назад') {
+                    $this->showMainMenu($chatId);
+                }
+
+                break;
             case 'show_main_menu':
             case 'show_subcategory':
                 $this->checkCategory($chatId, $text);
@@ -356,7 +362,6 @@ class TelegramService
                         'caption' => $index === 0 ? $description : '',
                         'parse_mode' => 'Markdown'
                     ]);
-
                 }
                 $this->telegram->sendMediaGroup([
                     'chat_id' => $chatId,
@@ -467,7 +472,6 @@ class TelegramService
                     'price' => $item->price,
                 ]);
             }
-
         }
 
         $this->updateBasketTotalPrice($basket->id, $chatId, $callbackQuery);
@@ -503,7 +507,8 @@ class TelegramService
 
         if ($basketItem) {
             if (($productId && $basketItem->product_count > 1) ||
-                ($componentId && $basketItem->component_count > 1)) {
+                ($componentId && $basketItem->component_count > 1)
+            ) {
                 $basketItem->decrement($productId ? 'product_count' : 'component_count');
             } else {
                 $basketItem->delete();
@@ -564,7 +569,6 @@ class TelegramService
                     ['text' => '+', 'callback_data' => 'add_component_to_bin' . $componentId],
                 ]
             ]]);
-
         }
 
         foreach ($adminAssemblyQuantities as $adminAssemblyId => $count) {
@@ -798,7 +802,6 @@ class TelegramService
                         'caption' => $index === 0 ? $description : '',
                         'parse_mode' => 'Markdown'
                     ]);
-
                 }
                 $this->telegram->sendMediaGroup([
                     'chat_id' => $chatId,
@@ -817,7 +820,6 @@ class TelegramService
                 'text' => "🛍️ Добавить в корзину",
                 'reply_markup' => $keyboard,
             ]);
-
         }
     }
 
@@ -892,7 +894,6 @@ class TelegramService
                         'caption' => $index === 0 ? $description : '',
                         'parse_mode' => 'Markdown'
                     ]);
-
                 }
                 $this->telegram->sendMediaGroup([
                     'chat_id' => $chatId,
@@ -1317,5 +1318,7 @@ class TelegramService
             'parse_mode' => 'Markdown',
             'reply_markup' => $reply_markup
         ]);
+
+        $this->updateUserStep($chatId, 'setting');
     }
 }
