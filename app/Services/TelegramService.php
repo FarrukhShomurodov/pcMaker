@@ -1285,25 +1285,14 @@ class TelegramService
 
         $keyboard[] = [
             [
-                'text' => 'Язык',
-            ],
-            [
                 'text' => 'Номер телефона',
             ],
-
-        ];
-
-        $keyboard[] = [
             [
                 'text' => 'Полное имя'
             ],
             [
                 'text' => 'Язык'
             ],
-        ];
-
-        $keyboard[] = [
-            ['text' => 'Назад'],
         ];
 
         $reply_markup = new Keyboard([
@@ -1316,9 +1305,9 @@ class TelegramService
         $this->telegram->sendMessage([
             'chat_id' => $chatId,
             'text' => '*Настройки*' . PHP_EOL .
-                '*Язык: *' . $lang . PHP_EOL .
-                '*Полное имя: *' . $user->full_name . PHP_EOL .
-                '*Номер телефона: *' . $user->phone_number,
+                'Язык:' . $lang . PHP_EOL .
+                'Полное имя:' . $user->full_name . PHP_EOL .
+                'Номер телефона:' . $user->phone_number,
             'parse_mode' => 'Markdown',
             'reply_markup' => $reply_markup
         ]);
