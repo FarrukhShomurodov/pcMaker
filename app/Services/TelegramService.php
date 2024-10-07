@@ -152,11 +152,7 @@ class TelegramService
                         'text' => "Пожалуйста, выберите язык.\n\nIltimos, tilni tanlang.",
                         'reply_markup' => $reply_markup
                     ]);
-                } 
-
-                if ($text == 'Русский' || $text == "O'zbekcha"){
-                    $this->updateUserLang($chatId, $text == 'Русский' ? 'ru' : 'uz');
-                    if ($text == 'Русский' || $text == "O'zbekcha") {
+                }elseif ($text == 'Русский' || $text == "O'zbekcha") {
                         $this->updateUserLang($chatId, $text == 'Русский' ? 'ru' : 'uz');
                         $this->telegram->sendMessage([
                             'chat_id' => $chatId,
@@ -164,9 +160,6 @@ class TelegramService
                         ]);
                         $this->setting($chatId);
                     }
-                    $this->setting($chatId);
-                }
-
                 break;
             case 'show_main_menu':
             case 'show_subcategory':
