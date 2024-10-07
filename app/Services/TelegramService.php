@@ -1285,19 +1285,21 @@ class TelegramService
 
         $keyboard[] = [
             [
-                [
-                    'text' => 'Язык',
-                ],
-                [
-                    'text' => 'Номер телефона',
-                ],
-                [
-                    'text' => 'Полное имя'
-                ],
+                'text' => 'Язык',
             ],
-            ['text' => 'Назад'],
+            [
+                'text' => 'Номер телефона',
+            ],
+            [
+                'text' => 'Полное имя'
+            ],
             ['text' => 'Язык'],
+
         ];
+
+        $keyboard[] = [
+            ['text' => 'Назад'],
+        ]
 
         $reply_markup = new Keyboard([
             'keyboard' => $keyboard,
