@@ -1213,9 +1213,6 @@ class TelegramService
                 'parse_mode' => 'Markdown',
             ]);
         }
-
-        $this->updateUserStep($chatId, 'assembly_viewed');
-        $this->showMainMenu($chatId);
     }
 
     private function deleteAssembly($chatId, $assemblyId, $callbackQuery)
