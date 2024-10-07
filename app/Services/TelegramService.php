@@ -773,7 +773,7 @@ class TelegramService
                 ];
             }
         }
-
+        
         $inlineKeyboard[] = [
             ['text' => 'Оформить', 'callback_data' => 'confirm_basket_items_' . $basket->id],
         ];
