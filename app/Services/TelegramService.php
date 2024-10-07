@@ -1284,7 +1284,17 @@ class TelegramService
         $user = BotUser::query()->where('chat_id', $chatId)->first();
 
         $keyboard[] = [
-            ['text' => 'Язык', 'text' => 'Номер телефона', 'text' => 'Полное имя'],
+            [
+                [
+                    'text' => 'Язык',
+                ],
+                [
+                    'text' => 'Номер телефона',
+                ],
+                [
+                    'text' => 'Полное имя'
+                ],
+            ],
             ['text' => 'Назад'],
             ['text' => 'Язык'],
         ];
@@ -1298,10 +1308,10 @@ class TelegramService
 
         $this->telegram->sendMessage([
             'chat_id' => $chatId,
-            'text' => __('telegram.settings') . PHP_EOL .
-                'Язык' . ': ' . $lang . PHP_EOL .
-                'Полное имя' . ': ' . $user->full_name . PHP_EOL .
-                'Номер телефона' . ': ' . $user->phone_number,
+            'text' => 'Настройки' . PHP_EOL .
+                '*Язык: *' . $lang . PHP_EOL .
+                '*Полное имя: *' . $user->full_name . PHP_EOL .
+                '*Номер телефона: *' . $user->phone_number,
             'reply_markup' => $reply_markup
         ]);
     }
