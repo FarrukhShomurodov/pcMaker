@@ -1284,11 +1284,12 @@ class TelegramService
         $user = BotUser::query()->where('chat_id', $chatId)->first();
 
         $keyboard = [
-            ['Язык', 'Номер телефона', 'Полное имя'],
-            'Назад'
+            ['text' => 'Язык', 'text' => 'Номер телефона', 'text' => 'Полное имя'],
+            ['text' => 'Назад'],
+            ['text' => 'Язык'],
         ];
 
-        $reply_markup = Keyboard::make([
+        $reply_markup = new Keyboard([
             'keyboard' => $keyboard,
             'resize_keyboard' => true,
         ]);
