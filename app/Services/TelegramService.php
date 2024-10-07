@@ -1283,7 +1283,7 @@ class TelegramService
     {
         $user = BotUser::query()->where('chat_id', $chatId)->first();
 
-        $keyboard = [
+        $keyboard[] = [
             ['text' => 'Язык', 'text' => 'Номер телефона', 'text' => 'Полное имя'],
             ['text' => 'Назад'],
             ['text' => 'Язык'],
