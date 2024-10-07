@@ -1295,6 +1295,12 @@ class TelegramService
             ],
         ];
 
+        $keyboard[] = [
+            [
+                'text' => 'Назад',
+            ],
+        ];
+
         $reply_markup = new Keyboard([
             'keyboard' => $keyboard,
             'resize_keyboard' => true,
