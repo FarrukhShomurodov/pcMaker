@@ -1319,7 +1319,7 @@ class TelegramService
                 '*Язык: *' . $lang . PHP_EOL .
                 '*Полное имя: *' . $user->full_name . PHP_EOL .
                 '*Номер телефона: *' . $user->phone_number,
-            'parse_mode' => 'Markdown'
+            'parse_mode' => 'Markdown',
             'reply_markup' => $reply_markup
         ]);
     }
