@@ -156,10 +156,14 @@ class TelegramService
 
                 if ($text == 'Русский' || $text == "O'zbekcha"){
                     $this->updateUserLang($chatId, $text == 'Русский' ? 'ru' : 'uz');
-                    $this->telegram->sendMessage([
-                        'chat_id' => $chatId,
-                        'text' => `Язык успешно изменен на $text.`
-                    ]);
+                    if ($text == 'Русский' || $text == "O'zbekcha") {
+                        $this->updateUserLang($chatId, $text == 'Русский' ? 'ru' : 'uz');
+                        $this->telegram->sendMessage([
+                            'chat_id' => $chatId,
+                            'text' => "Язык успешно изменен на $text."
+                        ]);
+                        $this->setting($chatId);
+                    }
                     $this->setting($chatId);
                 }
 
