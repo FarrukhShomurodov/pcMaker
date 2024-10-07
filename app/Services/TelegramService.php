@@ -43,6 +43,11 @@ class TelegramService
             $this->assemblyConfirmation($chatId, $assemblyId);
         }
 
+        if (str_starts_with($data, 'confirm_basket_items_')) {
+            $basketId = str_replace('confirm_basket_items_', '', $data);
+            $this->basketConfirmation($chatId, $basketId);
+        }
+
         if (str_starts_with($data, 'delete_assembly_')) {
             $assemblyId = str_replace('delete_assembly_', '', $data);
             $this->deleteAssembly($chatId, $assemblyId, $callbackQuery);
@@ -718,7 +723,6 @@ class TelegramService
         $this->updateBasketTotalPrice($basket->id, $chatId, $callbackQuery);
     }
 
-
     private function updateBasketTotalPrice($basketId, $chatId, $callbackQuery)
     {
         $basketItems = BasketItem::where('basket_id', $basketId)->get();
@@ -739,8 +743,6 @@ class TelegramService
 
         $this->updateBasketMessage($chatId, $basket, $callbackQuery);
     }
-
-
 
     private function updateBasketMessage($chatId, $basket, $callbackQuery)
     {
@@ -771,6 +773,10 @@ class TelegramService
                 ];
             }
         }
+
+        $inlineKeyboard[] = [
+            ['text' => 'Оформить', 'callback_data' => 'confirm_basket_items_' . $basket->id],
+        ];
 
         // Создание клавиатуры с кнопками
         $keyboard = Keyboard::make(['inline_keyboard' => $inlineKeyboard]);
@@ -947,7 +953,6 @@ class TelegramService
             'reply_markup' => $keyboard,
         ]);
     }
-
 
     // Admin Assemblies
     private function adminAssemblies($chatId)
@@ -1450,6 +1455,47 @@ class TelegramService
             'quantity' => 1,
             'price' => $assembly->total_price,
         ]);
+
+        $this->telegram->sendMessage([
+            'chat_id' => $chatId,
+            'text' => "Благодарим за выбор нашей компании и покупку у нас! \nЕсли вам требуется помощь в быстрой сборке, свяжитесь с нашими администраторами:\n\n📞 Тел: 999340799\n📞 Тел: 931311100\n\nСвязь через Telegram:\n🔹 @meaning_03 (УЗ-РУ)\n🔹 @muhtar_pc (РУ)\n\nМы всегда готовы помочь вам! ✅"
+        ]);
+    }
+
+    private function basketConfirmation($chatId, $basketId)
+    {
+        $user = BotUser::query()->where('chat_id', $chatId)->first();
+
+        if (!$user) {
+            return;
+        }
+
+        $basket = Basket::query()->find($basketId);
+
+        if (!$basket) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => "Ошибка: Карзина не найдена.",
+            ]);
+            return;
+        }
+
+        foreach($basket->basketItems as $item){
+            $order = Order::query()->create([
+                'bot_user_id' => $user->id,
+                'total_price' => $basketId->total_price,
+                'status' => 'waiting',
+                'type' => 'assembly',
+            ]);
+
+            OrderItem::query()->create([
+                'order_id' => $order->id,
+                'product_id' => $item->product_id,
+                'admin_assembly_id' => $item->admin_assembly_id,
+                'quantity'=> $item->product_count ?? $item->component_count,
+                'price' => $item->total_price,
+            ]);
+        }
 
         $this->telegram->sendMessage([
             'chat_id' => $chatId,
