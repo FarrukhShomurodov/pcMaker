@@ -1483,7 +1483,7 @@ class TelegramService
         foreach($basket->basketItems as $item){
             $order = Order::query()->create([
                 'bot_user_id' => $user->id,
-                'total_price' => $basketId->total_price,
+                'total_price' => $basket->total_price,
                 'status' => 'waiting',
                 'type' => 'assembly',
             ]);
@@ -1493,7 +1493,7 @@ class TelegramService
                 'product_id' => $item->product_id,
                 'admin_assembly_id' => $item->admin_assembly_id,
                 'quantity'=> $item->product_count ?? $item->component_count,
-                'price' => $item->total_price,
+                'price' => $item->price,
             ]);
         }
 
