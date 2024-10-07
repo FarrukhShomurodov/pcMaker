@@ -86,13 +86,13 @@ class TelegramService
 
     public function processMessage($chatId, $text, $step, $message)
     {
-        // Handle pre-defined commands
         $commands = [
             '🛍️ Корзина' => 'basketItems',
             '💼 Выбрать сборку' => 'adminAssemblies',
             '🖥️ Собрать компьютер' => 'createAssembly',
             '🔧 Комплектующие' => 'showAdminCategory',
-            '🧩 Мои сборки' => 'myAssembly'
+            '🧩 Мои сборки' => 'myAssembly',
+            '⚙️ Настройки' => 'setting'
         ];
 
         if (array_key_exists($text, $commands)) {
@@ -100,7 +100,6 @@ class TelegramService
             return;
         }
 
-        // Handle user steps
         switch ($step) {
             case 'choose_language':
                 $this->processLanguageChoice($chatId, $text);
@@ -143,7 +142,6 @@ class TelegramService
                 break;
         }
     }
-
 
     // Auth
     private function processLanguageChoice($chatId, $text)
@@ -249,6 +247,7 @@ class TelegramService
 
         $buttons[] = [
             ['text' => '🧩 Мои сборки'],
+            ['text' => '⚙️ Настройки'],
         ];
 
         $keyboard = new Keyboard(['keyboard' => $buttons, 'resize_keyboard' => true, 'one_time_keyboard' => true]);
@@ -1276,6 +1275,15 @@ class TelegramService
         $this->telegram->sendMessage([
             'chat_id' => $chatId,
             'text' => "Благодарим за выбор нашей компании и покупку у нас! \nЕсли вам требуется помощь в быстрой сборке, свяжитесь с нашими администраторами:\n\n📞 Тел: 999340799\n📞 Тел: 931311100\n\nСвязь через Telegram:\n🔹 @meaning_03 (УЗ-РУ)\n🔹 @muhtar_pc (РУ)\n\nМы всегда готовы помочь вам! ✅"
+        ]);
+    }
+
+    // Setting
+    private function setting($chatId)
+    {
+        $this->telegram->sendMessage([
+            'chat_id' => $chatId,
+            'message' => 'text'
         ]);
     }
 }
