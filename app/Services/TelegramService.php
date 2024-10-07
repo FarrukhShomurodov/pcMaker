@@ -152,6 +152,7 @@ class TelegramService
                         'text' => "Пожалуйста, выберите язык.\n\nIltimos, tilni tanlang.",
                         'reply_markup' => $reply_markup
                     ]);
+                    $this->updateUserStep($chatId, 'change_lang');
                 } elseif ($text == 'Полное имя'){
                     $keyboard = [
                         ["Назад"]
@@ -169,20 +170,24 @@ class TelegramService
                         'reply_markup' => $reply_markup
                     ]);
                     $this->updateUserStep($chatId, 'change_full_name');
-                } elseif ($text == 'Русский' || $text == "O'zbekcha") {
-                        $this->updateUserLang($chatId, $text == 'Русский' ? 'ru' : 'uz');
-                        $this->telegram->sendMessage([
-                            'chat_id' => $chatId,
-                            'text' => "Язык успешно изменен на $text."
-                        ]);
-                        $this->setting($chatId);
-                    }
+                }
+
                 break;
             case 'change_full_name':
                 if ($text !== 'Назад') {
                     $this->changeUserFullName($chatId, $text);
                 }
 
+                $this->setting($chatId);
+                break;
+            case 'change_lang':
+               if ($text == 'Русский' || $text == "O'zbekcha") {
+                    $this->updateUserLang($chatId, $text == 'Русский' ? 'ru' : 'uz');
+                    $this->telegram->sendMessage([
+                        'chat_id' => $chatId,
+                        'text' => "Язык успешно изменен на $text."
+                    ]);
+                }
                 $this->setting($chatId);
                 break;
             case 'show_main_menu':
