@@ -61,11 +61,11 @@ class TelegramService
         $parts = explode(':', $data);
 
         if (count($parts) < 2) {
-            $this->telegram->answerCallbackQuery([
-                'callback_query_id' => $callbackQuery->getId(),
-                'text' => 'Неверный формат данных.',
-                'show_alert' => true
-            ]);
+            // $this->telegram->answerCallbackQuery([
+            //     'callback_query_id' => $callbackQuery->getId(),
+            //     'text' => 'Неверный формат данных.',
+            //     'show_alert' => true
+            // ]);
             return;
         }
 
@@ -1485,7 +1485,7 @@ class TelegramService
                 'bot_user_id' => $user->id,
                 'total_price' => $basket->total_price,
                 'status' => 'waiting',
-                'type' => 'assembly',
+                'type' => (!empty($item->product_id) || !empty($item->component_id))  ? 'product' : 'admin_assembly',
             ]);
 
             OrderItem::query()->create([
