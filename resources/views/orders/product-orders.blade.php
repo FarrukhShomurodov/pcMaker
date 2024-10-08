@@ -8,7 +8,7 @@
                     <div class="data-table-list">
                         <div class="basic-tb-hd">
                             <div style="display: flex; align-items: center; justify-content: space-between;">
-                                <h2 style="margin: 0;">заказы продукты</h2>
+                                <h2 style="margin: 0;">Заказы продукты</h2>
                             </div>
                         </div>
                         <div class="table-responsive">
