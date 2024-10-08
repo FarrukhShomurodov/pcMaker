@@ -25,15 +25,15 @@ class OrderController extends Controller
                 ];
             });
         } elseif ($order->type === 'admin_assembly') {
-            $orderDetails = $order->items->map(function ($item) {
-                return [
-                    'admin_assembly' => $item->assemblyAdmin ? [
-                        'title' => $item->assemblyAdmin->title,
-                        'description' => $item->assemblyAdmin->description,
-                        'price' => $item->assemblyAdmin->price,
-                    ] : [],
-                ];
-            });
+            $assemblyAdmin = $order->items->assemblyAdmin;
+            $orderDetails = $assemblyAdmin ? 
+            [
+                'title' => $assemblyAdmin->title,
+                'description' => $assemblyAdmin->description,
+                'price' => $assemblyAdmin->price,
+            ] : [];
+
+            return $orderDetails;
         } else {
             $orderDetails = $order->items->map(function ($item) {
                 return [

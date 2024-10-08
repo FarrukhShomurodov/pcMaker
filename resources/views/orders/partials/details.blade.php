@@ -11,11 +11,8 @@
 @elseif($order->type === 'admin_assembly')
     <h3>Детали админ-сборки:</h3>
     <ul>
-        @dd($orderDetails)
-        @foreach($orderDetails as $item)
-            <li>{{ $item['admin_assembly']['title'] }} (Цена: {{ $item['admin_assembly']['price'] }})</li>
-            <p>{{ $item['admin_assembly']['description'] }}</p>
-        @endforeach
+        <li>{{ $orderDetails['title'] }} (Цена: {{ $orderDetails['price'] }})</li>
+        <p>{{ $orderDetails['description'] }}</p>
     </ul>
 @else
     <h3>Детали заказа:</h3>
