@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->foreignId('product_id')->nullable()->constrained('products')->onDelete('cascade');
             $table->foreignId('assembly_id')->nullable()->constrained('assemblies')->onDelete('cascade');
+            $table->foreignId('component_id')->nullable()->constrained('components')->onDelete('cascade');
             $table->foreignId('admin_assembly_id')->nullable()->constrained('admin_assemblies')->onDelete('cascade');
             $table->integer('quantity');
             $table->decimal('price');

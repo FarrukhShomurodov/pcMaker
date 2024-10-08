@@ -14,10 +14,13 @@ class OrderItem extends Model
         'order_id',
         'product_id',
         'assembly_id',
+        'component_id',
         'admin_assembly_id',
         'quantity',
         'price',
     ];
+
+
 
     public function order(): BelongsTo
     {
@@ -37,5 +40,10 @@ class OrderItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function component(): BelongsTo
+    {
+        return $this->belongsTo(Component::class);
     }
 }

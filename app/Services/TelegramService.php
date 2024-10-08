@@ -1492,7 +1492,8 @@ class TelegramService
                 'order_id' => $order->id,
                 'product_id' => $item->product_id,
                 'admin_assembly_id' => $item->admin_assembly_id,
-                'quantity'=> $item->product_count ?? $item->component_count,
+                'component_id' => $item->component_id,
+                'quantity'=> ($item->product_count ?? $item->component_count) ?? 1,
                 'price' => $item->price,
             ]);
         }
