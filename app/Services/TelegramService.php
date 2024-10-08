@@ -1496,6 +1496,8 @@ class TelegramService
                 'quantity'=> ($item->product_count ?? $item->component_count) ?? 1,
                 'price' => $item->price,
             ]);
+
+            $item->delete();
         }
 
         $basket->delete();
