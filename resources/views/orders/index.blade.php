@@ -34,7 +34,7 @@
                                         </td>
                                         <td>{{ $order->total_price }}</td>
                                         <td>
-                                            <select id="change_status" data-order-id="{{ order->id }}">
+                                            <select id="change_status" data-order-id="{{ $order->id }}">
                                                 <option value="done" @selected($order->status == 'done')>done</option>
                                                 <option value="waiting" @selected($order->status == 'waiting')>waiting</option>
                                                 <option value="cancelled" @selected($order->status == 'cancelled')>cancelled</option>
