@@ -93,10 +93,10 @@
                     }
                 });
             });
-
+            
             $('#change_status').on('change', function () {
-                console.log(this.data('order-id'));
-            })
+                console.log($(this).data('order-id'));
+            });
         });
     </script>
 @endsection
