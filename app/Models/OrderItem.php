@@ -34,7 +34,7 @@ class OrderItem extends Model
 
     public function assemblyAdmin(): BelongsTo
     {
-        return $this->belongsTo(AdminAssembly::class, 'admin_assembly_id', 'id');
+        return $this->belongsTo(AdminAssembly::class, 'id', 'admin_assembly_id');
     }
 
     public function product(): BelongsTo

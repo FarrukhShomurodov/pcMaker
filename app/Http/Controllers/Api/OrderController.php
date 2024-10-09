@@ -25,7 +25,7 @@ class OrderController extends Controller
                 ];
             });
         } elseif ($order->type === 'admin_assembly') {
-            return response()->json($order->items);
+            return response()->json($order->items->assemblyAdmin);
             $assemblyAdmin = $order->items->assemblyAdmin;
             $orderDetails = $assemblyAdmin ? 
             [
