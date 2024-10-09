@@ -166,7 +166,7 @@ class OrderController extends Controller
 
             $telegram->sendMessage([
                 'chat_id' => $order->user->chat_id,
-                'text' => $detailsText,
+                'text' => $orderDetails,
             ]);
         }
 
