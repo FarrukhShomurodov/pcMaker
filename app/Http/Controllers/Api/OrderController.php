@@ -151,17 +151,13 @@ class OrderController extends Controller
 
             $detailsText = "Ваш заказ содержит следующие детали:\n";
             foreach ($orderDetails as $detail) {
-                $telegram->sendMessage([
-                    'chat_id' => $order->user->chat_id,
-                    'text' => json_encode($detail),
-                ]);
                 if (isset($detail['components'])) {
                     $detailsText .= "Сборка №{$detail['number']}:\n";
                     foreach ($detail['components'] as $component) {
                         $detailsText .= "- {$component['name']} ({$component['category']}): {$component['price']} сум\n";
                     }
-                } elseif (isset($detail['adminAssembly'])) {
-                    $detailsText .= "Административная сборка: {$detail['adminAssembly']['title']} - {$detail['adminAssembly']['price']} сум\n";
+                } elseif (isset($detail['id'])) {
+                    $detailsText .= "Административная сборка: {$detail['title']} - {$detail['price']} сум\n";
                 } elseif (isset($detail['component'])) {
                     $component = $detail['component'];
                     $detailsText .= "- Компонент: {$component['name']} (Категория: {$component['category']}, Тип: {$component['type']}) - {$component['price']} сум (Количество: {$component['quantity']})\n";
