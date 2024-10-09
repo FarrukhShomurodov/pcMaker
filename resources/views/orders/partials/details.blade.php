@@ -15,6 +15,7 @@
         <p>{{ $orderDetails['description'] }}</p>
     </ul>
 @else
+@dd($order->type )
     <h3>Детали заказа:</h3>
     <ul>
         @foreach($orderDetails as $item)
