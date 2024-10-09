@@ -34,7 +34,7 @@ class OrderController extends Controller
                 'price' => $assemblyAdmin->price,
             ] : [];
         } else {
-            if ($order->items->component_id){
+            if ($order->items()->first()->component_id){
                 $orderDetails = $order->items->map(function ($item) {
                     return [
                         'component' => $item->component ? [
