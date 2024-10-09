@@ -84,6 +84,11 @@ class OrderController extends Controller
                 'chat_id' => $order->user->chat_id,
                 'text' => $text,
             ]);
+            
+            $telegram->sendLocation(['chat_id' => $order->user->chat_id,
+                'latitude' => 41.227364,
+                'longitude' => 69.204015
+            ]);
         }
 
         return response()->json([], 200);
