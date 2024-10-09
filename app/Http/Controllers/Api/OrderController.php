@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Telegram\Bot\Api;
 
 class OrderController extends Controller
 {
@@ -70,7 +71,17 @@ class OrderController extends Controller
     public function changeStatus(Request $request, Order $order){
         $order->update([
             'status' => $request->input('status')
-        ]);
+        ]); 
+
+        if($order->status !== 'waiting'){
+            $text = $order->status == 'done' ? 'done' : 'canceled';
+
+            $telegram = new Api(config('telegram.bot_token'));
+            $telegram->sendMessage([
+                'chat_id' => $order->user->chat_id,
+                'text' => $text,
+            ]);
+        }
 
         return response()->json([], 200);
     }
