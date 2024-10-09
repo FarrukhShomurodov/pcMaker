@@ -12,14 +12,17 @@
     <h3>Детали админ-сборки:</h3>
     <ul>
         <li><b>Номер сборки:</b> {{ $orderDetails['id'] }}</li>
-        <li><b>Номер название:</b> {{ $orderDetails['title'] }} (Цена: {{ $orderDetails['price'] }})</li>
+        <li><b>Номер название:</b> {{ $orderDetails['title'] }}</li>
         <p><b>Номер описание:</b> {{ $orderDetails['description'] }}</p>
+        <p><b>Цена:</b> {{ $orderDetails['price'] }}</p>
     </ul>
 @else
     <h3>Детали заказа</h3>
     <ul>
         @foreach($orderDetails as $item)
-            <li>{{ $item['product']['name'] }} (Кол-во: {{ $item['product']['quantity'] }}) (Цена: {{ $item['product']['price'] }})</li>
+            <li><b>Название:</b> {{ $item['product']['name'] }}</li>
+            <li><b>Кол-во:</b> {{ $item['product']['quantity'] }}</li>
+            <li><b>Цена:</b> {{ $item['product']['price'] }}</li>
         @endforeach
     </ul>
 @endif
