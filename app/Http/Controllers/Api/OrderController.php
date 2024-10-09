@@ -74,7 +74,10 @@ class OrderController extends Controller
         ]); 
 
         if($order->status !== 'waiting'){
-            $text = $order->status == 'done' ? 'done' : 'canceled';
+            $text = $order->status == 'done'
+            ? 'Отличные новости! Ваш заказ готов к выдаче. Вы можете забрать его в любое удобное время.'
+            : 'К сожалению, ваш заказ был отменен. Если у вас возникли вопросы, пожалуйста, свяжитесь с нашей службой поддержки.';
+
 
             $telegram = new Api(config('telegram.bot_token'));
             $telegram->sendMessage([
