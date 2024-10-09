@@ -15,8 +15,7 @@
         <p>{{ $orderDetails['description'] }}</p>
     </ul>
 @else
-@dd($order->type )
-    <h3>Детали заказа:</h3>
+    <h3>Детали заказа: {{  $order->type  }}</h3>
     <ul>
         @foreach($orderDetails as $item)
             <li>{{ $item['product']['name'] }} (Кол-во: {{ $item['product']['quantity'] }}) (Цена: {{ $item['product']['price'] }})</li>
