@@ -25,7 +25,7 @@ class OrderController extends Controller
                 ];
             });
         } elseif ($order->type === 'admin_assembly') {
-            $assemblyAdmin = $order->items()->first()->assemblyAdmin()->get();
+            $assemblyAdmin = $order->items()->first()->assemblyAdmin()->first();
             $orderDetails = $assemblyAdmin ? 
             [
                 'title' => $assemblyAdmin->title,
