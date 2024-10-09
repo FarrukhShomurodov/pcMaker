@@ -96,7 +96,7 @@
 
                  $.ajax({
                     url: '/api/orders/status/' + orderId,
-                    method: 'put',
+                    method: 'PUT',
                     data: {
                         status: $(this).val()
                     },
