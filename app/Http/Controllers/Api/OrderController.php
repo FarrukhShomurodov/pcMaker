@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminAssembly;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Telegram\Bot\Api;
@@ -113,10 +114,12 @@ class OrderController extends Controller
                 $assemblyAdmin = $order->items()->first()->assemblyAdmin()->first();
                 $orderDetails = $assemblyAdmin ?
                     [
+                    'adminAssembly' => [
                         'id' => $assemblyAdmin->id,
                         'title' => $assemblyAdmin->title,
                         'description' => $assemblyAdmin->description,
                         'price' => $assemblyAdmin->price,
+                        ]
                     ] : [];
             } else {
                 if ($order->items()->first()->component_id) {
@@ -148,19 +151,13 @@ class OrderController extends Controller
 
             $detailsText = "Ваш заказ содержит следующие детали:\n";
             foreach ($orderDetails as $detail) {
-                
-                $telegram->sendMessage([
-                    'chat_id' => $order->user->chat_id,
-                    'text' => json_encode($detail),
-                ]);
-
                 if (isset($detail['components'])) {
                     $detailsText .= "Сборка №{$detail['number']}:\n";
                     foreach ($detail['components'] as $component) {
                         $detailsText .= "- {$component['name']} ({$component['category']}): {$component['price']} сум\n";
                     }
-                } elseif (isset($detail['id'])) {
-                    $detailsText .= "Административная сборка: {$detail['title']} - {$detail['price']} сум\n";
+                } elseif (isset($detail['adminAssembly'])) {
+                    $detailsText .= "Административная сборка: {$detail['adminAssembly']['title']} - {$detail['adminAssembly']['price']} сум\n";
                 } elseif (isset($detail['component'])) {
                     $component = $detail['component'];
                     $detailsText .= "- Компонент: {$component['name']} (Категория: {$component['category']}, Тип: {$component['type']}) - {$component['price']} сум (Количество: {$component['quantity']})\n";
