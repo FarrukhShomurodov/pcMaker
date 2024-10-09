@@ -11,11 +11,12 @@
 @elseif($order->type === 'admin_assembly')
     <h3>Детали админ-сборки:</h3>
     <ul>
-        <li>{{ $orderDetails['title'] }} (Цена: {{ $orderDetails['price'] }})</li>
-        <p>{{ $orderDetails['description'] }}</p>
+        <li><b>Номер сборки:</b> {{ $orderDetails['id'] }}</li>
+        <li><b>Номер название:</b> {{ $orderDetails['title'] }} (Цена: {{ $orderDetails['price'] }})</li>
+        <p><b>Номер описание:</b> {{ $orderDetails['description'] }}</p>
     </ul>
 @else
-    <h3>Детали заказа: {{  $order->type  }}</h3>
+    <h3>Детали заказа</h3>
     <ul>
         @foreach($orderDetails as $item)
             <li>{{ $item['product']['name'] }} (Кол-во: {{ $item['product']['quantity'] }}) (Цена: {{ $item['product']['price'] }})</li>

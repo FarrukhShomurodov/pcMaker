@@ -28,6 +28,7 @@ class OrderController extends Controller
             $assemblyAdmin = $order->items()->first()->assemblyAdmin()->first();
             $orderDetails = $assemblyAdmin ? 
             [
+                'id' => $assemblyAdmin->id,
                 'title' => $assemblyAdmin->title,
                 'description' => $assemblyAdmin->description,
                 'price' => $assemblyAdmin->price,
