@@ -37,6 +37,7 @@ class OrderController extends Controller
             $orderDetails = $order->items->map(function ($item) {
                 return [
                     'product' => $item->product ? [
+                        'id' => $item->product->id,
                         'name' => $item->product->name,
                         'price' => $item->product->price,
                         'quantity' => $item->quantity,
