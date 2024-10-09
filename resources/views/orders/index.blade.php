@@ -102,7 +102,7 @@
                     method: 'put',
                     data: {
                         status: $(this).val()
-                    }
+                    },
                     success: function(response) {
                         console.log('Status updated successfully.');
                     },
