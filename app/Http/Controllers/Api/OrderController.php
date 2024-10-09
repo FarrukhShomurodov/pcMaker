@@ -34,6 +34,7 @@ class OrderController extends Controller
                 'price' => $assemblyAdmin->price,
             ] : [];
         } else {
+            return response()->json($order->items);
             $orderDetails = $order->items->map(function ($item) {
                 return [
                     'product' => $item->product ? [
