@@ -61,8 +61,6 @@ class OrderController extends Controller
             }
         }
 
-        return response()->json($orderDetails);
-
         $html = view('orders.partials.details', compact('order', 'orderDetails'))->render();
 
         return response()->json(['html' => $html]);
