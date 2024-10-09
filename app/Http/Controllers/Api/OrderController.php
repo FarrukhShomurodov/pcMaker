@@ -148,12 +148,6 @@ class OrderController extends Controller
 
             $detailsText = "Ваш заказ содержит следующие детали:\n";
             foreach ($orderDetails as $detail) {
-
-                $telegram->sendMessage([
-                    'chat_id' => $order->user->chat_id,
-                    'text' => $detail['title'],
-                ]);
-
                 if (isset($detail['components'])) {
                     $detailsText .= "Сборка №{$detail['number']}:\n";
                     foreach ($detail['components'] as $component) {
