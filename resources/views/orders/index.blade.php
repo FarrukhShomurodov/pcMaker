@@ -95,7 +95,7 @@
             });
 
             $('#change_status').on('change', function () {
-                console.log(this.data);
+                console.log(this.data('order-id'));
             })
         });
     </script>
