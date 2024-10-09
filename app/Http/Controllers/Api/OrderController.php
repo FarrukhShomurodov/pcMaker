@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
@@ -64,5 +65,13 @@ class OrderController extends Controller
         $html = view('orders.partials.details', compact('order', 'orderDetails'))->render();
 
         return response()->json(['html' => $html]);
+    }
+
+    public function changeStatus(Request $request, Order $order){
+        $order->update([
+            'status' => $request->input('status')
+        ]);
+
+        return response()->json([], 200);
     }
 }

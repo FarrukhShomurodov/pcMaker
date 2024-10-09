@@ -95,8 +95,21 @@
             });
 
             $('#change_status').on('change', function () {
-                console.log($(this).data('order-id'));
-                console.log($(this).val());
+                let orderId = $(this).data('order-id');
+
+                 $.ajax({
+                    url: '/api/orders/status/' + orderId,
+                    method: 'put',
+                    data: {
+                        status: $(this).val()
+                    }
+                    success: function(response) {
+                        console.log('Status updated successfully.');
+                    },
+                    error: function() {
+                        alert('Ошибка загрузки данных');
+                    }
+                });
             });
         });
     </script>
