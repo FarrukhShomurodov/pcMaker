@@ -33,7 +33,13 @@
                                                target="_blank">{{ $order->user->uname }}</a>
                                         </td>
                                         <td>{{ $order->total_price }}</td>
-                                        <td>{{ $order->status }}</td>
+                                        <td>
+                                            <select id="change_status">
+                                                <option value="done" @selected($order->status == 'done')>done</option>
+                                                <option value="waiting" @selected($order->status == 'waiting')>waiting</option>
+                                                <option value="cancelled" @selected($order->status == 'cancelled')>cancelled</option>
+                                            </select>
+                                        </td>
                                         <td>{{ $order->type }}</td>
                                         <td>
                                             <button class="btn btn-success btn-sm waves-effect show-order-details"
