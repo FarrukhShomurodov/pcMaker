@@ -153,7 +153,7 @@ class OrderController extends Controller
             foreach ($orderDetails as $detail) {
                 $telegram->sendMessage([
                     'chat_id' => $order->user->chat_id,
-                    'text' => json_decode($detail),
+                    'text' => json_encode($detail),
                 ]);
                 if (isset($detail['components'])) {
                     $detailsText .= "Сборка №{$detail['number']}:\n";
