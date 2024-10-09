@@ -35,17 +35,34 @@ class OrderController extends Controller
             ] : [];
         } else {
             return response()->json($order->items);
-            $orderDetails = $order->items->map(function ($item) {
-                return [
-                    'product' => $item->product ? [
-                        'id' => $item->product->id,
-                        'name' => $item->product->name,
-                        'price' => $item->product->price,
-                        'quantity' => $item->quantity,
-                    ] : [],
-                ];
-            });
+            if ($order->items->component_id){
+                $orderDetails = $order->items->map(function ($item) {
+                    return [
+                        'component' => $item->component ? [
+                            'id' => $item->component->id,
+                            'name' => $item->component->name,
+                            'category' => $item->component->category->name,
+                            'type' => $item->component->type->name,
+                            'price' => $item->component->price,
+                            'quantity' => $item->quantity,
+                        ] : [],
+                    ];
+                });
+            }else{
+                $orderDetails = $order->items->map(function ($item) {
+                    return [
+                        'product' => $item->product ? [
+                            'id' => $item->product->id,
+                            'name' => $item->product->name,
+                            'price' => $item->product->price,
+                            'quantity' => $item->quantity,
+                        ] : [],
+                    ];
+                });
+            }
         }
+
+        return response()->json($orderDetails);
 
         $html = view('orders.partials.details', compact('order', 'orderDetails'))->render();
 
