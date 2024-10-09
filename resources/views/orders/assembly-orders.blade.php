@@ -33,7 +33,13 @@
                                                target="_blank">{{ $order->user->uname }}</a>
                                         </td>
                                         <td>{{ $order->total_price}}</td>
-                                        <td>{{ $order->status }}</td>
+                                       <td>
+                                            <select id="change_status" data-order-id="{{ $order->id }}">
+                                                <option value="done" @selected($order->status == 'done')>done</option>
+                                                <option value="waiting" @selected($order->status == 'waiting')>waiting</option>
+                                                <option value="cancelled" @selected($order->status == 'cancelled')>cancelled</option>
+                                            </select>
+                                        </td>
                                         <td>{{ $order->type }}</td>
                                         <td>
                                             <button class="btn btn-success btn-sm waves-effect show-order-details"
@@ -79,6 +85,24 @@
                     success: function(response) {
                         $('#order-details-content').html(response.html);
                         $('#orderDetailsModal').modal('show');
+                    },
+                    error: function() {
+                        alert('Ошибка загрузки данных');
+                    }
+                });
+            });
+
+             $('#change_status').on('change', function () {
+                let orderId = $(this).data('order-id');
+
+                 $.ajax({
+                    url: '/api/orders/status/' + orderId,
+                    method: 'put',
+                    data: {
+                        status: $(this).val()
+                    },
+                    success: function(response) {
+                        console.log('Status updated successfully.');
                     },
                     error: function() {
                         alert('Ошибка загрузки данных');
