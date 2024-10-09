@@ -32,8 +32,6 @@ class OrderController extends Controller
                 'description' => $assemblyAdmin->description,
                 'price' => $assemblyAdmin->price,
             ] : [];
-
-            return $orderDetails;
         } else {
             $orderDetails = $order->items->map(function ($item) {
                 return [
