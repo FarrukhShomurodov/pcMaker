@@ -95,7 +95,7 @@
             });
 
             $('#change_status').on('change', function () {
-                console.log('test');
+                console.log(this.data);
             })
         });
     </script>
