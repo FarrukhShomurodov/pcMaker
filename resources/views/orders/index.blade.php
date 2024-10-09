@@ -79,6 +79,8 @@
                     url: '/api/orders/show/' + orderId,
                     method: 'GET',
                     success: function(response) {
+                        console.console.log(response);
+                        
                         $('#order-details-content').html(response.html);
                         $('#orderDetailsModal').modal('show');
                     },
