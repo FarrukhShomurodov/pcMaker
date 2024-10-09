@@ -21,7 +21,7 @@
         <h3>Детали заказа:</h3>
         <ul>
             @foreach($orderDetails as $item)
-                <li><b>Номер:</b> {{ $item['id'] }}</li>
+                <li><b>Номер:</b> {{ $item['component']['id'] }}</li>
                 <li><b>Название:</b> {{ $item['component']['name'] }}</li>
                 <li><b>Категория:</b> {{ $item['component']['category'] }}</li>
                 <li><b>Тип:</b> {{ $item['component']['type'] }}</li>
@@ -33,7 +33,7 @@
     <h3>Детали заказа:</h3>
         <ul>
             @foreach($orderDetails as $item)
-                <li><b>Номер:</b> {{ $item['id'] }}</li>
+                <li><b>Номер:</b> {{ $item['product']['id'] }}</li>
                 <li><b>Название:</b> {{ $item['product']['name'] }}</li>
                 <li><b>Кол-во:</b> {{ $item['product']['quantity'] }}</li>
                 <li><b>Цена:</b> {{ $item['product']['price'] }}</li>
