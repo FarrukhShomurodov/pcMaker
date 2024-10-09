@@ -93,9 +93,10 @@
                     }
                 });
             });
-            
+
             $('#change_status').on('change', function () {
                 console.log($(this).data('order-id'));
+                console.log($(this).val());
             });
         });
     </script>
