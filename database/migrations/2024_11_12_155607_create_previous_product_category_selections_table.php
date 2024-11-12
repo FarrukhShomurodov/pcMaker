@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('previous_product_category_selections', function (Blueprint $table) {
             $table->id();
             $table->foreignId('bot_user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('product_sub_category_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('product_sub_category_id')->nullable();
             $table->timestamps();
         });
     }
