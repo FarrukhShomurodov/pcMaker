@@ -30,7 +30,7 @@ class TelegramController extends Controller
             $text = $message->getText();
 
             $user = BotUser::firstOrCreate(['chat_id' => $chatId]);
-            $user->update(['uname' => $message->from->username]);
+//            $user->update(['uname' => $message->from->username]);
 
             if ($text == '/start') {
                 $user->update(['step' => 'choose_language']);

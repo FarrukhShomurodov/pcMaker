@@ -21,6 +21,7 @@ class Component extends Model
         'description',
     ];
 
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(ComponentCategory::class, 'component_category_id', 'id');
