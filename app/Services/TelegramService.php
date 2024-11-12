@@ -466,14 +466,7 @@ class TelegramService
             $category = ProductCategory::query()->with('subCategories')->where('name', $name)->first();
         }
 
-        BotUser::query()->where('chat_id', $chatId)->first()->previous()->updateOrCreate(
-            [
-                'bot_user_id' => BotUser::query()->where('chat_id', $chatId)->first()->id
-            ],
-            [
-                'product_sub_category_id' => null,
-            ]
-        );
+        BotUser::query()->where('chat_id', $chatId)->first()->previous()->delete();
 
         if (!$category) {
             $this->telegram->sendMessage([
@@ -554,10 +547,7 @@ class TelegramService
             ]);
             return;
         } else {
-            BotUser::query()->where('chat_id', $chatId)->first()->previous()->updateOrCreate(
-                [
-                    'bot_user_id' => BotUser::query()->where('chat_id', $chatId)->first()->id
-                ],
+            BotUser::query()->where('chat_id', $chatId)->first()->previous()->create(
                 [
                     'product_sub_category_id' => $subCategory->id,
                 ]
