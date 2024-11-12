@@ -554,12 +554,6 @@ class TelegramService
             ]);
             return;
         } else {
-            BotUser::query()->where('chat_id', $chatId)->first()->previous()->updateOrCreate(
-                [
-                    'product_sub_category_id' => $subCategory->id,
-                ]
-            );
-
             $this->showProducts($chatId, $products);
         }
     }
