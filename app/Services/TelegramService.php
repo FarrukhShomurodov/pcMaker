@@ -303,9 +303,11 @@ class TelegramService
     private function showSubCategories($chatId, $name = null, $id = null): void
     {
         if ($id) {
-            $category = ProductCategory::query()->with('subCategories')->find($id);
+            $category = true;
+            $subCategories = ProductSubCategory::query()->find($id);
         } else {
             $category = ProductCategory::query()->with('subCategories')->where('name', $name)->first();
+            $subCategories = $category->subCategories;
         }
 
         $this->user->previous()->updateOrCreate(
@@ -323,7 +325,6 @@ class TelegramService
             return;
         }
 
-        $subCategories = $category->subCategories;
 
         if (count($subCategories) < 1) {
             $this->telegram->sendMessage([
