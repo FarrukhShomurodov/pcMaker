@@ -50,6 +50,12 @@ class TelegramService
         }
 
         if ($text === '🏠 На главную') {
+            $this->user->previous()->updateOrCreate(
+                ['bot_user_id' => $this->user->id],
+                [
+                    'product_category_id' => null,
+                ]
+            );
             $this->showMainMenu($chatId);
             return;
         }
@@ -82,7 +88,7 @@ class TelegramService
                 break;
             case 'show_product':
                 if ($text == '◀️ Назад') {
-                    $this->showSubCategories($chatId, null, $this->user->previous->product_sub_category_id);
+                    $this->showSubCategories($chatId, null, $this->user->previous()->first()->product_category_id);
                     return;
                 }
 
@@ -303,19 +309,13 @@ class TelegramService
     private function showSubCategories($chatId, $name = null, $id = null): void
     {
         if ($id) {
-            $category = true;
-            $subCategories = ProductSubCategory::query()->find($id)->first();
+            $category = ProductCategory::query()->with('subCategories')->find($id);
         } else {
             $category = ProductCategory::query()->with('subCategories')->where('name', $name)->first();
-            $subCategories = $category->subCategories;
         }
 
-        $this->user->previous()->updateOrCreate(
-            ['bot_user_id' => $this->user->id],
-            [
-                'product_sub_category_id' => null,
-            ]
-        );
+
+        $subCategories = $category->subCategories;
 
         if (!$category) {
             $this->telegram->sendMessage([
@@ -333,6 +333,13 @@ class TelegramService
             ]);
             return;
         }
+
+        $this->user->previous()->updateOrCreate(
+            ['bot_user_id' => $this->user->id],
+            [
+                'product_category_id' => $category->id,
+            ]
+        );
 
         $keyboard = [];
 
@@ -395,13 +402,6 @@ class TelegramService
             ]);
             return;
         } else {
-            $this->user->previous()->updateOrCreate(
-                ['bot_user_id' => $this->user->id],
-                [
-                    'product_sub_category_id' => $subCategory->id,
-                ]
-            );
-
             $this->showProducts($chatId, $products);
         }
     }

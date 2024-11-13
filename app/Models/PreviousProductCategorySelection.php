@@ -11,6 +11,6 @@ class PreviousProductCategorySelection extends Model
 
     protected $fillable = [
         'bot_user_id',
-        'product_sub_category_id'
+        'product_category_id'
     ];
 }
