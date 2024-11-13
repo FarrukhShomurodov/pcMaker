@@ -304,7 +304,7 @@ class TelegramService
     {
         if ($id) {
             $category = true;
-            $subCategories = ProductSubCategory::query()->find($id);
+            $subCategories = ProductSubCategory::query()->find($id)->first();
         } else {
             $category = ProductCategory::query()->with('subCategories')->where('name', $name)->first();
             $subCategories = $category->subCategories;
