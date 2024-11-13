@@ -479,7 +479,7 @@ class TelegramService
 
                 $mediaGroup[] = [
                     'type' => 'photo',
-                    'media' => 'https://test-test.co.uz/storage/component_photos/FjTdIe35vkjSX4kSKSk5ySVDWK6TDiA6qR06DGiA.jpg',
+                    'media' => $fullPhotoUrl,
                 ];
             }
 
@@ -654,7 +654,7 @@ class TelegramService
 
                 $mediaGroup[] = [
                     'type' => 'photo',
-                    'media' => 'https://test-test.co.uz/storage/component_photos/FjTdIe35vkjSX4kSKSk5ySVDWK6TDiA6qR06DGiA.jpg',
+                    'media' => $fullPhotoUrl,
                 ];
             }
             $this->telegram->sendMediaGroup([
@@ -707,7 +707,7 @@ class TelegramService
 
                     $mediaGroup[] = [
                         'type' => 'photo',
-                        'media' => 'https://test-test.co.uz/storage/component_photos/FjTdIe35vkjSX4kSKSk5ySVDWK6TDiA6qR06DGiA.jpg',
+                        'media' => $fullPhotoUrl,
                     ];
                 }
 
