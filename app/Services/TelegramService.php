@@ -499,7 +499,7 @@ class TelegramService
 
         $this->telegram->sendMessage([
             'chat_id' => $chatId,
-            'text' => $index === 0 ? $description : '',
+            'text' => $description,
             'parse_mode' => 'Markdown',
             'reply_markup' => $keyboard,
         ]);
