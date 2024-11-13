@@ -24,153 +24,17 @@ use Telegram\Bot\Keyboard\Keyboard;
 class TelegramService
 {
     protected Api $telegram;
+    protected BotUser $user;
 
     public function __construct()
     {
         $this->telegram = new Api(config('telegram.bot_token'));
     }
 
-    public function processCallbackQuery($chatId, $data, $callbackQuery)
+    public function processMessage($chatId, $text, $step, $message, $user)
     {
-        if (str_starts_with($data, 'confirm_assembly_')) {
-            $assemblyId = str_replace('confirm_assembly_', '', $data);
-            $this->assemblyConfirmation($chatId, $assemblyId);
-        }
+        $this->user = $user;
 
-        if (str_starts_with($data, 'confirm_basket_items_')) {
-            $basketId = str_replace('confirm_basket_items_', '', $data);
-            $this->basketConfirmation($chatId, $basketId);
-        }
-
-        if (str_starts_with($data, 'delete_assembly_')) {
-            $assemblyId = str_replace('delete_assembly_', '', $data);
-            $this->deleteAssembly($chatId, $assemblyId, $callbackQuery);
-        }
-
-        $parts = explode(':', $data);
-
-        if (count($parts) < 2) {
-            // $this->telegram->answerCallbackQuery([
-            //     'callback_query_id' => $callbackQuery->getId(),
-            //     'text' => 'Неверный формат данных.',
-            //     'show_alert' => true
-            // ]);
-            return;
-        }
-
-        $action = $parts[0];
-        $type = $parts[1];
-        $id = isset($parts[2]) ? $parts[2] : null;
-
-        switch ($action) {
-            case 'add':
-                $this->handleAddAction($chatId, $type, $id, $callbackQuery);
-                break;
-
-            case 'remove':
-                $this->handleRemoveAction($chatId, $type, $id, $callbackQuery);
-                break;
-
-            case 'current':
-                $this->handleCurrentAction($chatId, $type, $id, $callbackQuery);
-                break;
-
-            default:
-                $this->telegram->answerCallbackQuery([
-                    'callback_query_id' => $callbackQuery->getId(),
-                    'text' => 'Неизвестное действие.',
-                    'show_alert' => true
-                ]);
-                break;
-        }
-    }
-
-    private function handleCurrentAction($chatId, $type, $id, $callbackQuery)
-    {
-        $count = $this->getCurrentCount($type, $id);
-
-        $this->telegram->answerCallbackQuery([
-            'callback_query_id' => $callbackQuery->getId(),
-            'text' => 'Текущее количество: ' . $count,
-            'show_alert' => true
-        ]);
-    }
-
-    private function handleAddAction($chatId, $type, $id, $callbackQuery)
-    {
-        switch ($type) {
-            case 'product':
-                $this->addProductToBasket($chatId, $id, null, null, $callbackQuery);
-                break;
-
-            case 'component':
-                $this->addProductToBasket($chatId, null, $id, null, $callbackQuery);
-                break;
-
-            case 'admin_assembly':
-                $this->addProductToBasket($chatId, null, null, $id, $callbackQuery);
-                break;
-
-            default:
-                $this->telegram->answerCallbackQuery([
-                    'callback_query_id' => $callbackQuery->getId(),
-                    'text' => 'Неизвестный тип объекта.',
-                    'show_alert' => true
-                ]);
-                break;
-        }
-    }
-
-    private function handleRemoveAction($chatId, $type, $id, $callbackQuery)
-    {
-        switch ($type) {
-            case 'product':
-                $this->removeProductFromBasket($chatId, $id, null, null, $callbackQuery);
-                break;
-
-            case 'component':
-                $this->removeProductFromBasket($chatId, null, $id, null, $callbackQuery);
-                break;
-
-            case 'admin_assembly':
-                $this->removeProductFromBasket($chatId, null, null, $id, $callbackQuery);
-                break;
-
-            default:
-                $this->telegram->answerCallbackQuery([
-                    'callback_query_id' => $callbackQuery->getId(),
-                    'text' => 'Неизвестный тип объекта.',
-                    'show_alert' => true
-                ]);
-                break;
-        }
-    }
-
-    private function getCurrentCount($type, $id)
-    {
-        $basket = $this->getUserBasketByTypeAndId($type, $id);
-
-        if (!$basket) {
-            return 0;
-        }
-
-        switch ($type) {
-            case 'product':
-                return $basket->product_count ?? 0;
-
-            case 'component':
-                return $basket->component_count ?? 0;
-
-            case 'admin_assembly':
-                return $basket->admin_assembly_id ? 1 : 0;
-
-            default:
-                return 0;
-        }
-    }
-
-    public function processMessage($chatId, $text, $step, $message)
-    {
         $commands = [
             '🛍️ Корзина' => 'basketItems',
             '💼 Выбрать сборку' => 'adminAssemblies',
@@ -218,8 +82,7 @@ class TelegramService
                 break;
             case 'show_product':
                 if ($text == '◀️ Назад') {
-                    $botUser = BotUser::query()->where('chat_id', $chatId)->first();
-                    $this->showSubCategories($chatId, null, $botUser->previous->product_sub_category_id);
+                    $this->showSubCategories($chatId, null, $this->user->previous->product_sub_category_id);
                     return;
                 }
 
@@ -315,7 +178,7 @@ class TelegramService
     }
 
     // Auth
-    private function processLanguageChoice($chatId, $text)
+    private function processLanguageChoice($chatId, $text): void
     {
         if ($text === '🇷🇺 Русский') {
             $this->updateUserLang($chatId, 'ru');
@@ -336,7 +199,7 @@ class TelegramService
         }
     }
 
-    private function processPhoneRequest($chatId, $message)
+    private function processPhoneRequest($chatId, $message): void
     {
         if ($message->getContact()) {
             $phone = $message->getContact()->getPhoneNumber();
@@ -350,7 +213,7 @@ class TelegramService
         }
     }
 
-    private function processPhoneConfirmation($chatId, $text)
+    private function processPhoneConfirmation($chatId, $text): void
     {
         if ($text === 'Да') {
             $this->telegram->sendMessage(['chat_id' => $chatId, 'text' => "Введите Ф.И.О."]);
@@ -365,13 +228,13 @@ class TelegramService
         }
     }
 
-    private function processNameRequest($chatId, $text)
+    private function processNameRequest($chatId, $text): void
     {
         $this->saveUserName($chatId, $text);
         $this->showMainMenu($chatId);
     }
 
-    private function requestPhoneKeyboard()
+    private function requestPhoneKeyboard(): Keyboard
     {
         return new Keyboard(
             [
@@ -382,30 +245,9 @@ class TelegramService
         );
     }
 
-    private function confirmationKeyboard()
+    private function confirmationKeyboard(): Keyboard
     {
         return new Keyboard(['keyboard' => [['Да', 'Нет']], 'resize_keyboard' => true, 'one_time_keyboard' => true]);
-    }
-
-    private function updateUserLang($chatId, $lang)
-    {
-        BotUser::where('chat_id', $chatId)->update(['lang' => $lang]);
-    }
-
-    private function saveUserPhone($chatId, $phone)
-    {
-        BotUser::where('chat_id', $chatId)->update(['phone_number' => $phone]);
-    }
-
-    private function saveUserName($chatId, $fullName)
-    {
-        BotUser::where('chat_id', $chatId)->update(['full_name' => $fullName]);
-    }
-
-    // Update user step
-    private function updateUserStep($chatId, $step)
-    {
-        BotUser::query()->updateOrCreate(['chat_id' => $chatId], ['step' => $step]);
     }
 
     // Main menu
@@ -466,7 +308,12 @@ class TelegramService
             $category = ProductCategory::query()->with('subCategories')->where('name', $name)->first();
         }
 
-        BotUser::query()->where('chat_id', $chatId)->first()->previous()->delete();
+        $this->user->previous()->updateOrCreate(
+            ['bot_user_id' => $this->user->id],
+            [
+                'product_sub_category_id' => null,
+            ]
+        );
 
         if (!$category) {
             $this->telegram->sendMessage([
@@ -547,7 +394,8 @@ class TelegramService
             ]);
             return;
         } else {
-            BotUser::query()->where('chat_id', $chatId)->first()->previous()->create(
+            $this->user->previous()->updateOrCreate(
+                ['bot_user_id' => $this->user->id],
                 [
                     'product_sub_category_id' => $subCategory->id,
                 ]
@@ -557,7 +405,7 @@ class TelegramService
         }
     }
 
-    private function showProducts($chatId, $products)
+    private function showProducts($chatId, $products): void
     {
         $keyboard = [];
 
@@ -630,7 +478,7 @@ class TelegramService
 
                 $mediaGroup[] = [
                     'type' => 'photo',
-                    'media' => $fullPhotoUrl,
+                    'media' => 'https://test-test.co.uz/storage/component_photos/FjTdIe35vkjSX4kSKSk5ySVDWK6TDiA6qR06DGiA.jpg',
                 ];
             }
 
@@ -654,497 +502,6 @@ class TelegramService
             'parse_mode' => 'Markdown',
             'reply_markup' => $keyboard,
         ]);
-    }
-
-    // Basket
-    private function getUserBasketByTypeAndId($type, $id)
-    {
-        // Получаем пользователя по chat_id
-        $botUser = BotUser::where('chat_id', $id)->first(); // Предполагается, что id соответствует chat_id
-        if (!$botUser) {
-            return null;
-        }
-
-        // Получаем корзину пользователя
-        $basket = Basket::where('bot_user_id', $botUser->id)->first();
-        if (!$basket) {
-            return null;
-        }
-
-        // Получаем товар из корзины по типу и id
-        switch ($type) {
-            case 'product':
-                return BasketItem::where('basket_id', $basket->id)
-                    ->where('product_id', $id)
-                    ->first();
-
-            case 'component':
-                return BasketItem::where('basket_id', $basket->id)
-                    ->where('component_id', $id)
-                    ->first();
-
-            case 'admin_assembly':
-                return BasketItem::where('basket_id', $basket->id)
-                    ->where('admin_assembly_id', $id)
-                    ->first();
-
-            default:
-                return null;
-        }
-    }
-
-    // Basket
-    private function addProductToBasket(
-        $chatId,
-        $productId = null,
-        $componentId = null,
-        $adminAssemblyId = null,
-        $callbackQuery
-    ) {
-        $itemType = null;
-        $item = null;
-
-        if ($adminAssemblyId) {
-            $item = AdminAssembly::find($adminAssemblyId);
-            $itemType = 'admin_assembly';
-        } elseif ($productId) {
-            $item = Product::find($productId);
-            $itemType = 'product';
-        } elseif ($componentId) {
-            $item = Component::find($componentId);
-            $itemType = 'component';
-        } else {
-            $this->telegram->answerCallbackQuery([
-                'callback_query_id' => $callbackQuery->getId(),
-                'text' => 'Произошла ошибка. Повторите попытку.',
-            ]);
-            return;
-        }
-
-        if (!$item) {
-            $errorMessages = [
-                'admin_assembly' => 'Сборка админа не найдена.',
-                'product' => 'Продукт не найден.',
-                'component' => 'Компонент не найден.',
-            ];
-
-            $this->telegram->sendMessage([
-                'chat_id' => $chatId,
-                'text' => $errorMessages[$itemType] ?? 'Произошла ошибка.',
-            ]);
-            return;
-        }
-
-        $botUser = BotUser::where('chat_id', $chatId)->first();
-        if (!$botUser) {
-            $this->telegram->sendMessage([
-                'chat_id' => $chatId,
-                'text' => 'Пользователь не найден! 😕'
-            ]);
-            return;
-        }
-
-        $basket = Basket::firstOrCreate(['bot_user_id' => $botUser->id]);
-
-        $basketItem = BasketItem::where('basket_id', $basket->id)
-            ->where($itemType . '_id', $item->id)
-            ->first();
-
-        if ($basketItem) {
-            // Проверка доступного количества
-            if ($itemType === 'product' && $item->quantity < ($basketItem->product_count + 1)) {
-                $this->telegram->answerCallbackQuery([
-                    'callback_query_id' => $callbackQuery->getId(),
-                    'text' => 'К сожалению, вы превысили доступное количество этого товара.',
-                    'show_alert' => true
-                ]);
-                return;
-            } elseif ($itemType === 'component' && $item->quantity < ($basketItem->component_count + 1)) {
-                $this->telegram->answerCallbackQuery([
-                    'callback_query_id' => $callbackQuery->getId(),
-                    'text' => 'К сожалению, вы превысили доступное количество этого компонента.',
-                    'show_alert' => true
-                ]);
-                return;
-            } else {
-                if (in_array($itemType, ['component', 'product'])) {
-                    $basketItem->increment($itemType . '_count');
-                }
-            }
-        } else {
-            if (in_array($itemType, ['component', 'product'])) {
-                BasketItem::create([
-                    'basket_id' => $basket->id,
-                    $itemType . '_id' => $item->id,
-                    $itemType . '_count' => 1,
-                    'price' => $item->price,
-                ]);
-            } else { // admin_assembly
-                BasketItem::create([
-                    'basket_id' => $basket->id,
-                    $itemType . '_id' => $item->id,
-                    'price' => $item->price,
-                ]);
-            }
-        }
-
-        $this->updateBasketTotalPrice($basket->id, $chatId, $callbackQuery);
-    }
-
-    private function removeProductFromBasket(
-        $chatId,
-        $productId = null,
-        $componentId = null,
-        $adminAssemblyId = null,
-        $callbackQuery
-    ) {
-        $botUser = BotUser::where('chat_id', $chatId)->first();
-        if (!$botUser) {
-            $this->telegram->sendMessage([
-                'chat_id' => $chatId,
-                'text' => 'Пользователь не найден! 😕'
-            ]);
-            return;
-        }
-
-        $basket = Basket::where('bot_user_id', $botUser->id)->first();
-
-        if (!$basket) {
-            $this->telegram->sendMessage([
-                'chat_id' => $chatId,
-                'text' => 'Корзина пуста.'
-            ]);
-            return;
-        }
-
-        $itemType = null;
-        $id = null;
-
-        if ($adminAssemblyId) {
-            $itemType = 'admin_assembly';
-            $id = $adminAssemblyId;
-        } elseif ($productId) {
-            $itemType = 'product';
-            $id = $productId;
-        } elseif ($componentId) {
-            $itemType = 'component';
-            $id = $componentId;
-        }
-
-        if (!$itemType || !$id) {
-            $this->telegram->answerCallbackQuery([
-                'callback_query_id' => $callbackQuery->getId(),
-                'text' => 'Произошла ошибка. Повторите попытку.',
-                'show_alert' => true
-            ]);
-            return;
-        }
-
-        $basketItem = BasketItem::where('basket_id', $basket->id)
-            ->where($itemType . '_id', $id)
-            ->first();
-
-        if ($basketItem) {
-            if (($itemType === 'product' && $basketItem->product_count > 1) ||
-                ($itemType === 'component' && $basketItem->component_count > 1)
-            ) {
-                $basketItem->decrement($itemType . '_count');
-            } else {
-                $basketItem->delete();
-            }
-        }
-
-        $this->updateBasketTotalPrice($basket->id, $chatId, $callbackQuery);
-    }
-
-    private function updateBasketTotalPrice($basketId, $chatId, $callbackQuery)
-    {
-        $basketItems = BasketItem::where('basket_id', $basketId)->get();
-        $totalPrice = $basketItems->sum(function ($item) {
-            $itemTotal = $item->price;
-            if ($item->product_count) {
-                $itemTotal *= $item->product_count;
-            } elseif ($item->component_count) {
-                $itemTotal *= $item->component_count;
-            } elseif ($item->admin_assembly_id) {
-                $itemTotal *= 1; // Предполагается, что количество для сборок админа всегда 1
-            }
-            return $itemTotal;
-        });
-
-        $basket = Basket::find($basketId);
-        $basket->update(['total_price' => $totalPrice]);
-
-        $this->updateBasketMessage($chatId, $basket, $callbackQuery);
-    }
-
-    private function updateBasketMessage($chatId, $basket, $callbackQuery)
-    {
-        $basketItems = BasketItem::where('basket_id', $basket->id)->get();
-        $totalPrice = $basket->total_price;
-        $inlineKeyboard = [];
-
-        foreach ($basketItems as $item) {
-            if ($item->product_id) {
-                $inlineKeyboard[] = [
-                    ['text' => '-', 'callback_data' => 'remove:product:' . $item->product_id],
-                    ['text' => $item->product_count, 'callback_data' => 'current:product:' . $item->product_id],
-                    ['text' => '+', 'callback_data' => 'add:product:' . $item->product_id],
-                ];
-            }
-
-            if ($item->component_id) {
-                $inlineKeyboard[] = [
-                    ['text' => '-', 'callback_data' => 'remove:component:' . $item->component_id],
-                    ['text' => $item->component_count, 'callback_data' => 'current:component:' . $item->component_id],
-                    ['text' => '+', 'callback_data' => 'add:component:' . $item->component_id],
-                ];
-            }
-
-            if ($item->admin_assembly_id) {
-                $inlineKeyboard[] = [
-                    ['text' => 'Удалить', 'callback_data' => 'remove:admin_assembly:' . $item->admin_assembly_id],
-                ];
-            }
-        }
-
-
-        // Создание клавиатуры с кнопками
-        $keyboard = Keyboard::make(['inline_keyboard' => $inlineKeyboard]);
-
-        // Обновление текста сообщения корзины
-        $this->telegram->editMessageText([
-            'chat_id' => $chatId,
-            'message_id' => $callbackQuery->getMessage()->getMessageId(),
-            'text' => "🛍️ Ваша корзина\n\nТекущая стоимость: $totalPrice сум",
-            'reply_markup' => $keyboard,
-        ]);
-
-        // Ответ на callback_query
-        $this->telegram->answerCallbackQuery([
-            'callback_query_id' => $callbackQuery->getId(),
-            'text' => 'Корзина обновлена.',
-        ]);
-    }
-
-
-    private function basketItems($chatId)
-    {
-        // Получение пользователя по chat_id
-        $botUser = BotUser::where('chat_id', $chatId)->first();
-
-        if (!$botUser) {
-            $this->telegram->sendMessage([
-                'chat_id' => $chatId,
-                'text' => 'Пользователь не найден! 😕'
-            ]);
-            return;
-        }
-
-        // Получение корзины пользователя вместе с товарами
-        $basket = $botUser->basket()->with('basketItems')->first();
-
-        if (!$basket) {
-            $this->telegram->sendMessage([
-                'chat_id' => $chatId,
-                'text' => 'Корзина не найдена! 😕'
-            ]);
-            return;
-        }
-
-        // Получение товаров в корзине
-        $basketItems = $basket->basketItems()->get();
-
-        if ($basketItems->isEmpty()) {
-            $this->telegram->sendMessage([
-                'chat_id' => $chatId,
-                'text' => 'Корзина пуста! 😕'
-            ]);
-            return;
-        }
-
-        // Инициализация переменных для сообщения и клавиатуры
-        $inlineKeyboard = [];
-        $messageText = "🛍️ Ваша корзина:\n\n";
-        $mediaGroup = [];
-
-        foreach ($basketItems as $basketItem) {
-            if ($basketItem->product_id) {
-                $product = Product::find($basketItem->product_id);
-                if ($product) {
-                    $messageText .= "💻 *{$product->name}*\n"
-                        . "🔧 *Бренд:* _{$product->brand}_\n"
-                        . "💵 *Цена:* *{$product->price} сум*\n"
-                        . "📦 *В наличии:* _{$product->quantity} шт._\n"
-                        . "📊 *Количество:* {$basketItem->product_count}\n\n";
-
-                    // Добавление фотографий продукта в медиа-группу
-                    $photos = json_decode($product->photos, true);
-                    if (!empty($photos) && is_array($photos)) {
-                        foreach ($photos as $photo) {
-                            $photoPath = Storage::url('public/' . $photo);
-                            $fullPhotoUrl = env('APP_URL') . $photoPath;
-
-                            $mediaGroup[] = [
-                                'type' => 'photo',
-                                'media' => $fullPhotoUrl,
-                            ];
-                        }
-                    }
-
-                    // Добавление кнопок управления количеством продукта
-                    $inlineKeyboard[] = [
-                        ['text' => '-', 'callback_data' => 'remove:product:' . $product->id],
-                        ['text' => $basketItem->product_count, 'callback_data' => 'current:product:' . $product->id],
-                        ['text' => '+', 'callback_data' => 'add:product:' . $product->id],
-                    ];
-                }
-            }
-
-            if ($basketItem->component_id) {
-                $component = Component::find($basketItem->component_id);
-                if ($component) {
-                    $messageText .= "🔧 *{$component->name}*\n"
-                        . "🔧 *Бренд:* _{$component->brand}_\n"
-                        . "💵 *Цена:* *{$component->price} сум*\n"
-                        . "📦 *В наличии:* _{$component->quantity} шт._\n"
-                        . "📊 *Количество:* {$basketItem->component_count}\n\n";
-
-                    // Добавление фотографий компонента в медиа-группу
-                    $photos = json_decode($component->photos, true);
-                    if (!empty($photos) && is_array($photos)) {
-                        foreach ($photos as $photo) {
-                            $photoPath = Storage::url('public/' . $photo);
-                            $fullPhotoUrl = env('APP_URL') . $photoPath;
-
-                            $mediaGroup[] = [
-                                'type' => 'photo',
-                                'media' => $fullPhotoUrl,
-                            ];
-                        }
-                    }
-
-                    // Добавление кнопок управления количеством компонента
-                    $inlineKeyboard[] = [
-                        ['text' => '-', 'callback_data' => 'remove:component:' . $component->id],
-                        [
-                            'text' => $basketItem->component_count,
-                            'callback_data' => 'current:component:' . $component->id
-                        ],
-                        ['text' => '+', 'callback_data' => 'add:component:' . $component->id],
-                    ];
-                }
-            }
-
-            if ($basketItem->admin_assembly_id) {
-                $adminAssembly = AdminAssembly::find($basketItem->admin_assembly_id);
-                if ($adminAssembly) {
-                    $messageText .= "*{$adminAssembly->title}*\n"
-                        . "{$adminAssembly->description}\n"
-                        . "💵 *Цена:* *{$adminAssembly->price} сум*\n\n";
-
-                    // Добавление фотографий сборки админа в медиа-группу
-                    $photos = json_decode($adminAssembly->photos, true);
-                    if (!empty($photos) && is_array($photos)) {
-                        foreach ($photos as $photo) {
-                            $photoPath = Storage::url('public/' . $photo);
-                            $fullPhotoUrl = env('APP_URL') . $photoPath;
-
-                            $mediaGroup[] = [
-                                'type' => 'photo',
-                                'media' => $fullPhotoUrl,
-                            ];
-                        }
-                    }
-
-                    // Добавление кнопки удаления сборки админа из корзины
-                    $inlineKeyboard[] = [
-                        ['text' => 'Удалить', 'callback_data' => 'remove:admin_assembly:' . $adminAssembly->id],
-                    ];
-                }
-            }
-        }
-
-        // Отправка группы медиа (фото), если есть фотографии
-        if (!empty($mediaGroup)) {
-            $this->telegram->sendMediaGroup([
-                'chat_id' => $chatId,
-                'media' => json_encode($mediaGroup),
-            ]);
-        }
-
-        // Добавление общей стоимости в сообщение
-        $messageText .= "🛍️ *Общая стоимость:* *{$basket->total_price} сум*";
-
-        $inlineKeyboard[] = [
-            ['text' => 'Оформить', 'callback_data' => 'confirm_basket_items_' . $basket->id],
-        ];
-        // Создание клавиатуры с кнопками
-        $keyboard = Keyboard::make(['inline_keyboard' => $inlineKeyboard]);
-
-        // Отправка или обновление сообщения с корзиной
-        $this->telegram->sendMessage([
-            'chat_id' => $chatId,
-            'text' => $messageText,
-            'parse_mode' => 'Markdown',
-            'reply_markup' => $keyboard,
-        ]);
-    }
-
-    // Admin Assemblies
-    private function adminAssemblies($chatId): void
-    {
-        $adminAssemblies = AdminAssembly::all();
-
-        if ($adminAssemblies->count() < 1) {
-            $this->telegram->sendMessage([
-                'chat_id' => $chatId,
-                'text' => 'Сборок админа нету в наличии.'
-            ]);
-            return;
-        }
-
-        foreach ($adminAssemblies as $adminAssembly) {
-            $photos = json_decode($adminAssembly->photos, true);
-
-            $description = "*{$adminAssembly->title}*\n\n"
-                . "{$adminAssembly->description}\n\n"
-                . "💵 *Цена:* *{$adminAssembly->price} сум*\n\n";
-
-            $mediaGroup = [];
-            if (!empty($photos) && is_array($photos)) {
-                foreach ($photos as $index => $photo) {
-                    $photoPath = Storage::url('public/' . $photo);
-                    $fullPhotoUrl = env('APP_URL') . $photoPath;
-
-                    $mediaGroup[] = [
-                        'type' => 'photo',
-                        'media' => $fullPhotoUrl,
-                        'caption' => $index === 0 ? $description : '',
-                        'parse_mode' => 'Markdown'
-                    ];
-                }
-
-                $this->telegram->sendMediaGroup([
-                    'chat_id' => $chatId,
-                    'media' => json_encode($mediaGroup)
-                ]);
-            }
-
-            $keyboard = Keyboard::make([
-                'inline_keyboard' => [
-                    [
-                        ['text' => '+', 'callback_data' => 'add:admin_assembly:' . $adminAssembly->id],
-                    ]
-                ]
-            ]);
-
-            $this->telegram->sendMessage([
-                'chat_id' => $chatId,
-                'text' => "🛍️ Добавить в корзину",
-                'reply_markup' => $keyboard,
-            ]);
-        }
     }
 
     // Component
@@ -1296,7 +653,7 @@ class TelegramService
 
                 $mediaGroup[] = [
                     'type' => 'photo',
-                    'media' => $fullPhotoUrl,
+                    'media' => 'https://test-test.co.uz/storage/component_photos/FjTdIe35vkjSX4kSKSk5ySVDWK6TDiA6qR06DGiA.jpg',
                 ];
             }
             $this->telegram->sendMediaGroup([
@@ -1322,9 +679,262 @@ class TelegramService
         ]);
     }
 
+    // Admin Assemblies
+    private function adminAssemblies($chatId): void
+    {
+        $adminAssemblies = AdminAssembly::all();
 
-    // User Assemblies
-    private function createAssembly($chatId)
+        if ($adminAssemblies->count() < 1) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => 'Сборок админа нету в наличии.'
+            ]);
+            return;
+        }
+
+        foreach ($adminAssemblies as $adminAssembly) {
+            $description = "*{$adminAssembly->title}*\n\n"
+                . "{$adminAssembly->description}\n\n"
+                . "💵 *Цена:* *{$adminAssembly->price} сум*\n\n";
+
+            $mediaGroup = [];
+            if ($adminAssembly->photos) {
+                $photos = json_decode($adminAssembly->photos, true);
+                foreach ($photos as $index => $photo) {
+                    $photoPath = Storage::url('public/' . $photo);
+                    $fullPhotoUrl = env('APP_URL') . $photoPath;
+
+                    $mediaGroup[] = [
+                        'type' => 'photo',
+                        'media' => 'https://test-test.co.uz/storage/component_photos/FjTdIe35vkjSX4kSKSk5ySVDWK6TDiA6qR06DGiA.jpg',
+                    ];
+                }
+
+                $this->telegram->sendMediaGroup([
+                    'chat_id' => $chatId,
+                    'media' => json_encode($mediaGroup)
+                ]);
+            }
+
+            $keyboard = Keyboard::make([
+                'inline_keyboard' => [
+                    [
+                        ['text' => '+', 'callback_data' => 'add:admin_assembly:' . $adminAssembly->id],
+                    ]
+                ]
+            ]);
+
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => $description,
+                'reply_markup' => $keyboard,
+                'parse_mode' => 'Markdown'
+            ]);
+        }
+    }
+
+    // Setting
+    private function setting($chatId)
+    {
+        $keyboard[] = [
+            [
+                'text' => 'Полное имя'
+            ],
+            [
+                'text' => 'Язык'
+            ],
+        ];
+
+        $keyboard[] = [
+            [
+                'text' => 'Назад',
+            ],
+        ];
+
+        $reply_markup = new Keyboard([
+            'keyboard' => $keyboard,
+            'resize_keyboard' => true,
+        ]);
+
+        $lang = $this->user->lang == 'ru' ? 'Русский' : "O'zbekcha";
+
+        $this->telegram->sendMessage([
+            'chat_id' => $chatId,
+            'text' => '*Настройки*' . PHP_EOL .
+                'Язык: ' . $lang . PHP_EOL .
+                'Полное имя: ' . $this->user->full_name . PHP_EOL .
+                'Номер телефона: ' . $this->user->phone_number,
+            'parse_mode' => 'Markdown',
+            'reply_markup' => $reply_markup
+        ]);
+
+        $this->updateUserStep($chatId, 'setting');
+    }
+
+    // Users
+    private function changeUserFullName($chatId, $fullName): void
+    {
+        $this->user->update(['full_name' => $fullName]);
+    }
+
+    private function updateUserLang($chatId, $lang): void
+    {
+        $this->user->update(['lang' => $lang]);
+    }
+
+    private function saveUserPhone($chatId, $phone): void
+    {
+        $this->user->update(['phone_number' => $phone]);
+    }
+
+    private function saveUserName($chatId, $fullName): void
+    {
+        $this->user->update(['full_name' => $fullName]);
+    }
+
+    private function updateUserStep($chatId, $step): void
+    {
+        $this->user->updateOrCreate(['chat_id' => $chatId], ['step' => $step]);
+    }
+
+
+    // queries
+    public function processCallbackQuery($chatId, $data, $callbackQuery)
+    {
+        if (str_starts_with($data, 'confirm_assembly_')) {
+            $assemblyId = str_replace('confirm_assembly_', '', $data);
+            $this->assemblyConfirmation($chatId, $assemblyId);
+        }
+
+        if (str_starts_with($data, 'confirm_basket_items_')) {
+            $basketId = str_replace('confirm_basket_items_', '', $data);
+            $this->basketConfirmation($chatId, $basketId);
+        }
+
+        if (str_starts_with($data, 'delete_assembly_')) {
+            $assemblyId = str_replace('delete_assembly_', '', $data);
+            $this->deleteAssembly($chatId, $assemblyId, $callbackQuery);
+        }
+
+        $parts = explode(':', $data);
+
+        if (count($parts) < 2) {
+            return;
+        }
+
+        $action = $parts[0];
+        $type = $parts[1];
+        $id = isset($parts[2]) ? $parts[2] : null;
+
+        switch ($action) {
+            case 'add':
+                $this->handleAddAction($chatId, $type, $id, $callbackQuery);
+                break;
+
+            case 'remove':
+                $this->handleRemoveAction($chatId, $type, $id, $callbackQuery);
+                break;
+
+            case 'current':
+                $this->handleCurrentAction($chatId, $type, $id, $callbackQuery);
+                break;
+
+            default:
+                $this->telegram->answerCallbackQuery([
+                    'callback_query_id' => $callbackQuery->getId(),
+                    'text' => 'Неизвестное действие.',
+                    'show_alert' => true
+                ]);
+                break;
+        }
+    }
+
+    private function handleCurrentAction($chatId, $type, $id, $callbackQuery): void
+    {
+        $count = $this->getCurrentCount($type, $id);
+
+        $this->telegram->answerCallbackQuery([
+            'callback_query_id' => $callbackQuery->getId(),
+            'text' => 'Текущее количество: ' . $count,
+            'show_alert' => true
+        ]);
+    }
+
+    private function handleAddAction($chatId, $type, $id, $callbackQuery): void
+    {
+        switch ($type) {
+            case 'product':
+                $this->addProductToBasket($chatId, $id, null, null, $callbackQuery);
+                break;
+
+            case 'component':
+                $this->addProductToBasket($chatId, null, $id, null, $callbackQuery);
+                break;
+
+            case 'admin_assembly':
+                $this->addProductToBasket($chatId, null, null, $id, $callbackQuery);
+                break;
+
+            default:
+                $this->telegram->answerCallbackQuery([
+                    'callback_query_id' => $callbackQuery->getId(),
+                    'text' => 'Неизвестный тип объекта.',
+                    'show_alert' => true
+                ]);
+                break;
+        }
+    }
+
+    private function handleRemoveAction($chatId, $type, $id, $callbackQuery)
+    {
+        switch ($type) {
+            case 'product':
+                $this->removeProductFromBasket($chatId, $id, null, null, $callbackQuery);
+                break;
+
+            case 'component':
+                $this->removeProductFromBasket($chatId, null, $id, null, $callbackQuery);
+                break;
+
+            case 'admin_assembly':
+                $this->removeProductFromBasket($chatId, null, null, $id, $callbackQuery);
+                break;
+
+            default:
+                $this->telegram->answerCallbackQuery([
+                    'callback_query_id' => $callbackQuery->getId(),
+                    'text' => 'Неизвестный тип объекта.',
+                    'show_alert' => true
+                ]);
+                break;
+        }
+    }
+
+    private function getCurrentCount($type, $id)
+    {
+        $basket = $this->getUserBasketByTypeAndId($type, $id);
+
+        if (!$basket) {
+            return 0;
+        }
+
+        switch ($type) {
+            case 'product':
+                return $basket->product_count ?? 0;
+
+            case 'component':
+                return $basket->component_count ?? 0;
+
+            case 'admin_assembly':
+                return $basket->admin_assembly_id ? 1 : 0;
+
+            default:
+                return 0;
+        }
+    }
+
+    // For test
+    private function createAssembly($chatId): void
     {
         $firstCategory = ComponentCategory::query()->first();
 
@@ -1348,7 +958,7 @@ class TelegramService
         $this->selectCategory($chatId, $firstCategory->id, true);
     }
 
-    private function cancelAssembly($chatId)
+    private function cancelAssembly($chatId): void
     {
         $user = BotUser::query()->where('chat_id', $chatId)->first();
 
@@ -1363,7 +973,7 @@ class TelegramService
         $this->showMainMenu($chatId);
     }
 
-    private function selectCategory($chatId, $categoryId, $isFirst = false)
+    private function selectCategory($chatId, $categoryId, $isFirst = false): void
     {
         $components = Component::query()->where('component_category_id', $categoryId)
             ->where('quantity', '>', 0)
@@ -1396,7 +1006,7 @@ class TelegramService
     }
 
 
-    private function selectComponent($chatId, $component)
+    private function selectComponent($chatId, $component): void
     {
         $component = Component::query()->where('name', $component)->first();
 
@@ -1484,7 +1094,7 @@ class TelegramService
         return ComponentCategory::query()->find($lastSelectedCategoryId);
     }
 
-    private function completeAssembly($chatId)
+    private function completeAssembly($chatId): void
     {
         $user = BotUser::query()->where('chat_id', $chatId)->first();
         if (!$user) {
@@ -1541,7 +1151,7 @@ class TelegramService
         $this->showMainMenu($chatId);
     }
 
-    private function myAssembly($chatId)
+    private function myAssembly($chatId): void
     {
         $user = BotUser::query()->where('chat_id', $chatId)->first();
         if (!$user) {
@@ -1596,7 +1206,7 @@ class TelegramService
         }
     }
 
-    private function deleteAssembly($chatId, $assemblyId, $callbackQuery)
+    private function deleteAssembly($chatId, $assemblyId, $callbackQuery): void
     {
         Assembly::query()->find($assemblyId)->delete();
 
@@ -1614,7 +1224,7 @@ class TelegramService
         ]);
     }
 
-    private function checkCompatibility($chatId, $selectedComponent)
+    private function checkCompatibility($chatId, $selectedComponent): bool
     {
         $user = BotUser::query()->where('chat_id', $chatId)->first();
         if (!$user) {
@@ -1654,7 +1264,7 @@ class TelegramService
         return true;
     }
 
-    private function assemblyConfirmation($chatId, $assemblyId)
+    private function assemblyConfirmation($chatId, $assemblyId): void
     {
         $user = BotUser::query()->where('chat_id', $chatId)->first();
 
@@ -1692,7 +1302,7 @@ class TelegramService
         ]);
     }
 
-    private function basketConfirmation($chatId, $basketId)
+    private function basketConfirmation($chatId, $basketId): void
     {
         $user = BotUser::query()->where('chat_id', $chatId)->first();
 
@@ -1738,48 +1348,419 @@ class TelegramService
         ]);
     }
 
-    // Setting
-    private function setting($chatId)
+    // For second test
+    private function getUserBasketByTypeAndId($type, $id)
     {
-        $user = BotUser::query()->where('chat_id', $chatId)->first();
+        $botUser = BotUser::where('chat_id', $id)->first();
+        if (!$botUser) {
+            return null;
+        }
 
-        $keyboard[] = [
-            [
-                'text' => 'Полное имя'
-            ],
-            [
-                'text' => 'Язык'
-            ],
-        ];
+        $basket = \App\Models\Basket::where('bot_user_id', $botUser->id)->first();
+        if (!$basket) {
+            return null;
+        }
 
-        $keyboard[] = [
-            [
-                'text' => 'Назад',
-            ],
-        ];
+        // Получаем товар из корзины по типу и id
+        switch ($type) {
+            case 'product':
+                return BasketItem::where('basket_id', $basket->id)
+                    ->where('product_id', $id)
+                    ->first();
 
-        $reply_markup = new Keyboard([
-            'keyboard' => $keyboard,
-            'resize_keyboard' => true,
+            case 'component':
+                return BasketItem::where('basket_id', $basket->id)
+                    ->where('component_id', $id)
+                    ->first();
+
+            case 'admin_assembly':
+                return BasketItem::where('basket_id', $basket->id)
+                    ->where('admin_assembly_id', $id)
+                    ->first();
+
+            default:
+                return null;
+        }
+    }
+
+    private function addProductToBasket(
+        $chatId,
+        $productId = null,
+        $componentId = null,
+        $adminAssemblyId = null,
+        $callbackQuery
+    ) {
+        $itemType = null;
+        $item = null;
+
+        if ($adminAssemblyId) {
+            $item = AdminAssembly::find($adminAssemblyId);
+            $itemType = 'admin_assembly';
+        } elseif ($productId) {
+            $item = Product::find($productId);
+            $itemType = 'product';
+        } elseif ($componentId) {
+            $item = Component::find($componentId);
+            $itemType = 'component';
+        } else {
+            $this->telegram->answerCallbackQuery([
+                'callback_query_id' => $callbackQuery->getId(),
+                'text' => 'Произошла ошибка. Повторите попытку.',
+            ]);
+            return;
+        }
+
+        if (!$item) {
+            $errorMessages = [
+                'admin_assembly' => 'Сборка админа не найдена.',
+                'product' => 'Продукт не найден.',
+                'component' => 'Компонент не найден.',
+            ];
+
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => $errorMessages[$itemType] ?? 'Произошла ошибка.',
+            ]);
+            return;
+        }
+
+        $botUser = BotUser::where('chat_id', $chatId)->first();
+        if (!$botUser) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => 'Пользователь не найден! 😕'
+            ]);
+            return;
+        }
+
+        $basket = \App\Models\Basket::firstOrCreate(['bot_user_id' => $botUser->id]);
+
+        $basketItem = BasketItem::where('basket_id', $basket->id)
+            ->where($itemType . '_id', $item->id)
+            ->first();
+
+        if ($basketItem) {
+            // Проверка доступного количества
+            if ($itemType === 'product' && $item->quantity < ($basketItem->product_count + 1)) {
+                $this->telegram->answerCallbackQuery([
+                    'callback_query_id' => $callbackQuery->getId(),
+                    'text' => 'К сожалению, вы превысили доступное количество этого товара.',
+                    'show_alert' => true
+                ]);
+                return;
+            } elseif ($itemType === 'component' && $item->quantity < ($basketItem->component_count + 1)) {
+                $this->telegram->answerCallbackQuery([
+                    'callback_query_id' => $callbackQuery->getId(),
+                    'text' => 'К сожалению, вы превысили доступное количество этого компонента.',
+                    'show_alert' => true
+                ]);
+                return;
+            } else {
+                if (in_array($itemType, ['component', 'product'])) {
+                    $basketItem->increment($itemType . '_count');
+                }
+            }
+        } else {
+            if (in_array($itemType, ['component', 'product'])) {
+                BasketItem::create([
+                    'basket_id' => $basket->id,
+                    $itemType . '_id' => $item->id,
+                    $itemType . '_count' => 1,
+                    'price' => $item->price,
+                ]);
+            } else { // admin_assembly
+                BasketItem::create([
+                    'basket_id' => $basket->id,
+                    $itemType . '_id' => $item->id,
+                    'price' => $item->price,
+                ]);
+            }
+        }
+
+        $this->updateBasketTotalPrice($basket->id, $chatId, $callbackQuery);
+    }
+
+    private function removeProductFromBasket(
+        $chatId,
+        $productId = null,
+        $componentId = null,
+        $adminAssemblyId = null,
+        $callbackQuery
+    ) {
+        $botUser = BotUser::where('chat_id', $chatId)->first();
+        if (!$botUser) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => 'Пользователь не найден! 😕'
+            ]);
+            return;
+        }
+
+        $basket = \App\Services\Telegram\Basket::where('bot_user_id', $botUser->id)->first();
+
+        if (!$basket) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => 'Корзина пуста.'
+            ]);
+            return;
+        }
+
+        $itemType = null;
+        $id = null;
+
+        if ($adminAssemblyId) {
+            $itemType = 'admin_assembly';
+            $id = $adminAssemblyId;
+        } elseif ($productId) {
+            $itemType = 'product';
+            $id = $productId;
+        } elseif ($componentId) {
+            $itemType = 'component';
+            $id = $componentId;
+        }
+
+        if (!$itemType || !$id) {
+            $this->telegram->answerCallbackQuery([
+                'callback_query_id' => $callbackQuery->getId(),
+                'text' => 'Произошла ошибка. Повторите попытку.',
+                'show_alert' => true
+            ]);
+            return;
+        }
+
+        $basketItem = BasketItem::where('basket_id', $basket->id)
+            ->where($itemType . '_id', $id)
+            ->first();
+
+        if ($basketItem) {
+            if (($itemType === 'product' && $basketItem->product_count > 1) ||
+                ($itemType === 'component' && $basketItem->component_count > 1)
+            ) {
+                $basketItem->decrement($itemType . '_count');
+            } else {
+                $basketItem->delete();
+            }
+        }
+
+        $this->updateBasketTotalPrice($basket->id, $chatId, $callbackQuery);
+    }
+
+    private function updateBasketTotalPrice($basketId, $chatId, $callbackQuery)
+    {
+        $basketItems = BasketItem::where('basket_id', $basketId)->get();
+        $totalPrice = $basketItems->sum(function ($item) {
+            $itemTotal = $item->price;
+            if ($item->product_count) {
+                $itemTotal *= $item->product_count;
+            } elseif ($item->component_count) {
+                $itemTotal *= $item->component_count;
+            } elseif ($item->admin_assembly_id) {
+                $itemTotal *= 1;
+            }
+            return $itemTotal;
+        });
+
+        $basket = Basket::find($basketId);
+        $basket->update(['total_price' => $totalPrice]);
+
+        $this->updateBasketMessage($chatId, $basket, $callbackQuery);
+    }
+
+    private function updateBasketMessage($chatId, $basket, $callbackQuery)
+    {
+        $basketItems = BasketItem::where('basket_id', $basket->id)->get();
+        $totalPrice = $basket->total_price;
+        $inlineKeyboard = [];
+
+        foreach ($basketItems as $item) {
+            if ($item->product_id) {
+                $inlineKeyboard[] = [
+                    ['text' => '-', 'callback_data' => 'remove:product:' . $item->product_id],
+                    ['text' => $item->product_count, 'callback_data' => 'current:product:' . $item->product_id],
+                    ['text' => '+', 'callback_data' => 'add:product:' . $item->product_id],
+                ];
+            }
+
+            if ($item->component_id) {
+                $inlineKeyboard[] = [
+                    ['text' => '-', 'callback_data' => 'remove:component:' . $item->component_id],
+                    ['text' => $item->component_count, 'callback_data' => 'current:component:' . $item->component_id],
+                    ['text' => '+', 'callback_data' => 'add:component:' . $item->component_id],
+                ];
+            }
+
+            if ($item->admin_assembly_id) {
+                $inlineKeyboard[] = [
+                    ['text' => 'Удалить', 'callback_data' => 'remove:admin_assembly:' . $item->admin_assembly_id],
+                ];
+            }
+        }
+
+
+        $keyboard = Keyboard::make(['inline_keyboard' => $inlineKeyboard]);
+
+        $this->telegram->editMessageText([
+            'chat_id' => $chatId,
+            'message_id' => $callbackQuery->getMessage()->getMessageId(),
+            'text' => "🛍️ Ваша корзина\n\nТекущая стоимость: $totalPrice сум",
+            'reply_markup' => $keyboard,
         ]);
 
-        $lang = $user->lang == 'ru' ? 'Русский' : "O'zbekcha";
+        $this->telegram->answerCallbackQuery([
+            'callback_query_id' => $callbackQuery->getId(),
+            'text' => 'Корзина обновлена.',
+        ]);
+    }
+
+
+    private function basketItems($chatId)
+    {
+        $botUser = BotUser::where('chat_id', $chatId)->first();
+
+        if (!$botUser) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => 'Пользователь не найден! 😕'
+            ]);
+            return;
+        }
+
+        $basket = $botUser->basket()->with('basketItems')->first();
+
+        if (!$basket) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => 'Корзина не найдена! 😕'
+            ]);
+            return;
+        }
+
+        $basketItems = $basket->basketItems()->get();
+
+        if ($basketItems->isEmpty()) {
+            $this->telegram->sendMessage([
+                'chat_id' => $chatId,
+                'text' => 'Корзина пуста! 😕'
+            ]);
+            return;
+        }
+
+        $inlineKeyboard = [];
+        $messageText = "🛍️ Ваша корзина:\n\n";
+        $mediaGroup = [];
+
+        foreach ($basketItems as $basketItem) {
+            if ($basketItem->product_id) {
+                $product = Product::find($basketItem->product_id);
+                if ($product) {
+                    $messageText .= "💻 *{$product->name}*\n"
+                        . "🔧 *Бренд:* _{$product->brand}_\n"
+                        . "💵 *Цена:* *{$product->price} сум*\n"
+                        . "📦 *В наличии:* _{$product->quantity} шт._\n"
+                        . "📊 *Количество:* {$basketItem->product_count}\n\n";
+
+                    $photos = json_decode($product->photos, true);
+                    if (!empty($photos) && is_array($photos)) {
+                        foreach ($photos as $photo) {
+                            $photoPath = Storage::url('public/' . $photo);
+                            $fullPhotoUrl = env('APP_URL') . $photoPath;
+
+                            $mediaGroup[] = [
+                                'type' => 'photo',
+                                'media' => $fullPhotoUrl,
+                            ];
+                        }
+                    }
+
+                    $inlineKeyboard[] = [
+                        ['text' => '-', 'callback_data' => 'remove:product:' . $product->id],
+                        ['text' => $basketItem->product_count, 'callback_data' => 'current:product:' . $product->id],
+                        ['text' => '+', 'callback_data' => 'add:product:' . $product->id],
+                    ];
+                }
+            }
+
+            if ($basketItem->component_id) {
+                $component = Component::find($basketItem->component_id);
+                if ($component) {
+                    $messageText .= "🔧 *{$component->name}*\n"
+                        . "🔧 *Бренд:* _{$component->brand}_\n"
+                        . "💵 *Цена:* *{$component->price} сум*\n"
+                        . "📦 *В наличии:* _{$component->quantity} шт._\n"
+                        . "📊 *Количество:* {$basketItem->component_count}\n\n";
+
+                    $photos = json_decode($component->photos, true);
+                    if (!empty($photos) && is_array($photos)) {
+                        foreach ($photos as $photo) {
+                            $photoPath = Storage::url('public/' . $photo);
+                            $fullPhotoUrl = env('APP_URL') . $photoPath;
+
+                            $mediaGroup[] = [
+                                'type' => 'photo',
+                                'media' => $fullPhotoUrl,
+                            ];
+                        }
+                    }
+
+                    $inlineKeyboard[] = [
+                        ['text' => '-', 'callback_data' => 'remove:component:' . $component->id],
+                        [
+                            'text' => $basketItem->component_count,
+                            'callback_data' => 'current:component:' . $component->id
+                        ],
+                        ['text' => '+', 'callback_data' => 'add:component:' . $component->id],
+                    ];
+                }
+            }
+
+            if ($basketItem->admin_assembly_id) {
+                $adminAssembly = AdminAssembly::find($basketItem->admin_assembly_id);
+                if ($adminAssembly) {
+                    $messageText .= "*{$adminAssembly->title}*\n"
+                        . "{$adminAssembly->description}\n"
+                        . "💵 *Цена:* *{$adminAssembly->price} сум*\n\n";
+
+                    $photos = json_decode($adminAssembly->photos, true);
+                    if (!empty($photos) && is_array($photos)) {
+                        foreach ($photos as $photo) {
+                            $photoPath = Storage::url('public/' . $photo);
+                            $fullPhotoUrl = env('APP_URL') . $photoPath;
+
+                            $mediaGroup[] = [
+                                'type' => 'photo',
+                                'media' => $fullPhotoUrl,
+                            ];
+                        }
+                    }
+
+                    $inlineKeyboard[] = [
+                        ['text' => 'Удалить', 'callback_data' => 'remove:admin_assembly:' . $adminAssembly->id],
+                    ];
+                }
+            }
+        }
+
+        if (!empty($mediaGroup)) {
+            $this->telegram->sendMediaGroup([
+                'chat_id' => $chatId,
+                'media' => json_encode($mediaGroup),
+            ]);
+        }
+
+        $messageText .= "🛍️ *Общая стоимость:* *{$basket->total_price} сум*";
+
+        $inlineKeyboard[] = [
+            ['text' => 'Оформить', 'callback_data' => 'confirm_basket_items_' . $basket->id],
+        ];
+
+        $keyboard = Keyboard::make(['inline_keyboard' => $inlineKeyboard]);
 
         $this->telegram->sendMessage([
             'chat_id' => $chatId,
-            'text' => '*Настройки*' . PHP_EOL .
-                'Язык: ' . $lang . PHP_EOL .
-                'Полное имя: ' . $user->full_name . PHP_EOL .
-                'Номер телефона: ' . $user->phone_number,
+            'text' => $messageText,
             'parse_mode' => 'Markdown',
-            'reply_markup' => $reply_markup
+            'reply_markup' => $keyboard,
         ]);
-
-        $this->updateUserStep($chatId, 'setting');
-    }
-
-    private function changeUserFullName($chatId, $fullName)
-    {
-        BotUser::query()->where('chat_id', $chatId)->update(['full_name' => $fullName]);
     }
 }

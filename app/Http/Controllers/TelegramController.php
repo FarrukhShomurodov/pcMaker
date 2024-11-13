@@ -53,7 +53,7 @@ class TelegramController extends Controller
                 return;
             }
 
-            $this->telegramService->processMessage($chatId, $text, $user->step, $message);
+            $this->telegramService->processMessage($chatId, $text, $user->step, $message, $user);
         }
 
         // Обработка callback_query
